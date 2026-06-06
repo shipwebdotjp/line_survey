@@ -1,0 +1,24 @@
+{
+  "title": "Sample Survey",
+  "pages": [
+    {
+      "name": "page1",
+      "elements": [
+        {
+          "type": "text",
+          "name": "question1",
+          "title": "What is your name?"
+        },
+        {
+          "type": "radiogroup",
+          "name": "question2",
+          "title": "Do you like React?",
+          "choices": [
+            "Yes",
+            "No"
+          ]
+        }
+      ]
+    }
+  ]
+}
