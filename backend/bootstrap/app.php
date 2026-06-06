@@ -1,8 +1,12 @@
 <?php
 
 use App\Config\Settings;
+use App\Infrastructure\Database\ConnectionFactory;
 use DI\ContainerBuilder;
 use Dotenv\Dotenv;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\ConnectionInterface;
+use Psr\Container\ContainerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 
@@ -14,13 +18,25 @@ if (file_exists(__DIR__ . '/../.env')) {
     $dotenv->load();
 }
 
+$settings = new Settings();
+date_default_timezone_set($settings->get('app.timezone', 'Asia/Tokyo'));
+
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
 // Set up settings
 $containerBuilder->addDefinitions([
-    Settings::class => function () {
-        return new Settings();
+    Settings::class => function () use ($settings) {
+        return $settings;
+    },
+    ConnectionFactory::class => function () use ($settings) {
+        return new ConnectionFactory($settings);
+    },
+    Capsule::class => function (ContainerInterface $container) {
+        return $container->get(ConnectionFactory::class)->create();
+    },
+    ConnectionInterface::class => function (ContainerInterface $container) {
+        return $container->get(Capsule::class)->getConnection();
     },
 ]);
 

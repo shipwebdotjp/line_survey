@@ -13,12 +13,17 @@ class Settings
                 'name' => 'Survey App',
                 'env' => $_ENV['APP_ENV'] ?? 'production',
                 'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
+                'timezone' => $_ENV['APP_TIMEZONE'] ?? 'Asia/Tokyo',
             ],
             'db' => [
+                'driver' => $_ENV['DB_CONNECTION'] ?? 'mysql',
                 'host' => $_ENV['DB_HOST'] ?? 'localhost',
+                'port' => (int) ($_ENV['DB_PORT'] ?? 3306),
                 'database' => $_ENV['DB_NAME'] ?? '',
                 'username' => $_ENV['DB_USER'] ?? '',
                 'password' => $_ENV['DB_PASS'] ?? '',
+                'charset' => $_ENV['DB_CHARSET'] ?? 'utf8mb4',
+                'collation' => $_ENV['DB_COLLATION'] ?? 'utf8mb4_unicode_ci',
             ],
             'error' => [
                 'display_error_details' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
