@@ -42,9 +42,9 @@ npm-dev:
 npm-build:
 	docker compose exec web npm run build --prefix frontend
 
-# --- Database Commands (Placeholder for now) ---
+# --- Database Commands ---
 migrate:
-	@echo "Migration command placeholder"
+	docker compose exec web backend/vendor/bin/phinx migrate -c backend/phinx.php
 
 seed:
-	@echo "Seed command placeholder"
+	docker compose exec web backend/vendor/bin/phinx seed:run -c backend/phinx.php
