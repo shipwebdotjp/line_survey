@@ -30,6 +30,25 @@ class Settings
                 'log_errors' => true,
                 'log_error_details' => true,
             ],
+            'auth' => $this->getAuthSettings(),
+        ];
+    }
+
+    private function getAuthSettings(): array
+    {
+        $user = $_ENV['ADMIN_USER'] ?? '';
+        $pass = $_ENV['ADMIN_PASS'] ?? '';
+        $env = $_ENV['APP_ENV'] ?? 'production';
+
+        if ($env === 'production') {
+            if (empty($user) || empty($pass)) {
+                throw new \RuntimeException('ADMIN_USER and ADMIN_PASS must be set in production environment.');
+            }
+        }
+
+        return [
+            'admin_user' => !empty($user) ? $user : 'admin',
+            'admin_pass' => !empty($pass) ? $pass : 'password',
         ];
     }
 
