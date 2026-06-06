@@ -12,7 +12,7 @@ class Settings
             'app' => [
                 'name' => 'Survey App',
                 'env' => $_ENV['APP_ENV'] ?? 'production',
-                'debug' => ($_ENV['APP_DEBUG'] ?? 'false') === 'true',
+                'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
             ],
             'db' => [
                 'host' => $_ENV['DB_HOST'] ?? 'localhost',
@@ -21,7 +21,7 @@ class Settings
                 'password' => $_ENV['DB_PASS'] ?? '',
             ],
             'error' => [
-                'display_error_details' => ($_ENV['APP_DEBUG'] ?? 'false') === 'true',
+                'display_error_details' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
                 'log_errors' => true,
                 'log_error_details' => true,
             ],

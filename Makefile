@@ -1,3 +1,5 @@
+.PHONY: up build init down restart ps logs composer-install test npm-install npm-dev npm-build migrate seed
+
 # --- Docker Commands ---
 up:
 	docker-compose up -d
