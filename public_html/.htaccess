@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Route /api and /api/* to public_html/api/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api(?:/(.*))?$ api/index.php [QSA,L]
+
+# For frontend (React router support)
+# Exclude /api and /api/* from SPA catch-all
+RewriteCond %{REQUEST_URI} !^/api(?:/|$)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
