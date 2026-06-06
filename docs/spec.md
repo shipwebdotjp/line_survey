@@ -105,11 +105,9 @@ SurveyJS JSONをそのままDBに保存する。
 
 ## 4. アンケート編集ルール
 
-- 回答が0件の場合
-  - `questions_json` を自由に編集可能
-- 回答が1件以上ある場合
-  - `questions_json` は編集不可
-  - 理由: 設問構造を変更すると、過去回答との整合性が崩れるため
+- `questions_json` は回答が 1 件以上あっても編集可能
+- 保存済み回答との整合性は `responses.survey_snapshot_json` で保持する
+- 設問構造を更新しても、過去回答の表示やCSV出力は回答時点の定義を基準にする
 
 回答後も編集可能な項目:
 
@@ -459,8 +457,8 @@ CSVインポート時に、
 
 ### CSV列生成
 
-CSVの設問列は、`surveys.questions_json` を基準に生成する。
-回答後は `questions_json` をロックするため、列ズレを防ぐ。
+CSVの設問列は、`responses.survey_snapshot_json` を基準に生成する。
+`questions_json` は回答後も編集できるため、列ズレは回答時点の定義で防ぐ。
 
 ## 13. 回答時点のアンケート定義保存
 
@@ -505,9 +503,9 @@ CSVの設問列は、`surveys.questions_json` を基準に生成する。
 - include_answers_in_email
 - questions_json
 
-ただし、回答が1件以上ある場合は、
+ただし、回答が1件以上ある場合も、
 
-- `questions_json` 編集不可
+- `questions_json` 編集可能
 
 ### SurveyJS JSON編集
 

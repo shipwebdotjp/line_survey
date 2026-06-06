@@ -12,14 +12,14 @@
   - `.env` 読み込みと設定クラスを用意する（phpdotenv）
   - エラーレスポンスの形式を `{ "error": "...", "code": "..." }` に統一する
 
-- [ ] 0-2. フロントエンドの起動基盤を作る
+- [x] 0-2. フロントエンドの起動基盤を作る
   - Vite + React + TypeScript のビルド/起動導線を整える
   - 公開側（`/s/*`）と管理側（`/admin/*`）でルーティングを分ける
   - **SurveyJS のバージョンを固定し、`questions_json` の最小サンプルを1件用意する**
   - LIFF SDK をインストールし、初期化関数の雛形を作る
   - **LIFF ブラウザ外アクセス時（開発環境など）のフォールバック方針を決める**
 
-- [ ] 0-3. DB 接続と共通ユーティリティを作る
+- [x] 0-3. DB 接続と共通ユーティリティを作る
   - MariaDB/MySQL 接続（illuminate/database）、タイムゾーン（Asia/Tokyo）を共通化する
   - `public_id` と `edit_token` の生成関数を実装する
   - 日時のフォーマット/変換ヘルパーを用意する（Carbon または手動）
@@ -28,12 +28,12 @@
 
 ## 1. DB と永続化の土台
 
-- [ ] 1-1. 全テーブルを作成するマイグレーションを作る
+- [x] 1-1. 全テーブルを作成するマイグレーションを作る
   - `surveys` / `respondent_masters` / `respondents` / `responses` を作成する
   - **`responses` の外部キー（`survey_id` → `surveys.id`、`respondent_id` → `respondents.id`）を明示する**
   - `respondents.line_user_id` と `respondent_masters.line_display_name` の UNIQUE 制約を必ず入れる
   - `responses.edit_token` の UNIQUE 制約を入れる
-  - phinx または生 SQL でマイグレーションを管理する
+  - phinx でマイグレーションを管理する
 
 - [ ] 1-2. 初期データと管理者認証設定を用意する
   - Basic 認証用のユーザー名/パスワードを環境変数（`ADMIN_USER` / `ADMIN_PASS`）で管理する
@@ -181,11 +181,11 @@
 
 - [ ] 8-3. `GET /api/admin/surveys/{id}` を実装する
   - 編集画面用に全カラムを返す
-  - 回答数も含めて返す（`questions_json` 編集ロックの判定用）
+  - 回答数も含めて返す（編集画面の補助情報として使う）
 
 - [ ] 8-4. `PUT /api/admin/surveys/{id}` を実装する
-  - 回答数 ≥ 1 のとき `questions_json` の更新を拒否する（400）
-  - それ以外のフィールドは更新可能
+  - `questions_json` を含む全フィールドを更新可能にする
+  - `questions_json` は JSON 構文バリデーションを行う
 
 - [ ] 8-5. `DELETE /api/admin/surveys/{id}` を実装する
   - 回答数 ≥ 1 のとき削除を拒否する（409）
@@ -208,7 +208,7 @@
 
 - [ ] 9-2. `GET /api/admin/surveys/{id}/responses.csv` を実装する
   - 列順: 回答ID、初回回答日時、最終更新日時、LINE表示名、氏名、敬称、メール、設問列
-  - 設問列は `surveys.questions_json` から生成する（回答後はロックされているため列ズレなし）
+  - 設問列は `responses.survey_snapshot_json` から生成する（回答時点の定義を使う）
   - 複数選択は `;` 区切り、空値は空文字
   - 文字コード: UTF-8 BOM付き、改行: CRLF、日時: Asia/Tokyo
 
@@ -293,7 +293,7 @@
 
 - [ ] 13-3. アンケート編集画面を作る
   - title / description / status / starts_at / ends_at / allow_multiple / allow_edit / メール設定
-  - 回答 ≥ 1 件のとき `questions_json` 編集欄を disabled にする
+  - `questions_json` 編集欄は常時編集可能にする
 
 - [ ] 13-4. SurveyJS JSON 編集 UI を作る
   - textarea + JSON.parse によるバリデーション
@@ -316,12 +316,13 @@
   - 初回アクセス（名寄せ成功）→ 回答 → メール受信
   - 初回アクセス（名寄せ失敗）→ 手入力 → 回答 → 次回再訪で再入力なし
   - 編集 URL から再編集 → 編集控えメール受信
+  - 回答後に `questions_json` を編集 → 既存回答が `survey_snapshot_json` ベースで保持される
   - CSV ダウンロードの列・文字コード確認
 
 - [ ] 14-2. 代表的な異常系を確認する
   - ID Token 不正 → 401
   - 編集期限超過 → 403
-  - `questions_json` ロック違反 → 400
+  - `questions_json` の JSON 構文エラー → 400
   - CSV インポートの一部エラー行 → 成功行は保存・エラー行一覧返却
   - LIFF 外アクセス → エラー表示（フリーズしない）
 

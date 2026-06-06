@@ -149,7 +149,7 @@ SurveyJS の定義と公開状態を保持する。
 補足:
 
 - `status` は `draft` / `published` / `closed` / `archived`
-- `questions_json` は回答 0 件のときのみ編集可能とする
+- `questions_json` は回答が 1 件以上あっても編集可能とする
 - `public_id` は `sv_` + URL-safe Base64 のランダム 16 bytes で生成する
 
 ### 4.4 `responses`
@@ -214,14 +214,14 @@ SurveyJS の定義と公開状態を保持する。
 
 1. 管理者が対象アンケートを選択する
 2. バックエンドが `responses` を取得する
-3. `surveys.questions_json` を元に列を展開する
+3. `responses.survey_snapshot_json` を元に列を展開する
 4. CSV を生成する
 5. ダウンロードレスポンスとして返す
 
 ## 6. アンケート編集ルール
 
-- 回答が 0 件のときのみ `questions_json` を編集可能にする
-- 回答が 1 件以上ある場合は `questions_json` を編集不可にする
+- `questions_json` は回答が 1 件以上あっても編集可能にする
+- 保存済み回答との整合性は `responses.survey_snapshot_json` で保持する
 - 編集可能なのは `title`, `description`, `status`, `starts_at`, `ends_at`, `allow_multiple`, `allow_edit`, `send_confirmation_email`, `include_answers_in_email`
 - 設問を変えたい場合は複製して新規アンケートとして作成する
 - 複製時は `title`, `description`, `questions_json`, `allow_multiple`, `allow_edit`, メール設定をコピーする
@@ -323,7 +323,7 @@ SurveyJS の定義と公開状態を保持する。
 - 文字コードは UTF-8 BOM 付き、改行コードは CRLF とする
 - 複数選択は `;` 区切りとする
 - 日時は Asia/Tokyo とする
-- 設問列は `questions_json` を基準に生成し、回答後は列ズレを防ぐ
+- 設問列は `responses.survey_snapshot_json` を基準に生成し、回答時点の定義で出力する
 
 ## 15. 認証・セキュリティ
 
@@ -383,7 +383,7 @@ SurveyJS の定義と公開状態を保持する。
 
 ## 18. 実装上の注意
 
-- `questions_json` は回答 1 件以上でロックする
+- `questions_json` は回答が 1 件以上あっても編集できる
 - `survey_snapshot_json` は回答時点の定義を保持する
 - `respondent_masters` と `respondents` の役割を混同しない
 - `respondents` の `line_user_id` を識別の主軸にする
