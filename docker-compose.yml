@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.6
+    container_name: wp_survey_mysqld
+    volumes:
+      - dbvol:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_DATABASE: survey
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: password
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+  web:
+    image: php:8.3-apache
+    container_name: survey_php
+    volumes:
+      - ./public_html:/var/www/html
+    ports:
+      - "8088:80"
+    environment:
+      DB_HOST: wp_survey_mysqld:3306
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: "wp_phpmyadmin_survey"
+    ports:
+      - "8000:80"
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+    environment:
+      PMA_HOSTS: wp_survey_mysqld
+      PMA_USER: mysqluser
+      PMA_PASSWORD: password
+
+volumes:
+  dbvol:
