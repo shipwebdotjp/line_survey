@@ -3,11 +3,13 @@
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
+use App\Presentation\Http\Middleware\BasicAuthMiddleware;
 use App\Presentation\Http\Survey\GetPublicSurveyAction;
 use App\Presentation\Http\Survey\SaveResponseAction;
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app) {
     $app->get('/api/health', function (Request $request, Response $response) {
@@ -21,4 +23,9 @@ return function (App $app) {
     // Public Survey
     $app->get('/api/surveys/public/{public_id}', GetPublicSurveyAction::class);
     $app->post('/api/surveys/public/{public_id}/responses', SaveResponseAction::class);
+
+    // Admin API (Basic Auth protected)
+    $app->group('/api/admin', function (RouteCollectorProxy $group) {
+        // Admin routes will be added here
+    })->add(BasicAuthMiddleware::class);
 };
