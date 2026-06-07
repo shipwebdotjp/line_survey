@@ -10,7 +10,7 @@ interface SurveyData {
   survey: {
     title: string;
     description: string;
-    questions_json: any;
+    questions_json: Record<string, any>;
     allow_multiple: boolean;
     allow_edit: boolean;
     starts_at: string | null;
@@ -31,7 +31,15 @@ const PublicSurveyPage: React.FC = () => {
     const fetchSurvey = async () => {
       try {
         const response = await fetch(`/api/surveys/public/${public_id}`);
-        const result = await response.json();
+
+        let result;
+        try {
+          result = await response.json();
+        } catch (jsonErr) {
+          setError('レスポンスの解析中にエラーが発生しました。');
+          setIsLoading(false);
+          return;
+        }
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -74,7 +82,14 @@ const PublicSurveyPage: React.FC = () => {
     );
   }
 
-  if (!surveyData) return null;
+  if (!surveyData || !surveyData.survey || !surveyData.survey.questions_json) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+        <p>アンケートデータの取得に失敗しました。</p>
+      </div>
+    );
+  }
 
   if (!surveyData.can_answer) {
     let title = '回答不可';
@@ -85,7 +100,7 @@ const PublicSurveyPage: React.FC = () => {
     } else if (surveyData.reason === 'not_started') {
       title = '開始前';
       message = 'このアンケートはまだ開始されていません。';
-      if (surveyData.survey?.starts_at) {
+      if (surveyData.survey.starts_at) {
         message += `\n開始予定: ${surveyData.survey.starts_at}`;
       }
     } else if (surveyData.reason === 'closed') {
@@ -103,12 +118,12 @@ const PublicSurveyPage: React.FC = () => {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
-      {surveyData.survey?.description && (
+      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey.title}</h1>
+      {surveyData.survey.description && (
         <p style={{ marginBottom: '1.5rem', color: '#666' }}>{surveyData.survey.description}</p>
       )}
       <SurveyRenderer
-        questions={surveyData.survey?.questions_json}
+        questions={surveyData.survey.questions_json}
         onComplete={(sender) => console.log('Survey complete:', sender.data)}
       />
     </div>
