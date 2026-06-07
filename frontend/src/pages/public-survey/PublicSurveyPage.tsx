@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { isLiffEnabled } from '../../features/liff/liff-init';
+import { useLiff } from '../../features/liff/useLiff';
+import LiffError from '../../features/liff/LiffError';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isLiffEnabled()) {
-      setError('Please access this survey via LINE.');
-    }
-  }, []);
+  const { isInitialized, isLoggedIn, error } = useLiff();
 
   if (error) {
+    return <LiffError error={error} />;
+  }
+
+  if (!isInitialized || !isLoggedIn) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
-        <h1>Error</h1>
-        <p>{error}</p>
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <p>読み込み中...</p>
       </div>
     );
   }
