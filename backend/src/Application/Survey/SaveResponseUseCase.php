@@ -83,13 +83,13 @@ final class SaveResponseUseCase
         // 6. Send confirmation email
         $mailResult = $this->mailService->sendConfirmation($respondent, $survey, $savedResponse);
 
-        // 7. Record email status
-        if ($mailResult['success']) {
+        // 7. Record email status only for actual send attempts.
+        if (($mailResult['status'] ?? null) === 'sent') {
             $this->responseRepository->update($responseId, [
                 'email_sent_at' => DateTimeHelper::formatTokyo(DateTimeHelper::nowTokyo()),
                 'email_error' => null,
             ]);
-        } else {
+        } elseif (($mailResult['status'] ?? null) === 'failed') {
             $this->responseRepository->update($responseId, [
                 'email_sent_at' => null,
                 'email_error' => $mailResult['message'],

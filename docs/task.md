@@ -84,7 +84,7 @@
 
 > **前提: タスク 1-3、2-3 完了後に着手する**
 
-- [ ] 3-1. `GET /api/surveys/public/{public_id}` を実装する
+- [x] 3-1. `GET /api/surveys/public/{public_id}` を実装する
   - `public_id` から survey を取得する
   - 回答可否を判定して返す:
     - `status != published` → 回答不可
@@ -92,7 +92,7 @@
     - `ends_at` 後 → 回答不可
   - 回答不可の理由をレスポンスに含める（`"reason": "not_started|closed|not_published"`）
 
-- [ ] 3-2. 回答者向け survey ペイロードを整える
+- [x] 3-2. 回答者向け survey ペイロードを整える
   - `questions_json`、タイトル、説明、`allow_multiple`、`allow_edit`、`ends_at` を返す
   - SurveyJS にそのまま渡せる形にする（`questions_json` をパースして `survey.fromJSON()` できること確認）
 
@@ -103,12 +103,12 @@
 > **前提: タスク 2-3、3-1、6-1 完了後に着手する**
 > ※ メールサービスを先に作ってから回答保存に組み込む（後回しにすると実装が中途半端になる）
 
-- [ ] 4-1. メール送信サービスを先に作る（`MailService`）
+- [x] 4-1. メール送信サービスを先に作る（`MailService`）
   - Resend API クライアントをラップする
   - `sendConfirmation(respondent, survey, response, editUrl|null)` のインターフェースを定める
   - 送信失敗時に例外を throw せず、失敗情報（メッセージ）を返す設計にする
 
-- [ ] 4-2. `POST /api/surveys/public/{public_id}/responses` を実装する
+- [x] 4-2. `POST /api/surveys/public/{public_id}/responses` を実装する
   - ID Token を検証して `respondent_id` を確定する
   - `allow_multiple=false` かつ既存回答あり → 既存回答を返す（保存しない）
   - 新規保存時: `answer_json`、`survey_snapshot_json`、`edit_token`、`submitted_at` を保存する

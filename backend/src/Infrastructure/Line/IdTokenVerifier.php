@@ -10,7 +10,7 @@ use Firebase\JWT\JWT;
 use Psr\SimpleCache\CacheInterface;
 use RuntimeException;
 
-final class IdTokenVerifier
+class IdTokenVerifier
 {
     private const CERTS_URL = 'https://api.line.me/oauth2/v2.1/certs';
     private const ISSUER = 'https://access.line.me';

@@ -8,7 +8,7 @@ use App\Config\Settings;
 use App\Infrastructure\Support\DateTimeHelper;
 use RuntimeException;
 
-final class MailService
+class MailService
 {
     private string $apiKey;
     private string $fromAddress;
@@ -35,16 +35,16 @@ final class MailService
      * @param array $survey
      * @param array $response
      * @param bool $isUpdate
-     * @return array{success: bool, message: string}
+     * @return array{status: 'sent'|'skipped'|'failed', message: string}
      */
     public function sendConfirmation(array $respondent, array $survey, array $response, bool $isUpdate = false): array
     {
         if (!($survey['send_confirmation_email'] ?? true)) {
-            return ['success' => true, 'message' => 'Email sending is disabled for this survey.'];
+            return ['status' => 'skipped', 'message' => 'Email sending is disabled for this survey.'];
         }
 
         if (empty($this->apiKey)) {
-            return ['success' => false, 'message' => 'Resend API key is not configured.'];
+            return ['status' => 'failed', 'message' => 'Resend API key is not configured.'];
         }
 
         $to = $respondent['email'];
@@ -178,11 +178,11 @@ final class MailService
         $response = json_decode($result, true);
 
         if ($httpCode >= 200 && $httpCode < 300) {
-            return ['success' => true, 'message' => 'Email sent successfully. ID: ' . ($response['id'] ?? 'unknown')];
+            return ['status' => 'sent', 'message' => 'Email sent successfully. ID: ' . ($response['id'] ?? 'unknown')];
         }
 
         return [
-            'success' => false,
+            'status' => 'failed',
             'message' => 'Resend API error: ' . ($response['message'] ?? $result)
         ];
     }
