@@ -12,6 +12,7 @@ final class IdentifyService
     public const STATUS_EXISTING = 'existing';
     public const STATUS_MATCHED = 'matched';
     public const STATUS_MANUAL_REQUIRED = 'manual_required';
+    public const STATUS_MANUAL_SAVED = 'manual_saved';
 
     public function __construct(
         private RespondentRepository $respondentRepository,
@@ -36,11 +37,10 @@ final class IdentifyService
             $this->respondentRepository->update((int)$respondent['id'], [
                 'line_display_name' => $lineDisplayName
             ]);
-            $respondent['line_display_name'] = $lineDisplayName;
 
             return [
                 'status' => self::STATUS_EXISTING,
-                'respondent' => $respondent
+                'respondent' => $this->respondentRepository->findById((int)$respondent['id'])
             ];
         }
 
@@ -48,6 +48,10 @@ final class IdentifyService
         $masters = $this->masterRepository->findBy(['line_display_name' => $lineDisplayName]);
         if (!empty($masters)) {
             $master = $masters[0];
+
+            if (empty($master['name']) || empty($master['email'])) {
+                throw new \InvalidArgumentException('Master record is missing required fields (name or email).');
+            }
 
             $newRespondentId = $this->respondentRepository->save([
                 'line_user_id' => $lineUserId,

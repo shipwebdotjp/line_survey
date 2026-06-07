@@ -18,7 +18,7 @@ final class FileCache implements CacheInterface
     {
         $this->cacheDir = $cacheDir ?? __DIR__ . '/../../../var/cache';
         if (!is_dir($this->cacheDir)) {
-            mkdir($this->cacheDir, 0777, true);
+            mkdir($this->cacheDir, 0755, true);
         }
     }
 
@@ -29,12 +29,17 @@ final class FileCache implements CacheInterface
             return $default;
         }
 
-        $content = file_get_contents($path);
+        $content = @file_get_contents($path);
         if ($content === false) {
             return $default;
         }
 
-        $data = unserialize($content);
+        $data = json_decode($content, true);
+        if (!is_array($data) || !isset($data['expires_at']) || !array_key_exists('value', $data)) {
+            $this->delete($key);
+            return $default;
+        }
+
         if ($data['expires_at'] !== null && $data['expires_at'] < time()) {
             $this->delete($key);
             return $default;
@@ -57,7 +62,7 @@ final class FileCache implements CacheInterface
             'expires_at' => $expiresAt
         ];
 
-        return file_put_contents($this->getPath($key), serialize($data)) !== false;
+        return file_put_contents($this->getPath($key), json_encode($data)) !== false;
     }
 
     public function delete(string $key): bool
@@ -72,8 +77,14 @@ final class FileCache implements CacheInterface
     public function clear(): bool
     {
         $files = glob($this->cacheDir . '/*.cache');
+        if ($files === false) {
+            return true;
+        }
+
         foreach ($files as $file) {
-            unlink($file);
+            if (is_file($file)) {
+                unlink($file);
+            }
         }
         return true;
     }
@@ -105,7 +116,27 @@ final class FileCache implements CacheInterface
 
     public function has(string $key): bool
     {
-        return $this->get($key) !== null;
+        $path = $this->getPath($key);
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $content = @file_get_contents($path);
+        if ($content === false) {
+            return false;
+        }
+
+        $data = json_decode($content, true);
+        if (!is_array($data) || !isset($data['expires_at'])) {
+            return false;
+        }
+
+        if ($data['expires_at'] !== null && $data['expires_at'] < time()) {
+            $this->delete($key);
+            return false;
+        }
+
+        return true;
     }
 
     private function getPath(string $key): string

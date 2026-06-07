@@ -30,8 +30,22 @@ final class IdentifyManualAction
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response->getBody()->write(json_encode(['error' => 'Invalid email format'], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
         try {
             $claims = $this->verifier->verify($idToken);
+        } catch (\RuntimeException $e) {
+            $response->getBody()->write(json_encode([
+                'error' => 'ID Token verification failed',
+                'message' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+        }
+
+        try {
             $respondent = $this->identifyService->saveManual($claims['sub'], $claims['name'], [
                 'name' => $name,
                 'email' => $email,
@@ -39,16 +53,22 @@ final class IdentifyManualAction
             ]);
 
             $response->getBody()->write(json_encode([
-                'status' => IdentifyService::STATUS_EXISTING, // After manual save, it's treated as existing
+                'status' => IdentifyService::STATUS_MANUAL_SAVED,
                 'respondent' => $respondent
             ], JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (\Exception $e) {
+        } catch (\InvalidArgumentException $e) {
             $response->getBody()->write(json_encode([
-                'error' => 'Manual identification failed',
+                'error' => 'Validation failed',
                 'message' => $e->getMessage()
             ], JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        } catch (\Throwable $e) {
+            $response->getBody()->write(json_encode([
+                'error' => 'Internal server error during manual save',
+                'message' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 }

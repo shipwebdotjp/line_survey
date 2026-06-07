@@ -70,9 +70,15 @@ final class IdTokenVerifier
             return $cached;
         }
 
-        $json = @file_get_contents(self::CERTS_URL);
+        $ctx = stream_context_create([
+            'http' => [
+                'timeout' => 5, // 5 seconds
+            ]
+        ]);
+
+        $json = @file_get_contents(self::CERTS_URL, false, $ctx);
         if ($json === false) {
-            throw new RuntimeException('Failed to fetch LINE public keys.');
+            throw new RuntimeException('Failed to fetch LINE public keys (timeout or network error).');
         }
 
         $data = json_decode($json, true);

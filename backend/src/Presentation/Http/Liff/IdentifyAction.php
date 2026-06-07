@@ -29,16 +29,26 @@ final class IdentifyAction
 
         try {
             $claims = $this->verifier->verify($idToken);
+        } catch (\RuntimeException $e) {
+            // Assume verification failures throw RuntimeException from verifier
+            $response->getBody()->write(json_encode([
+                'error' => 'ID Token verification failed',
+                'message' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+        }
+
+        try {
             $result = $this->identifyService->identify($claims['sub'], $claims['name']);
 
             $response->getBody()->write(json_encode($result, JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $response->getBody()->write(json_encode([
-                'error' => 'Identification failed',
+                'error' => 'Internal server error during identification',
                 'message' => $e->getMessage()
             ], JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 }
