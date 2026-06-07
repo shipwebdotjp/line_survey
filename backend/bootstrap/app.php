@@ -1,7 +1,9 @@
 <?php
 
 use App\Config\Settings;
+use App\Infrastructure\Cache\FileCache;
 use App\Infrastructure\Database\ConnectionFactory;
+use Psr\SimpleCache\CacheInterface;
 use DI\ContainerBuilder;
 use Dotenv\Dotenv;
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -37,6 +39,9 @@ $containerBuilder->addDefinitions([
     },
     ConnectionInterface::class => function (ContainerInterface $container) {
         return $container->get(Capsule::class)->getConnection();
+    },
+    CacheInterface::class => function (ContainerInterface $container) {
+        return new FileCache();
     },
 ]);
 
