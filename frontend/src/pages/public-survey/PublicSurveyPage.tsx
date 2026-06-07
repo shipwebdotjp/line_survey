@@ -12,7 +12,7 @@ interface SurveyData {
   survey: {
     title: string;
     description: string;
-    questions_json: any;
+    questions_json: Record<string, any>;
     allow_multiple: boolean;
     allow_edit: boolean;
     starts_at: string | null;
@@ -128,7 +128,14 @@ const PublicSurveyPage: React.FC = () => {
     );
   }
 
-  if (!surveyData) return null;
+  if (!surveyData || !surveyData.survey || !surveyData.survey.questions_json) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+        <p>アンケートデータの取得に失敗しました。</p>
+      </div>
+    );
+  }
 
   if (!surveyData.can_answer) {
     let title = '回答不可';
@@ -139,7 +146,7 @@ const PublicSurveyPage: React.FC = () => {
     } else if (surveyData.reason === 'not_started') {
       title = '開始前';
       message = 'このアンケートはまだ開始されていません。';
-      if (surveyData.survey?.starts_at) {
+      if (surveyData.survey.starts_at) {
         message += `\n開始予定: ${surveyData.survey.starts_at}`;
       }
     } else if (surveyData.reason === 'closed') {
