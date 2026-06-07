@@ -8,7 +8,7 @@ use App\Infrastructure\Support\DateTimeHelper;
 use Illuminate\Database\ConnectionInterface;
 use stdClass;
 
-final class SurveyRepository
+class SurveyRepository
 {
     private const TABLE = 'surveys';
 
@@ -21,6 +21,18 @@ final class SurveyRepository
     {
         $sql = sprintf('SELECT * FROM %s WHERE id = ? LIMIT 1', self::TABLE);
         $result = $this->db->selectOne($sql, [$id]);
+
+        if (!$result) {
+            return null;
+        }
+
+        return $this->mapToArray($result);
+    }
+
+    public function findByPublicId(string $publicId): ?array
+    {
+        $sql = sprintf('SELECT * FROM %s WHERE public_id = ? LIMIT 1', self::TABLE);
+        $result = $this->db->selectOne($sql, [$publicId]);
 
         if (!$result) {
             return null;

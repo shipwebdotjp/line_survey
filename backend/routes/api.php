@@ -3,6 +3,7 @@
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
+use App\Presentation\Http\Survey\GetPublicSurveyAction;
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,4 +16,7 @@ return function (App $app) {
     // LIFF Identification
     $app->post('/api/liff/identify', IdentifyAction::class);
     $app->post('/api/liff/identify/manual', IdentifyManualAction::class);
+
+    // Public Survey
+    $app->get('/api/surveys/public/{public_id}', GetPublicSurveyAction::class);
 };
