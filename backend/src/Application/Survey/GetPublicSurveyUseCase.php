@@ -28,13 +28,13 @@ final class GetPublicSurveyUseCase
         $canAnswer = true;
         $reason = null;
 
+        $startsAt = $survey['starts_at'] ? DateTimeHelper::parseTokyo($survey['starts_at']) : null;
+        $endsAt = $survey['ends_at'] ? DateTimeHelper::parseTokyo($survey['ends_at']) : null;
+
         if ($survey['status'] !== 'published') {
             $canAnswer = false;
             $reason = 'not_published';
         } else {
-            $startsAt = $survey['starts_at'] ? new DateTimeImmutable($survey['starts_at']) : null;
-            $endsAt = $survey['ends_at'] ? new DateTimeImmutable($survey['ends_at']) : null;
-
             if ($startsAt && $now < $startsAt) {
                 $canAnswer = false;
                 $reason = 'not_started';
@@ -53,8 +53,8 @@ final class GetPublicSurveyUseCase
                 'questions_json' => $survey['questions_json'],
                 'allow_multiple' => (bool)$survey['allow_multiple'],
                 'allow_edit' => (bool)$survey['allow_edit'],
-                'starts_at' => DateTimeHelper::formatTokyo($survey['starts_at'] ? new DateTimeImmutable($survey['starts_at']) : null),
-                'ends_at' => DateTimeHelper::formatTokyo($survey['ends_at'] ? new DateTimeImmutable($survey['ends_at']) : null),
+                'starts_at' => DateTimeHelper::formatTokyo($startsAt),
+                'ends_at' => DateTimeHelper::formatTokyo($endsAt),
             ],
         ];
     }
