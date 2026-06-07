@@ -23,11 +23,11 @@ class BasicAuthMiddleware implements MiddlewareInterface
     {
         $auth = $request->getHeaderLine('Authorization');
 
-        if (empty($auth) || !str_starts_with($auth, 'Basic ')) {
+        if ($auth === '' || !preg_match('/^Basic\s+/i', $auth)) {
             return $this->unauthorized();
         }
 
-        $credentials = base64_decode(substr($auth, 6));
+        $credentials = base64_decode(substr($auth, 6), true);
         if ($credentials === false || !str_contains($credentials, ':')) {
             return $this->unauthorized();
         }
