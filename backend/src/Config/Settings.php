@@ -14,6 +14,7 @@ class Settings
                 'env' => $_ENV['APP_ENV'] ?? 'production',
                 'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
                 'timezone' => $_ENV['APP_TIMEZONE'] ?? 'Asia/Tokyo',
+                'url' => $_ENV['APP_URL'] ?? 'http://localhost',
             ],
             'db' => [
                 'driver' => $_ENV['DB_CONNECTION'] ?? 'mysql',
@@ -36,6 +37,11 @@ class Settings
             ],
             'line' => [
                 'channel_id' => $_ENV['LINE_CHANNEL_ID'] ?? '',
+            ],
+            'mail' => [
+                'resend_api_key' => $_ENV['RESEND_API_KEY'] ?? '',
+                'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'onboarding@resend.dev',
+                'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Survey App',
             ],
         ];
     }
