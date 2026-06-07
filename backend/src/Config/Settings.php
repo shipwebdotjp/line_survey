@@ -34,6 +34,9 @@ class Settings
                 'admin_user' => $_ENV['ADMIN_USER'] ?? 'admin',
                 'admin_pass' => $_ENV['ADMIN_PASS'] ?? 'password',
             ],
+            'line' => [
+                'channel_id' => $_ENV['LINE_CHANNEL_ID'] ?? '',
+            ],
         ];
     }
 

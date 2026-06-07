@@ -8,7 +8,7 @@ use App\Infrastructure\Support\DateTimeHelper;
 use Illuminate\Database\ConnectionInterface;
 use stdClass;
 
-final class RespondentMasterRepository
+class RespondentMasterRepository
 {
     private const TABLE = 'respondent_masters';
 
