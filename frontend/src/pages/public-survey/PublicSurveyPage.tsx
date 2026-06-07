@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useLiff } from '../../features/liff/useLiff';
 import LiffError from '../../features/liff/LiffError';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
+import RespondentIdentification from '../../features/survey/RespondentIdentification';
+import type { IdentifyStatus, Respondent, IdentifyResponse } from '../../features/survey/types';
 
 interface SurveyData {
   can_answer: boolean;
@@ -20,37 +22,52 @@ interface SurveyData {
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
-  const { isInitialized, isLoggedIn, error: liffError } = useLiff();
+  const { isInitialized, isLoggedIn, idToken, error: liffError } = useLiff();
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
+  const [identifyStatus, setIdentifyStatus] = useState<IdentifyStatus | null>(null);
+  const [respondent, setRespondent] = useState<Respondent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isIdentifying, setIsIdentifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [identifyError, setIdentifyError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isInitialized || !isLoggedIn || !public_id) return;
+    if (!isInitialized || !isLoggedIn || !public_id || !idToken) return;
 
-    const fetchSurvey = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`/api/surveys/public/${public_id}`);
+        setIsLoading(true);
+        // 1. Fetch survey data
+        const surveyResponse = await fetch(`/api/surveys/public/${public_id}`);
+        const surveyResult = await surveyResponse.json();
 
-        let result;
-        try {
-          result = await response.json();
-        } catch (jsonErr) {
-          setError('レスポンスの解析中にエラーが発生しました。');
-          setIsLoading(false);
-          return;
-        }
-
-        if (!response.ok) {
-          if (response.status === 404) {
+        if (!surveyResponse.ok) {
+          if (surveyResponse.status === 404) {
             setError('アンケートが見つかりませんでした。');
           } else {
-            setError(result.error || '予期せぬエラーが発生しました。');
+            setError(surveyResult.error || '予期せぬエラーが発生しました。');
           }
           return;
         }
 
-        setSurveyData(result.data);
+        setSurveyData(surveyResult.data);
+
+        // 2. Identification
+        const identifyResponse = await fetch('/api/liff/identify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: idToken }),
+        });
+        const identifyResult: IdentifyResponse = await identifyResponse.json();
+
+        if (!identifyResponse.ok) {
+          setError(identifyResult.error || '本人確認に失敗しました。');
+          return;
+        }
+
+        setIdentifyStatus(identifyResult.status);
+        setRespondent(identifyResult.respondent);
+
       } catch (err) {
         setError('通信エラーが発生しました。');
       } finally {
@@ -58,8 +75,37 @@ const PublicSurveyPage: React.FC = () => {
       }
     };
 
-    fetchSurvey();
-  }, [isInitialized, isLoggedIn, public_id]);
+    fetchData();
+  }, [isInitialized, isLoggedIn, public_id, idToken]);
+
+  const handleManualSubmit = async (data: { name: string; email: string; honorific: string }) => {
+    if (!idToken) return;
+    try {
+      setIsIdentifying(true);
+      setIdentifyError(null);
+      const response = await fetch('/api/liff/identify/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_token: idToken,
+          ...data,
+        }),
+      });
+      const result: IdentifyResponse = await response.json();
+
+      if (!response.ok) {
+        setIdentifyError(result.error || '情報の保存に失敗しました。');
+        return;
+      }
+
+      setIdentifyStatus(result.status);
+      setRespondent(result.respondent);
+    } catch (err) {
+      setIdentifyError('通信エラーが発生しました。');
+    } finally {
+      setIsIdentifying(false);
+    }
+  };
 
   if (liffError) {
     return <LiffError error={liffError} />;
@@ -116,16 +162,31 @@ const PublicSurveyPage: React.FC = () => {
     );
   }
 
+  const showSurvey = identifyStatus === 'existing' || identifyStatus === 'matched' || identifyStatus === 'manual_saved';
+
   return (
-    <div style={{ padding: '1rem' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey.title}</h1>
-      {surveyData.survey.description && (
+    <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
+      {surveyData.survey?.description && (
         <p style={{ marginBottom: '1.5rem', color: '#666' }}>{surveyData.survey.description}</p>
       )}
-      <SurveyRenderer
-        questions={surveyData.survey.questions_json}
-        onComplete={(sender) => console.log('Survey complete:', sender.data)}
-      />
+
+      {identifyStatus && (
+        <RespondentIdentification
+          status={identifyStatus}
+          respondent={respondent}
+          onManualSubmit={handleManualSubmit}
+          isSubmitting={isIdentifying}
+          submitError={identifyError}
+        />
+      )}
+
+      {showSurvey && (
+        <SurveyRenderer
+          questions={surveyData.survey?.questions_json}
+          onComplete={(sender) => console.log('Survey complete:', sender.data)}
+        />
+      )}
     </div>
   );
 };
