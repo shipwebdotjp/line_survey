@@ -7,6 +7,7 @@ export async function initLiff(liffId: string): Promise<void> {
       // In a real application, you might want to allow external browser access for debugging
       // but according to the requirements, we should stop with an error.
       // throw new Error('Outside LIFF');
+      throw new Error('Outside LIFF');
     }
   } catch (err) {
     console.error('LIFF initialization failed', err);

@@ -51,18 +51,16 @@ return function (App $app) {
         // Handle specific custom exceptions if needed in the future
 
         $payload = [
-            'error' => [
-                'code' => $errorCode,
-                'message' => $message,
-            ],
+            'error' => $message,
+            'code' => $errorCode,
         ];
 
         if ($details !== null) {
-            $payload['error']['details'] = $details;
+            $payload['details'] = $details;
         }
 
         if ($displayErrorDetails) {
-            $payload['error']['debug'] = [
+            $payload['debug'] = [
                 'type' => get_class($exception),
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),

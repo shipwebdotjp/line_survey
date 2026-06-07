@@ -22,16 +22,16 @@ class JsonResponse
         mixed $details = null,
         int $statusCode = 400
     ): Response {
-        $error = [
+        $payloadData = [
+            'error' => $message,
             'code' => $code,
-            'message' => $message,
         ];
 
         if ($details !== null) {
-            $error['details'] = $details;
+            $payloadData['details'] = $details;
         }
 
-        $payload = json_encode(['error' => $error], JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($payloadData, JSON_UNESCAPED_UNICODE);
         $response->getBody()->write($payload);
         return $response
             ->withHeader('Content-Type', 'application/json')

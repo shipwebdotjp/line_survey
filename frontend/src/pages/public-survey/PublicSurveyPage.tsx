@@ -8,11 +8,7 @@ const PublicSurveyPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // In actual use, liff.init would be called before this
-    // For this task, we just check if it's in client as a mock requirement
-    // Check for a debug flag to allow verification
-    const isDebug = new URLSearchParams(window.location.search).get('debug') === 'true';
-    if (!isLiffEnabled() && !isDebug) {
+    if (!isLiffEnabled()) {
       setError('Please access this survey via LINE.');
     }
   }, []);

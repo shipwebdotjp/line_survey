@@ -14,7 +14,7 @@ class DevelopmentSeeder extends AbstractSeed
         $surveys = $this->table('surveys');
         $surveyData = [
             [
-                'public_id' => 'sample-survey-2024',
+                'public_id' => 'sv_p7Kf92LpQaXz3MnT8bQYv2A',
                 'title' => '開発用サンプルアンケート',
                 'description' => 'これは開発用のサンプルアンケートです。',
                 'questions_json' => json_encode([
