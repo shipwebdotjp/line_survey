@@ -4,7 +4,8 @@ import { useLiff } from '../../features/liff/useLiff';
 import LiffError from '../../features/liff/LiffError';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
-import type { IdentifyStatus, Respondent, IdentifyResponse } from '../../features/survey/types';
+import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult } from '../../features/survey/types';
+import type { Model } from 'survey-core';
 
 interface SurveyData {
   can_answer: boolean;
@@ -30,6 +31,9 @@ const PublicSurveyPage: React.FC = () => {
   const [isIdentifying, setIsIdentifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [identifyError, setIdentifyError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
 
   useEffect(() => {
     if (!isInitialized || !isLoggedIn || !public_id || !idToken) return;
@@ -107,6 +111,36 @@ const PublicSurveyPage: React.FC = () => {
     }
   };
 
+  const handleSurveyComplete = async (sender: Model) => {
+    if (!idToken || !public_id) return;
+    try {
+      setIsSubmitting(true);
+      setSubmitError(null);
+      const response = await fetch(`/api/surveys/public/${public_id}/responses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_token: idToken,
+          answer_json: sender.data,
+        }),
+      });
+      const result: SaveResponseResult = await response.json();
+
+      if (!response.ok) {
+        setSubmitError(result.error || 'アンケートの送信に失敗しました。');
+        return;
+      }
+
+      if (result.data) {
+        setSubmittedResponse(result.data);
+      }
+    } catch (err) {
+      setSubmitError('通信エラーが発生しました。');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (liffError) {
     return <LiffError error={liffError} />;
   }
@@ -164,6 +198,42 @@ const PublicSurveyPage: React.FC = () => {
 
   const showSurvey = identifyStatus === 'existing' || identifyStatus === 'matched' || identifyStatus === 'manual_saved';
 
+  if (submittedResponse) {
+    const editUrl = `${window.location.origin}/s/${public_id}/r/${submittedResponse.edit_token}/edit`;
+    const emailSent = !!submittedResponse.email_sent_at;
+
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>回答が完了しました</h1>
+        <p style={{ marginBottom: '1rem' }}>ご協力ありがとうございました。</p>
+
+        {emailSent ? (
+          <p style={{ marginBottom: '1.5rem', color: '#28a745' }}>
+            回答の控えをメールでお送りしました。ご確認ください。
+          </p>
+        ) : (
+          submittedResponse.email_error && (
+            <p style={{ marginBottom: '1.5rem', color: '#dc3545' }}>
+              ※回答控えメールの送信に失敗しました。回答自体は保存されています。
+            </p>
+          )
+        )}
+
+        {surveyData.survey?.allow_edit && (
+          <div style={{ marginTop: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+            <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>回答の修正用URL:</p>
+            <p style={{ fontSize: '0.8rem', wordBreak: 'break-all', color: '#007bff' }}>
+              <a href={editUrl}>{editUrl}</a>
+            </p>
+            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
+              ※このURLを保存しておくと、後から回答を修正できます。
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
@@ -182,10 +252,25 @@ const PublicSurveyPage: React.FC = () => {
       )}
 
       {showSurvey && (
-        <SurveyRenderer
-          questions={surveyData.survey?.questions_json}
-          onComplete={(sender) => console.log('Survey complete:', sender.data)}
-        />
+        <div style={{ marginTop: '1rem' }}>
+          {submitError && (
+            <div style={{
+              padding: '1rem',
+              marginBottom: '1rem',
+              backgroundColor: '#fff5f5',
+              color: '#c53030',
+              borderRadius: '4px',
+              border: '1px solid #feb2b2'
+            }}>
+              {submitError}
+            </div>
+          )}
+          <SurveyRenderer
+            questions={surveyData.survey?.questions_json}
+            onComplete={handleSurveyComplete}
+            isSubmitting={isSubmitting}
+          />
+        </div>
       )}
     </div>
   );
