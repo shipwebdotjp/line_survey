@@ -14,7 +14,7 @@ final class FileCache implements CacheInterface
 {
     private string $cacheDir;
 
-    public function __construct(string $cacheDir = null)
+    public function __construct(?string $cacheDir = null)
     {
         $this->cacheDir = $cacheDir ?? __DIR__ . '/../../../var/cache';
         if (!is_dir($this->cacheDir)) {

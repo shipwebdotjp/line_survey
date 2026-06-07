@@ -35,11 +35,11 @@
   - `responses.edit_token` の UNIQUE 制約を入れる
   - phinx でマイグレーションを管理する
 
-- [ ] 1-2. 初期データと管理者認証設定を用意する
+- [x] 1-2. 初期データと管理者認証設定を用意する
   - Basic 認証用のユーザー名/パスワードを環境変数（`ADMIN_USER` / `ADMIN_PASS`）で管理する
   - 開発用シードデータ（survey 1件、respondent_master 数件）を投入できるようにする
 
-- [ ] 1-3. リポジトリ層の雛形を作る
+- [x] 1-3. リポジトリ層の雛形を作る
   - `SurveyRepository` / `RespondentRepository` / `RespondentMasterRepository` / `ResponseRepository` を作る
   - 各リポジトリに `findById` / `findBy` / `save` / `update` の共通パターンを実装する
   - **以降のタスクはすべてこのリポジトリ層を経由することを前提とする**
@@ -50,19 +50,19 @@
 
 > **前提: タスク 0-3、1-1、1-3 完了後に着手する**
 
-- [ ] 2-1. LINE ID Token 検証クライアントを作る
+- [x] 2-1. LINE ID Token 検証クライアントを作る
   - LINE の公開鍵エンドポイントを使って ID Token を検証する
   - `line_user_id` と `display_name` を取り出せるようにする
   - 検証失敗時は 401 を返す
 
-- [ ] 2-2. 名寄せサービス層を実装する（`IdentifyService`）
+- [x] 2-2. 名寄せサービス層を実装する（`IdentifyService`）
   - 以下の3ケースをすべてカバーする
     1. `line_user_id` が `respondents` に既存 → `line_display_name` を最新値に更新して既存情報を返す
     2. `line_user_id` が未登録 → `respondent_masters.line_display_name` と完全一致で検索して `respondents` を作成する
     3. 名寄せ失敗 → 氏名・メール・敬称が必要な「手入力要求」状態を返す
   - 返り値に識別ステータス（`existing` / `matched` / `manual_required`）を含める
 
-- [ ] 2-3. `POST /api/liff/identify` を実装する
+- [x] 2-3. `POST /api/liff/identify` を実装する
   - ID Token を受け取り、`IdentifyService` を呼ぶ
   - **レスポンス仕様を明示する:**
     ```json
@@ -73,7 +73,7 @@
     ```
   - `manual_required` の場合は `respondent` を null で返す
 
-- [ ] 2-4. `POST /api/liff/identify/manual` を追加する
+- [x] 2-4. `POST /api/liff/identify/manual` を追加する
   - 手入力（氏名・メール・敬称）を受け取り `respondents` に保存する
   - `respondent_masters` には追加しない
   - バリデーション: メールアドレス必須・形式チェック
