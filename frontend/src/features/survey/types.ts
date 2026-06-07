@@ -13,3 +13,27 @@ export interface IdentifyResponse {
   error?: string;
   message?: string;
 }
+
+/**
+ * Represents the raw response from the survey response API.
+ * Note: Properties follow the backend snake_case naming convention.
+ */
+export interface SurveyResponse {
+  id: number;
+  survey_id: number;
+  respondent_id: number;
+  edit_token: string;
+  answer_json: Record<string, any>;
+  survey_snapshot_json: Record<string, any>;
+  submitted_at: string;
+  email_sent_at: string | null;
+  email_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SaveResponseResult {
+  data?: SurveyResponse;
+  error?: string;
+  code?: string;
+}

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import 'survey-core/survey-core.min.css';
@@ -6,21 +6,76 @@ import 'survey-core/survey-core.min.css';
 interface SurveyRendererProps {
   questions: Record<string, any>;
   onComplete?: (sender: Model) => void;
+  isSubmitting?: boolean;
 }
 
-const SurveyRenderer: React.FC<SurveyRendererProps> = ({ questions, onComplete }) => {
-  const survey = useMemo(() => new Model(questions), [questions]);
+const SurveyRenderer: React.FC<SurveyRendererProps> = ({ questions, onComplete, isSubmitting = false }) => {
+  const survey = useMemo(() => {
+    const model = new Model(questions);
+    model.showCompletedPage = false;
+    return model;
+  }, [questions]);
+
+  const isSubmittingRef = useRef(isSubmitting);
+  useEffect(() => {
+    isSubmittingRef.current = isSubmitting;
+  }, [isSubmitting]);
 
   useEffect(() => {
     if (onComplete) {
-      survey.onComplete.add(onComplete);
+      const wrappedOnComplete = (sender: Model) => {
+        if (isSubmittingRef.current) return;
+        onComplete(sender);
+      };
+      survey.onComplete.add(wrappedOnComplete);
       return () => {
-        survey.onComplete.remove(onComplete);
+        survey.onComplete.remove(wrappedOnComplete);
       };
     }
   }, [survey, onComplete]);
 
-  return <Survey model={survey} />;
+  return (
+    <div
+      className={isSubmitting ? 'survey-submitting' : ''}
+      style={{ position: 'relative' }}
+      aria-busy={isSubmitting}
+    >
+      <Survey model={survey} />
+      {isSubmitting && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          pointerEvents: 'all'
+        }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #3498db',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            marginBottom: '10px'
+          }} />
+          <div style={{ color: '#333', fontWeight: 'bold' }}>送信中...</div>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default SurveyRenderer;
