@@ -1,5 +1,10 @@
 <?php
 
+use App\Presentation\Http\Admin\Survey\CreateSurveyAction;
+use App\Presentation\Http\Admin\Survey\DeleteSurveyAction;
+use App\Presentation\Http\Admin\Survey\GetSurveyAction;
+use App\Presentation\Http\Admin\Survey\ListSurveysAction;
+use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
@@ -26,6 +31,10 @@ return function (App $app) {
 
     // Admin API (Basic Auth protected)
     $app->group('/api/admin', function (RouteCollectorProxy $group) {
-        // Admin routes will be added here
+        $group->get('/surveys', ListSurveysAction::class);
+        $group->post('/surveys', CreateSurveyAction::class);
+        $group->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
+        $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
+        $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
     })->add(BasicAuthMiddleware::class);
 };

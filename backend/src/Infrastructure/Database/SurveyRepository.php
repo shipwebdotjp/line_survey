@@ -60,6 +60,54 @@ class SurveyRepository
         return array_map([$this, 'mapToArray'], $results);
     }
 
+    public function findAllWithResponseCount(): array
+    {
+        $sql = sprintf(
+            'SELECT
+                s.id,
+                s.public_id,
+                s.title,
+                s.status,
+                s.allow_multiple,
+                s.allow_edit,
+                s.starts_at,
+                s.ends_at,
+                s.created_at,
+                s.updated_at,
+                COUNT(r.id) as response_count
+             FROM %s s
+             LEFT JOIN responses r ON s.id = r.survey_id
+             GROUP BY s.id
+             ORDER BY s.created_at DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql);
+
+        return array_map([$this, 'mapToArray'], $results);
+    }
+
+    public function findByIdWithResponseCount(int $id): ?array
+    {
+        $sql = sprintf(
+            'SELECT s.*, COUNT(r.id) as response_count
+             FROM %s s
+             LEFT JOIN responses r ON s.id = r.survey_id
+             WHERE s.id = ?
+             GROUP BY s.id
+             LIMIT 1',
+            self::TABLE
+        );
+
+        $result = $this->db->selectOne($sql, [$id]);
+
+        if (!$result) {
+            return null;
+        }
+
+        return $this->mapToArray($result);
+    }
+
     public function save(array $data): int
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
@@ -109,6 +157,14 @@ class SurveyRepository
         );
 
         $affected = $this->db->update($sql, $bindings);
+
+        return $affected > 0;
+    }
+
+    public function delete(int $id): bool
+    {
+        $sql = sprintf('DELETE FROM %s WHERE id = ?', self::TABLE);
+        $affected = $this->db->delete($sql, [$id]);
 
         return $affected > 0;
     }

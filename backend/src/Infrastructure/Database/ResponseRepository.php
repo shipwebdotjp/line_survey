@@ -48,6 +48,14 @@ class ResponseRepository
         return array_map([$this, 'mapToArray'], $results);
     }
 
+    public function countBySurveyId(int $surveyId): int
+    {
+        $sql = sprintf('SELECT COUNT(*) as count FROM %s WHERE survey_id = ?', self::TABLE);
+        $result = $this->db->selectOne($sql, [$surveyId]);
+
+        return (int)($result->count ?? 0);
+    }
+
     public function save(array $data): int
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
