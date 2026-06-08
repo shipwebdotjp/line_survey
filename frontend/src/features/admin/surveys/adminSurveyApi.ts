@@ -1,4 +1,10 @@
-import type { Survey, SurveyCreateParams, SurveyUpdateParams } from './types';
+import type {
+  ResponseDetail,
+  ResponseSummary,
+  Survey,
+  SurveyCreateParams,
+  SurveyUpdateParams,
+} from './types';
 
 const API_BASE = '/api/admin/surveys';
 
@@ -93,5 +99,25 @@ export const adminSurveyApi = {
       },
       'アンケートの複製に失敗しました'
     );
+  },
+
+  async listResponses(surveyId: number): Promise<ResponseSummary[]> {
+    return fetchJson<ResponseSummary[]>(
+      `${API_BASE}/${surveyId}/responses`,
+      {},
+      '回答一覧の取得に失敗しました'
+    );
+  },
+
+  async getResponse(surveyId: number, responseId: number): Promise<ResponseDetail> {
+    return fetchJson<ResponseDetail>(
+      `${API_BASE}/${surveyId}/responses/${responseId}`,
+      {},
+      '回答詳細の取得に失敗しました'
+    );
+  },
+
+  getCsvUrl(surveyId: number): string {
+    return `${API_BASE}/${surveyId}/responses.csv`;
   },
 };
