@@ -32,9 +32,14 @@ const LiffGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const AppContent = () => {
   const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
   const isLiffRequired =
-    location.search.includes('liff.state=') ||
-    location.pathname.startsWith('/s/');
+    location.pathname.startsWith('/s/') ||
+    params.has('liff.state') ||
+    params.has('code') ||
+    params.has('liffClientId') ||
+    params.has('liffRedirectUri');
 
   return (
     <LiffProvider enabled={isLiffRequired}>
