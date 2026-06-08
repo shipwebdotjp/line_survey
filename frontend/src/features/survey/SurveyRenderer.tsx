@@ -7,14 +7,28 @@ interface SurveyRendererProps {
   questions: Record<string, any>;
   onComplete?: (sender: Model) => void;
   isSubmitting?: boolean;
+  data?: Record<string, any>;
+  readOnly?: boolean;
 }
 
-const SurveyRenderer: React.FC<SurveyRendererProps> = ({ questions, onComplete, isSubmitting = false }) => {
+const SurveyRenderer: React.FC<SurveyRendererProps> = ({
+  questions,
+  onComplete,
+  isSubmitting = false,
+  data,
+  readOnly = false,
+}) => {
   const survey = useMemo(() => {
     const model = new Model(questions);
     model.showCompletedPage = false;
+    if (data) {
+      model.data = data;
+    }
+    if (readOnly) {
+      model.mode = 'display';
+    }
     return model;
-  }, [questions]);
+  }, [questions, data, readOnly]);
 
   const isSubmittingRef = useRef(isSubmitting);
   useEffect(() => {
