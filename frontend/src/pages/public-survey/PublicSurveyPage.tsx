@@ -35,9 +35,22 @@ const PublicSurveyPage: React.FC = () => {
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
 
   useEffect(() => {
-    // LiffGate ensures we are initialized before this component renders,
-    // but we still need isLoggedIn and idToken to fetch survey data.
-    if (!isLoggedIn || !public_id || !idToken) return;
+    // LiffGate ensures we are initialized before this component renders.
+
+    if (!public_id) {
+      setError('アンケートIDが指定されていません。');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!isLoggedIn || !idToken) {
+      // If we are not logged in here, it means liff.init with withLoginOnExternalBrowser: true
+      // did not result in a login (or it's still in progress, but LiffGate should have waited for initialization).
+      // We explicitly set error to avoid infinite loading.
+      setError('LINEログインが必要です。');
+      setIsLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
       try {

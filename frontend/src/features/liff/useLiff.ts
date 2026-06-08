@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import liff from '@line/liff';
 
 export interface UseLiffReturn {
@@ -20,7 +20,12 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
+  // Use a ref to track the current run ID to prevent race conditions
+  const runIdRef = useRef(0);
+
   useEffect(() => {
+    const currentRunId = ++runIdRef.current;
+
     // Reset state when enabled changes or on re-run
     setIsInitialized(false);
     setIsLoggedIn(false);
@@ -36,8 +41,10 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
       const liffId = import.meta.env.VITE_LIFF_ID;
 
       if (!liffId) {
-        setError(new Error('LIFF ID is not configured. Please set VITE_LIFF_ID environment variable.'));
-        setIsInitialized(true);
+        if (runIdRef.current === currentRunId) {
+          setError(new Error('LIFF ID is not configured. Please set VITE_LIFF_ID environment variable.'));
+          setIsInitialized(true);
+        }
         return;
       }
 
@@ -47,6 +54,8 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
           withLoginOnExternalBrowser: true
         });
 
+        if (runIdRef.current !== currentRunId) return;
+
         const loggedIn = liff.isLoggedIn();
         setIsLoggedIn(loggedIn);
         if (loggedIn) {
@@ -54,12 +63,18 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
         }
         setIsInitialized(true);
       } catch (err) {
+        if (runIdRef.current !== currentRunId) return;
         setError(err instanceof Error ? err : new Error(String(err)));
         setIsInitialized(true);
       }
     };
 
     init();
+
+    return () => {
+      // Invalidate current run on cleanup
+      runIdRef.current++;
+    };
   }, [enabled]);
 
   return {
