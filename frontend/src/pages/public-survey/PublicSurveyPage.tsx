@@ -5,6 +5,7 @@ import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
+import { createLiffUrl } from '../../lib/liffUrl';
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
@@ -211,7 +212,7 @@ const PublicSurveyPage: React.FC = () => {
   const navigate = useNavigate();
 
   if (submittedResponse) {
-    const editUrl = `${window.location.origin}/s/${public_id}/r/${submittedResponse.edit_token}/edit`;
+    const editUrl = createLiffUrl(`/s/${public_id}/r/${submittedResponse.edit_token}/edit`);
 
     return (
       <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>

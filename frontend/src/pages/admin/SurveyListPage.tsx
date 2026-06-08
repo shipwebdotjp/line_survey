@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
+import { createLiffUrl } from '../../lib/liffUrl';
 
 const SurveyListPage: React.FC = () => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -28,7 +29,7 @@ const SurveyListPage: React.FC = () => {
   }, []);
 
   const handleCopyUrl = async (publicId: string) => {
-    const url = `${window.location.origin}/s/${publicId}`;
+    const url = createLiffUrl(`/s/${publicId}`);
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
