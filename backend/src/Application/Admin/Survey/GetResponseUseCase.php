@@ -44,7 +44,7 @@ class GetResponseUseCase
                 'line_display_name' => $response['respondent_line_display_name'] ?? '',
                 'honorific' => $response['respondent_honorific'] ?? '',
                 'is_manually_entered' => (bool)($response['respondent_is_manually_entered'] ?? false),
-                'respondent_master_id' => $response['respondent_respondent_master_id'] ?? null,
+                'respondent_master_id' => $response['respondent_master_id'] ?? null,
             ],
         ];
     }

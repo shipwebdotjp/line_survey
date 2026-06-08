@@ -39,7 +39,7 @@ class ResponseRepository
                 res.line_display_name as respondent_line_display_name,
                 res.honorific as respondent_honorific,
                 res.is_manually_entered as respondent_is_manually_entered,
-                res.respondent_master_id as respondent_respondent_master_id
+                res.respondent_master_id as respondent_master_id
              FROM %s r
              JOIN respondents res ON r.respondent_id = res.id
              WHERE r.id = ? LIMIT 1',
@@ -93,7 +93,9 @@ class ResponseRepository
                 res.name as respondent_name,
                 res.email as respondent_email,
                 res.line_display_name as respondent_line_display_name,
-                res.honorific as respondent_honorific
+                res.honorific as respondent_honorific,
+                res.is_manually_entered as respondent_is_manually_entered,
+                res.respondent_master_id as respondent_master_id
              FROM %s r
              JOIN respondents res ON r.respondent_id = res.id
              WHERE r.survey_id = ?

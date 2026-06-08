@@ -45,7 +45,7 @@ class GetResponseUseCaseTest extends TestCase
             'respondent_line_display_name' => 'JohnL',
             'respondent_honorific' => 'Mr.',
             'respondent_is_manually_entered' => 0,
-            'respondent_respondent_master_id' => 100,
+            'respondent_master_id' => 100,
         ];
 
         $this->surveyRepositoryMock->expects($this->once())

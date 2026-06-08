@@ -40,7 +40,7 @@ return function (App $app) {
         $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
         $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
-        $group->get('/surveys/{id}/responses/{responseId}', GetResponseAction::class);
+        $group->get('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', GetResponseAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
     })->add(BasicAuthMiddleware::class);
 };
