@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
 import AdminShell from './pages/admin/AdminShell';
+import SurveyListPage from './pages/admin/SurveyListPage';
+import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
 import LiffError from './features/liff/LiffError';
 import React from 'react';
@@ -34,14 +36,25 @@ const AppContent = () => {
       <LiffGate>
         <Routes>
           {/* Public Survey Route */}
-          <Route path="/s/:public_id" element={<PublicSurveyPage />} />
+          <Route
+            path="/s/:public_id"
+            element={
+              <div className="public-survey-root">
+                <PublicSurveyPage />
+              </div>
+            }
+          />
 
           {/* Admin Routes */}
-          <Route path="/admin/*" element={<AdminShell />} />
+          <Route path="/admin" element={<AdminShell />}>
+            <Route index element={<Navigate to="surveys" replace />} />
+            <Route path="surveys" element={<SurveyListPage />} />
+            <Route path="*" element={<div>404 Not Found</div>} />
+          </Route>
 
           {/* Root Route - Redirect to admin or show a landing page */}
           <Route path="/" element={
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <div className="public-survey-root" style={{ padding: '2rem' }}>
               <h1>Survey System</h1>
               <p><Link to="/admin">Go to Admin</Link></p>
             </div>

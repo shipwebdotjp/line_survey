@@ -1,24 +1,37 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 
 const AdminShell: React.FC = () => {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{ width: '200px', background: '#f0f0f0', padding: '1rem' }}>
-        <nav>
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="admin-sidebar-brand">
+          Admin Panel
+        </div>
+        <nav className="admin-nav">
           <ul>
-            <li><Link to="/admin">Dashboard</Link></li>
-            <li><Link to="/admin/surveys">Surveys</Link></li>
+            <li>
+              <NavLink
+                to="/admin/surveys"
+                className={({ isActive }) => isActive ? 'active' : ''}
+              >
+                アンケート管理
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </aside>
-      <main style={{ flex: 1, padding: '1rem' }}>
-        <Routes>
-          <Route index element={<h1>Admin Dashboard</h1>} />
-          <Route path="surveys" element={<h1>Surveys Management</h1>} />
-          <Route path="*" element={<h1>404 Not Found</h1>} />
-        </Routes>
-      </main>
+      <div className="admin-main-container">
+        <header className="admin-header">
+          <div className="admin-breadcrumb">
+            {/* Breadcrumb space */}
+            <span>Admin</span> / <span>アンケート管理</span>
+          </div>
+        </header>
+        <main className="admin-content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
