@@ -56,6 +56,30 @@ class ResponseRepository
         return (int)($result->count ?? 0);
     }
 
+    /**
+     * @return array[]
+     */
+    public function findBySurveyIdWithRespondent(int $surveyId): array
+    {
+        $sql = sprintf(
+            'SELECT
+                r.*,
+                res.name as respondent_name,
+                res.email as respondent_email,
+                res.line_display_name as respondent_line_display_name,
+                res.honorific as respondent_honorific
+             FROM %s r
+             JOIN respondents res ON r.respondent_id = res.id
+             WHERE r.survey_id = ?
+             ORDER BY r.submitted_at DESC, r.id DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql, [$surveyId]);
+
+        return array_map([$this, 'mapToArray'], $results);
+    }
+
     public function save(array $data): int
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');

@@ -2,7 +2,9 @@
 
 use App\Presentation\Http\Admin\Survey\CreateSurveyAction;
 use App\Presentation\Http\Admin\Survey\DeleteSurveyAction;
+use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
+use App\Presentation\Http\Admin\Survey\ListResponsesAction;
 use App\Presentation\Http\Admin\Survey\ListSurveysAction;
 use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
 use App\Presentation\Http\JsonResponse;
@@ -36,5 +38,7 @@ return function (App $app) {
         $group->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
         $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
         $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
+        $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
+        $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
     })->add(BasicAuthMiddleware::class);
 };
