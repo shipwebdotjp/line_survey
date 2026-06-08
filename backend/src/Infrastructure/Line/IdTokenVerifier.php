@@ -16,6 +16,7 @@ class IdTokenVerifier
     private const ISSUER = 'https://access.line.me';
     private const CACHE_KEY = 'line_jwks';
     private const CACHE_TTL = 3600; // 1 hour
+    private const JWT_LEEWAY = 30;
 
     public function __construct(
         private Settings $settings,
@@ -41,7 +42,15 @@ class IdTokenVerifier
             $jwks = $this->fetchJwks();
             $keys = JWK::parseKeySet($jwks);
 
-            $decoded = JWT::decode($idToken, $keys);
+            $previousLeeway = JWT::$leeway;
+            JWT::$leeway = self::JWT_LEEWAY;
+
+            try {
+                $decoded = JWT::decode($idToken, $keys);
+            } finally {
+                JWT::$leeway = $previousLeeway;
+            }
+
             $claims = (array)$decoded;
 
             // Validate claims
