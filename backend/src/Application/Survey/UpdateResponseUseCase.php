@@ -10,10 +10,9 @@ use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Line\IdTokenVerifier;
 use App\Infrastructure\Mail\MailService;
 use App\Infrastructure\Support\DateTimeHelper;
-use App\Infrastructure\Support\IdGenerator;
 use RuntimeException;
 
-final class SaveResponseUseCase
+final class UpdateResponseUseCase
 {
     use SurveyResolutionTrait;
 
@@ -28,59 +27,60 @@ final class SaveResponseUseCase
 
     /**
      * @param string $publicId
+     * @param string $editToken
      * @param string $idToken
      * @param array $answerJson
      * @return array
      * @throws RuntimeException
      */
-    public function execute(string $publicId, string $idToken, array $answerJson): array
+    public function execute(string $publicId, string $editToken, string $idToken, array $answerJson): array
     {
         $respondent = $this->resolveRespondentFromToken($idToken);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
-        $this->validateSurveyAvailability($survey);
-
-        if (!($survey['allow_multiple'] ?? false)) {
-            $existingResponses = $this->responseRepository->findBy([
-                'survey_id' => $survey['id'],
-                'respondent_id' => $respondent['id']
-            ]);
-            if (!empty($existingResponses)) {
-                return $existingResponses[0];
-            }
+        if (!($survey['allow_edit'] ?? false)) {
+            throw new RuntimeException('Editing is not allowed for this survey', 403);
         }
 
-        $now = DateTimeHelper::nowTokyo();
-        $submittedAt = DateTimeHelper::formatTokyo($now);
-        $editToken = IdGenerator::generateEditToken();
+        $this->validateSurveyAvailability($survey);
 
-        $responseData = [
-            'survey_id' => $survey['id'],
-            'respondent_id' => $respondent['id'],
-            'edit_token' => $editToken,
+        $responses = $this->responseRepository->findBy(['edit_token' => $editToken]);
+        if (empty($responses)) {
+            throw new RuntimeException('Response not found', 404);
+        }
+        $response = $responses[0];
+
+        if ((int)$response['respondent_id'] !== (int)$respondent['id']) {
+            throw new RuntimeException('Unauthorized to edit this response', 403);
+        }
+
+        if ((int)$response['survey_id'] !== (int)$survey['id']) {
+            throw new RuntimeException('Response does not belong to this survey', 400);
+        }
+
+        $updateData = [
             'answer_json' => $answerJson,
             'survey_snapshot_json' => $survey['questions_json'],
-            'submitted_at' => $submittedAt,
         ];
 
-        $responseId = $this->responseRepository->save($responseData);
-        $savedResponse = $this->responseRepository->findById($responseId);
+        $this->responseRepository->update((int)$response['id'], $updateData);
+        $updatedResponse = $this->responseRepository->findById((int)$response['id']);
 
-        $mailResult = $this->mailService->sendConfirmation($respondent, $survey, $savedResponse);
+        $mailResult = $this->mailService->sendConfirmation($respondent, $survey, $updatedResponse, true);
 
         if (($mailResult['status'] ?? null) === 'sent') {
-            $this->responseRepository->update($responseId, [
+            $this->responseRepository->update((int)$response['id'], [
                 'email_sent_at' => DateTimeHelper::formatTokyo(DateTimeHelper::nowTokyo()),
                 'email_error' => null,
             ]);
         } elseif (($mailResult['status'] ?? null) === 'failed') {
-            $this->responseRepository->update($responseId, [
+            $this->responseRepository->update((int)$response['id'], [
                 'email_sent_at' => null,
                 'email_error' => $mailResult['message'],
             ]);
         }
 
-        return $this->responseRepository->findById($responseId);
+        return $this->responseRepository->findById((int)$response['id']);
     }
 
     private function validateSurveyAvailability(array $survey): void
@@ -90,12 +90,7 @@ final class SaveResponseUseCase
         }
 
         $now = DateTimeHelper::nowTokyo();
-        $startsAt = $survey['starts_at'] ? DateTimeHelper::parseTokyo($survey['starts_at']) : null;
         $endsAt = $survey['ends_at'] ? DateTimeHelper::parseTokyo($survey['ends_at']) : null;
-
-        if ($startsAt && $now < $startsAt) {
-            throw new RuntimeException('Survey has not started yet', 403);
-        }
 
         if ($endsAt && $now > $endsAt) {
             throw new RuntimeException('Survey has already ended', 403);

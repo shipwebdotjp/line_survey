@@ -71,12 +71,12 @@ class MailService
         $to = $respondent['email'];
         $subject = ($isUpdate ? '【回答修正控え】' : '【回答控え】') . $survey['title'];
 
-        $body = $this->buildEmailBody($respondent, $survey, $response);
+        $body = $this->buildEmailBody($respondent, $survey, $response, $isUpdate);
 
         return $this->sendEmail($to, $subject, $body);
     }
 
-    private function buildEmailBody(array $respondent, array $survey, array $response): string
+    private function buildEmailBody(array $respondent, array $survey, array $response, bool $isUpdate = false): string
     {
         $name = $respondent['name'];
         $honorific = $respondent['honorific'] ?? 'さん';
@@ -92,8 +92,8 @@ class MailService
         $lines = [];
         $lines[] = "{$displayName}";
         $lines[] = "";
-        $lines[] = "アンケートへのご回答ありがとうございます。";
-        $lines[] = "以下の内容で受け付けました。";
+        $lines[] = $isUpdate ? "アンケート回答の修正を受け付けました。" : "アンケートへのご回答ありがとうございます。";
+        $lines[] = $isUpdate ? "修正後の内容は以下の通りです。" : "以下の内容で受け付けました。";
         $lines[] = "";
         $lines[] = "■アンケート名";
         $lines[] = $survey['title'];
