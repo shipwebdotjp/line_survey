@@ -18,6 +18,14 @@ const AdminShell: React.FC = () => {
                 アンケート管理
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/admin/respondent-masters"
+                className={({ isActive }) => isActive ? 'active' : ''}
+              >
+                マスター管理
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </aside>
