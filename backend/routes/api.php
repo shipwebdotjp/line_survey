@@ -6,6 +6,8 @@ use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
 use App\Presentation\Http\Admin\Survey\ListResponsesAction;
+use App\Presentation\Http\Admin\RespondentMaster\ImportRespondentMastersAction;
+use App\Presentation\Http\Admin\RespondentMaster\ListRespondentMastersAction;
 use App\Presentation\Http\Admin\Survey\ListSurveysAction;
 use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
 use App\Presentation\Http\JsonResponse;
@@ -42,5 +44,9 @@ return function (App $app) {
         $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', GetResponseAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
+
+        // Respondent Masters
+        $group->get('/respondent-masters', ListRespondentMastersAction::class);
+        $group->post('/respondent-masters/import', ImportRespondentMastersAction::class);
     })->add(BasicAuthMiddleware::class);
 };
