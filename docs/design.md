@@ -376,8 +376,8 @@ SurveyJS の定義と公開状態を保持する。
 - アンケート作成
 - アンケート編集
 - SurveyJS JSON 編集
-- 回答一覧
-- 回答詳細
+- 回答一覧（response 単位）
+- 回答詳細（選択した response の内容）
 - CSV ダウンロード
 - respondent_masters CSV インポート
 
@@ -385,6 +385,8 @@ SurveyJS の定義と公開状態を保持する。
 
 - `questions_json` は回答が 1 件以上あっても編集できる
 - `survey_snapshot_json` は回答時点の定義を保持する
+- 回答管理は `responses` 単位で行い、同一回答者の重複 response は一覧にそのまま表示する
+- 回答詳細では同一回答者の response 切り替え UI を持たない
 - `respondent_masters` と `respondents` の役割を混同しない
 - `respondents` の `line_user_id` を識別の主軸にする
 - `public_id` と `edit_token` は用途を分ける

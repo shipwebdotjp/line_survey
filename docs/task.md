@@ -202,11 +202,11 @@
 
 > **前提: タスク 4-2、8-1 完了後に着手する**
 
-- [ ] 9-1. `GET /api/admin/surveys/{id}/responses` を実装する
+- [x] 9-1. `GET /api/admin/surveys/{id}/responses` を実装する
   - respondent の氏名・メール・LINE表示名を JOIN して返す
   - `submitted_at` 降順で返す
 
-- [ ] 9-2. `GET /api/admin/surveys/{id}/responses.csv` を実装する
+- [x] 9-2. `GET /api/admin/surveys/{id}/responses.csv` を実装する
   - 列順: 回答ID、初回回答日時、最終更新日時、LINE表示名、氏名、敬称、メール、設問列
   - 設問列は `responses.survey_snapshot_json` から生成する（回答時点の定義を使う）
   - 複数選択は `;` 区切り、空値は空文字
@@ -290,6 +290,7 @@
 
 - [ ] 13-2. アンケート一覧画面を作る
   - 一覧表示、新規作成ボタン、URL コピー、複製、削除（0件のみ）
+  - 各行右端に回答一覧へのリンクを置く
 
 - [ ] 13-3. アンケート編集画面を作る
   - title / description / status / starts_at / ends_at / allow_multiple / allow_edit / メール設定
@@ -300,9 +301,11 @@
   - 保存前に構文エラーをインラインで表示する
 
 - [ ] 13-5. 回答一覧・詳細画面を作る
-  - 一覧: 氏名・LINE表示名・回答日時
-  - 詳細: 回答内容（SurveyJS の `survey.data` ベースで表示）
-  - **`allow_multiple=true, allow_edit=true` の場合、同一回答者の複数 response を選択できる UI を用意する**
+  - 一覧: `responses` を 1 行ずつ表示し、氏名・LINE表示名・回答日時を出す
+  - 同一回答者の複数 response は重複して表示してよい
+  - 各行右端に詳細へのリンクを置く
+  - 詳細: 選択した response の回答内容（SurveyJS の `survey.data` ベース）を表示する
+  - 同一回答者の response 切り替え UI は不要
   - CSV ダウンロードボタン
 
 - [ ] 13-6. respondent_masters 一覧と CSV インポート画面を作る
