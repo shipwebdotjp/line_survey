@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
+import { handleExpiredToken } from '../../features/liff/liffRetry';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
@@ -9,7 +10,7 @@ import { createLiffUrl } from '../../lib/liffUrl';
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
-  const { isLoggedIn, idToken } = useLiffContext();
+  const { isLoggedIn, idToken, reauthenticate } = useLiffContext();
   const navigate = useNavigate();
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
   const [identifyStatus, setIdentifyStatus] = useState<IdentifyStatus | null>(null);
@@ -66,12 +67,17 @@ const PublicSurveyPage: React.FC = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id_token: idToken }),
         });
-        const identifyResult: IdentifyResponse = await identifyResponse.json();
 
         if (!identifyResponse.ok) {
+          if (await handleExpiredToken(identifyResponse, reauthenticate)) {
+            return;
+          }
+          const identifyResult: IdentifyResponse = await identifyResponse.json();
           setError(identifyResult.error || '本人確認に失敗しました。');
           return;
         }
+
+        const identifyResult: IdentifyResponse = await identifyResponse.json();
 
         setIdentifyStatus(identifyResult.status);
         setRespondent(identifyResult.respondent);
@@ -85,6 +91,8 @@ const PublicSurveyPage: React.FC = () => {
         if (responseRes.ok) {
           const responseResult = await responseRes.json();
           setExistingResponse(responseResult.data);
+        } else {
+          await handleExpiredToken(responseRes, reauthenticate);
         }
 
       } catch (err) {
@@ -110,12 +118,17 @@ const PublicSurveyPage: React.FC = () => {
           ...data,
         }),
       });
-      const result: IdentifyResponse = await response.json();
 
       if (!response.ok) {
+        if (await handleExpiredToken(response, reauthenticate)) {
+          return;
+        }
+        const result: IdentifyResponse = await response.json();
         setIdentifyError(result.error || '情報の保存に失敗しました。');
         return;
       }
+
+      const result: IdentifyResponse = await response.json();
 
       setIdentifyStatus(result.status);
       setRespondent(result.respondent);
@@ -141,12 +154,17 @@ const PublicSurveyPage: React.FC = () => {
           answer_json: sender.data,
         }),
       });
-      const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {
+        if (await handleExpiredToken(response, reauthenticate)) {
+          return;
+        }
+        const result: SaveResponseResult = await response.json();
         setSubmitError(result.error || 'アンケートの送信に失敗しました。');
         return;
       }
+
+      const result: SaveResponseResult = await response.json();
 
       if (result.data) {
         setSubmittedResponse(result.data);

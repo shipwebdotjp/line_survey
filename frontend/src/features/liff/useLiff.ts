@@ -7,6 +7,7 @@ export interface UseLiffReturn {
   isLoggedIn: boolean;
   idToken: string | null;
   error: Error | null;
+  reauthenticate: () => void;
 }
 
 export interface UseLiffOptions {
@@ -82,11 +83,16 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
     };
   }, [enabled]);
 
+  const reauthenticate = () => {
+    liff.login({ redirectUri: window.location.href });
+  };
+
   return {
     liff,
     isInitialized,
     isLoggedIn,
     idToken,
     error,
+    reauthenticate,
   };
 };

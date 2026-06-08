@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
+import { handleExpiredToken } from '../../features/liff/liffRetry';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import type { SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 
 const EditResponsePage: React.FC = () => {
   const { public_id, edit_token } = useParams<{ public_id: string, edit_token: string }>();
-  const { isLoggedIn, idToken } = useLiffContext();
+  const { isLoggedIn, idToken, reauthenticate } = useLiffContext();
   const navigate = useNavigate();
 
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
@@ -56,9 +57,12 @@ const EditResponsePage: React.FC = () => {
             'Authorization': `Bearer ${idToken}`
           }
         });
-        const responseResult = await responseRes.json();
 
         if (!responseRes.ok) {
+          if (await handleExpiredToken(responseRes, reauthenticate)) {
+            return;
+          }
+          const responseResult = await responseRes.json();
           if (responseRes.status === 403) {
             setError('この回答を編集する権限がありません。');
           } else if (responseRes.status === 404) {
@@ -68,6 +72,7 @@ const EditResponsePage: React.FC = () => {
           }
           return;
         }
+        const responseResult = await responseRes.json();
         setExistingResponse(responseResult.data);
 
       } catch (err) {
@@ -95,12 +100,17 @@ const EditResponsePage: React.FC = () => {
           answer_json: sender.data,
         }),
       });
-      const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {
+        if (await handleExpiredToken(response, reauthenticate)) {
+          return;
+        }
+        const result: SaveResponseResult = await response.json();
         setSubmitError(result.error || '回答の更新に失敗しました。');
         return;
       }
+
+      const result: SaveResponseResult = await response.json();
 
       setIsSuccess(true);
       if (result.data) {
