@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+## Project Specs
+Follow `docs/spec.md` as the project specs.
+
 ## Project Structure & Module Organization
 
 Follow `docs/structure.md` as the source of truth for layout. The intended shape is:
@@ -45,17 +48,6 @@ It's development stage currently, So Don't need to create a test for now.
 - Store shared fixtures in `tests/fixtures/`
 
 Name tests after behavior or the unit under test. Add tests for API routes, domain rules, and regressions before merging changes. Run `make test` before opening a PR.
-
-## Commit & Pull Request Guidelines
-
-The current git history is minimal and uses short, plain subjects such as `first commit` and `rename`. Keep commit messages concise, imperative, and specific.
-
-Pull requests should include:
-
-- a short summary of the change
-- the commands used to verify it
-- screenshots for UI changes
-- migration or environment notes when applicable
 
 ## Security & Configuration Tips
 
