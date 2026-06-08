@@ -33,6 +33,9 @@ return function (App $app) {
     // Public Survey
     $app->get('/api/surveys/public/{public_id}', GetPublicSurveyAction::class);
     $app->post('/api/surveys/public/{public_id}/responses', SaveResponseAction::class);
+    $app->get('/api/surveys/public/{public_id}/responses/current', \App\Presentation\Http\Survey\GetCurrentResponseAction::class);
+    $app->get('/api/surveys/public/{public_id}/responses/{edit_token}', \App\Presentation\Http\Survey\GetEditResponseAction::class);
+    $app->put('/api/surveys/public/{public_id}/responses/{edit_token}', \App\Presentation\Http\Survey\UpdateResponseAction::class);
 
     // Admin API (Basic Auth protected)
     $app->group('/api/admin', function (RouteCollectorProxy $group) {

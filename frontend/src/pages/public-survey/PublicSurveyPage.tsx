@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
@@ -33,6 +33,7 @@ const PublicSurveyPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
+  const [existingResponse, setExistingResponse] = useState<SurveyResponse | null>(null);
 
   useEffect(() => {
     // LiffGate ensures we are initialized before this component renders.
@@ -85,6 +86,13 @@ const PublicSurveyPage: React.FC = () => {
 
         setIdentifyStatus(identifyResult.status);
         setRespondent(identifyResult.respondent);
+
+        // 3. Check for existing response
+        const responseRes = await fetch(`/api/surveys/public/${public_id}/responses/current?id_token=${idToken}`);
+        if (responseRes.ok) {
+          const responseResult = await responseRes.json();
+          setExistingResponse(responseResult.data);
+        }
 
       } catch (err) {
         setError('通信エラーが発生しました。');
@@ -208,6 +216,8 @@ const PublicSurveyPage: React.FC = () => {
 
   const showSurvey = identifyStatus === 'existing' || identifyStatus === 'matched' || identifyStatus === 'manual_saved';
 
+  const navigate = useNavigate();
+
   if (submittedResponse) {
     const editUrl = `${window.location.origin}/s/${public_id}/r/${submittedResponse.edit_token}/edit`;
 
@@ -235,6 +245,43 @@ const PublicSurveyPage: React.FC = () => {
             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
               ※このURLを保存しておくと、後から回答を修正できます。
             </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (existingResponse && !surveyData.survey?.allow_multiple) {
+    return (
+      <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
+        <p style={{ marginBottom: '1rem', color: '#666' }}>既にご回答いただいています。</p>
+
+        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>前回の回答内容</h2>
+          <SurveyRenderer
+            questions={existingResponse.survey_snapshot_json || surveyData.survey?.questions_json}
+            data={existingResponse.answer_json}
+            readOnly={true}
+          />
+        </div>
+
+        {surveyData.survey?.allow_edit && (
+          <div style={{ textAlign: 'center' }}>
+            <button
+              onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
+              style={{
+                padding: '0.75rem 2rem',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              回答を修正する
+            </button>
           </div>
         )}
       </div>
