@@ -38,7 +38,7 @@ Prefer PSR-12 style for PHP and standard Vite/TypeScript formatting for frontend
 
 ## Testing Guidelines
 
-Don't need to create a test for now.
+It's development stage currently, So Don't need to create a test for now.
 
 - Put backend tests in `tests/backend/`
 - Put frontend tests in `tests/frontend/`
