@@ -9,13 +9,29 @@ export interface UseLiffReturn {
   error: Error | null;
 }
 
-export const useLiff = (): UseLiffReturn => {
+export interface UseLiffOptions {
+  enabled?: boolean;
+}
+
+export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
+  const { enabled = true } = options;
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Reset state when enabled changes or on re-run
+    setIsInitialized(false);
+    setIsLoggedIn(false);
+    setIdToken(null);
+    setError(null);
+
+    if (!enabled) {
+      setIsInitialized(true);
+      return;
+    }
+
     const init = async () => {
       const liffId = import.meta.env.VITE_LIFF_ID;
 
@@ -26,20 +42,16 @@ export const useLiff = (): UseLiffReturn => {
       }
 
       try {
-        await liff.init({ liffId });
-        if (!liff.isInClient()) {
-          setError(new Error('Outside LIFF'));
-          setIsInitialized(true);
-          return;
-        }
+        await liff.init({
+          liffId,
+          withLoginOnExternalBrowser: true
+        });
 
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return; // Redirecting...
+        const loggedIn = liff.isLoggedIn();
+        setIsLoggedIn(loggedIn);
+        if (loggedIn) {
+          setIdToken(liff.getIDToken());
         }
-
-        setIsLoggedIn(true);
-        setIdToken(liff.getIDToken());
         setIsInitialized(true);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -48,7 +60,7 @@ export const useLiff = (): UseLiffReturn => {
     };
 
     init();
-  }, []);
+  }, [enabled]);
 
   return {
     liff,

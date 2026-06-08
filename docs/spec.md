@@ -706,5 +706,25 @@ CREATE TABLE responses (
   INDEX idx_survey_respondent (survey_id,
 ```
 
-## 18. LIFFアプリの初期化とルーティング
-エンドポイントに s/ をつけて、s/ の場合はいつでもinit させるなどしないと 単にルートをエンドポイントに指定しているとliff initは実行されない
+## 18. LIFF仕様
+
+### 初期化タイミング
+
+LIFFの初期化（`liff.init()`）は、以下の条件のいずれかを満たす場合にのみ実行する。
+
+- URLに `liff.state=` パラメータが含まれている場合（LIFF内でのリダイレクト復元時）
+- パスが `/s/` で始まる場合（アンケート回答・編集画面）
+
+`/` (ランディングページ) や `/admin` (管理画面) への通常アクセス時は、LIFFの初期化を行わない。
+
+### 外部ブラウザ対応
+
+外部ブラウザからのアンケート閲覧・回答を許可する。
+
+- `liff.init()` の際、`withLoginOnExternalBrowser: true` を指定する。
+- コード内で明示的に `liff.login()` を呼び出すことは避ける（ログインループ防止のため、LIFF SDKの自動ログイン機能に委ねる）。
+
+### 実装構造
+
+- `LiffContext` / `LiffProvider` をApp直下に配置し、LIFFの状態を一元管理する。
+- `LiffGate` コンポーネントにより、初期化中のローディング表示やエラー表示を制御する。
