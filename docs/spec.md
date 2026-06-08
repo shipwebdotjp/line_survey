@@ -534,6 +534,13 @@ MVPでは簡易JSON編集。
 - 回答詳細
   - 選択した response の回答内容を表示する
   - 同一回答者の response 切り替え UI は持たない
+- 回答詳細API
+  - `GET /api/admin/surveys/{id}/responses/{response_id}`
+  - `respondent` はネストしたオブジェクトで返す
+  - `respondent` には `name`, `email`, `line_display_name`, `honorific`, `is_manually_entered`, `respondent_master_id` を含める
+  - `survey_snapshot_json` はDBに保存されている内容をそのまま返す
+  - `survey` が存在しない場合、または対象 `response` が存在しない場合は 404 を返す
+  - path ID が不正な場合は `VALIDATION_ERROR` の 400 を返す
 - CSVダウンロード
 
 ### respondent_masters 管理
@@ -608,6 +615,7 @@ MVPではBasic認証。
 - `DELETE /api/admin/surveys/{id}`
 - `POST /api/admin/surveys/{id}/duplicate`
 - `GET /api/admin/surveys/{id}/responses`
+- `GET /api/admin/surveys/{id}/responses/{response_id}`
 - `GET /api/admin/surveys/{id}/responses.csv`
 - `POST /api/admin/respondent-masters/import`
 - `GET /api/admin/respondent-masters`
