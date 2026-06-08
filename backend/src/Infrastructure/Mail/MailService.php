@@ -6,18 +6,32 @@ namespace App\Infrastructure\Mail;
 
 use App\Config\Settings;
 use App\Infrastructure\Support\DateTimeHelper;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
 use RuntimeException;
 
 class MailService
 {
+    private string $mailer;
     private string $apiKey;
+    private string $smtpHost;
+    private int $smtpPort;
+    private string $smtpUsername;
+    private string $smtpPassword;
+    private string $smtpEncryption;
     private string $fromAddress;
     private string $fromName;
     private string $appUrl;
 
     public function __construct(Settings $settings)
     {
+        $this->mailer = $settings->get('mail.mailer', 'smtp');
         $this->apiKey = $settings->get('mail.resend_api_key', '');
+        $this->smtpHost = $settings->get('mail.host', 'localhost');
+        $this->smtpPort = (int) $settings->get('mail.port', 587);
+        $this->smtpUsername = $settings->get('mail.username', '');
+        $this->smtpPassword = $settings->get('mail.password', '');
+        $this->smtpEncryption = $settings->get('mail.encryption', '');
         $this->fromAddress = $settings->get('mail.from_address', 'onboarding@resend.dev');
         $this->fromName = $settings->get('mail.from_name', 'Survey App');
 
@@ -43,7 +57,7 @@ class MailService
             return ['status' => 'skipped', 'message' => 'Email sending is disabled for this survey.'];
         }
 
-        if (empty($this->apiKey)) {
+        if ($this->mailer === 'resend' && empty($this->apiKey)) {
             return ['status' => 'failed', 'message' => 'Resend API key is not configured.'];
         }
 
@@ -148,6 +162,15 @@ class MailService
 
     private function sendEmail(string $to, string $subject, string $body): array
     {
+        if ($this->mailer === 'resend') {
+            return $this->sendViaResend($to, $subject, $body);
+        }
+
+        return $this->sendViaSmtp($to, $subject, $body);
+    }
+
+    private function sendViaResend(string $to, string $subject, string $body): array
+    {
         $url = 'https://api.resend.com/emails';
 
         $data = [
@@ -172,7 +195,7 @@ class MailService
         curl_close($ch);
 
         if ($result === false) {
-            return ['success' => false, 'message' => 'Curl error: ' . $error];
+            return ['status' => 'failed', 'message' => 'Curl error: ' . $error];
         }
 
         $response = json_decode($result, true);
@@ -185,5 +208,48 @@ class MailService
             'status' => 'failed',
             'message' => 'Resend API error: ' . ($response['message'] ?? $result)
         ];
+    }
+
+    private function sendViaSmtp(string $to, string $subject, string $body): array
+    {
+        $mail = new PHPMailer(true);
+
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host = $this->smtpHost;
+            $mail->Port = $this->smtpPort;
+            $mail->CharSet = 'UTF-8';
+
+            if (!empty($this->smtpUsername)) {
+                $mail->SMTPAuth = true;
+                $mail->Username = $this->smtpUsername;
+                $mail->Password = $this->smtpPassword;
+            } else {
+                $mail->SMTPAuth = false;
+            }
+
+            if ($this->smtpEncryption === 'tls') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($this->smtpEncryption === 'ssl') {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            }
+
+            // Recipients
+            $mail->setFrom($this->fromAddress, $this->fromName);
+            $mail->addAddress($to);
+
+            // Content
+            $mail->isHTML(false);
+            $mail->Subject = $subject;
+            $mail->Body = $body;
+
+            $mail->send();
+            return ['status' => 'sent', 'message' => 'Email sent successfully via SMTP.'];
+        } catch (PHPMailerException $e) {
+            return ['status' => 'failed', 'message' => 'SMTP error: ' . $mail->ErrorInfo];
+        } catch (\Exception $e) {
+            return ['status' => 'failed', 'message' => 'Error: ' . $e->getMessage()];
+        }
     }
 }
