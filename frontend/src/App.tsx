@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
 import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
+import SurveyCreatePage from './pages/admin/SurveyCreatePage';
+import SurveyEditPage from './pages/admin/SurveyEditPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
 import LiffError from './features/liff/LiffError';
@@ -49,6 +51,8 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminShell />}>
             <Route index element={<Navigate to="surveys" replace />} />
             <Route path="surveys" element={<SurveyListPage />} />
+            <Route path="surveys/new" element={<SurveyCreatePage />} />
+            <Route path="surveys/:id/edit" element={<SurveyEditPage />} />
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
 
