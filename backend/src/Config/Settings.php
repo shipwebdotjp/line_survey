@@ -39,6 +39,12 @@ class Settings
                 'channel_id' => $_ENV['LINE_CHANNEL_ID'] ?? '',
             ],
             'mail' => [
+                'mailer' => $_ENV['MAIL_MAILER'] ?? 'smtp',
+                'host' => $_ENV['MAIL_HOST'] ?? 'localhost',
+                'port' => (int) ($_ENV['MAIL_PORT'] ?? 587),
+                'username' => $_ENV['MAIL_USERNAME'] ?? '',
+                'password' => $_ENV['MAIL_PASSWORD'] ?? '',
+                'encryption' => $_ENV['MAIL_ENCRYPTION'] ?? '',
                 'resend_api_key' => $_ENV['RESEND_API_KEY'] ?? '',
                 'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'onboarding@resend.dev',
                 'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Survey App',
