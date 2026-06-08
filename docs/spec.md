@@ -608,6 +608,7 @@ MVPではBasic認証。
 - `DELETE /api/admin/surveys/{id}`
 - `POST /api/admin/surveys/{id}/duplicate`
 - `GET /api/admin/surveys/{id}/responses`
+- `GET /api/admin/surveys/{id}/responses/{responseId}`
 - `GET /api/admin/surveys/{id}/responses.csv`
 - `POST /api/admin/respondent-masters/import`
 - `GET /api/admin/respondent-masters`
