@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useLiff } from '../../features/liff/useLiff';
-import LiffError from '../../features/liff/LiffError';
+import { useLiffContext } from '../../features/liff/LiffContext';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult } from '../../features/survey/types';
@@ -23,7 +22,7 @@ interface SurveyData {
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
-  const { isInitialized, isLoggedIn, idToken, error: liffError } = useLiff();
+  const { isLoggedIn, idToken } = useLiffContext();
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
   const [identifyStatus, setIdentifyStatus] = useState<IdentifyStatus | null>(null);
   const [respondent, setRespondent] = useState<Respondent | null>(null);
@@ -36,7 +35,22 @@ const PublicSurveyPage: React.FC = () => {
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
 
   useEffect(() => {
-    if (!isInitialized || !isLoggedIn || !public_id || !idToken) return;
+    // LiffGate ensures we are initialized before this component renders.
+
+    if (!public_id) {
+      setError('アンケートIDが指定されていません。');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!isLoggedIn || !idToken) {
+      // If we are not logged in here, it means liff.init with withLoginOnExternalBrowser: true
+      // did not result in a login (or it's still in progress, but LiffGate should have waited for initialization).
+      // We explicitly set error to avoid infinite loading.
+      setError('LINEログインが必要です。');
+      setIsLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
       try {
@@ -80,7 +94,7 @@ const PublicSurveyPage: React.FC = () => {
     };
 
     fetchData();
-  }, [isInitialized, isLoggedIn, public_id, idToken]);
+  }, [isLoggedIn, public_id, idToken]);
 
   const handleManualSubmit = async (data: { name: string; email: string; honorific: string }) => {
     if (!idToken) return;
@@ -141,11 +155,7 @@ const PublicSurveyPage: React.FC = () => {
     }
   };
 
-  if (liffError) {
-    return <LiffError error={liffError} />;
-  }
-
-  if (!isInitialized || !isLoggedIn || (isLoading && !error)) {
+  if (isLoading && !error) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <p>読み込み中...</p>
