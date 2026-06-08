@@ -50,3 +50,33 @@ export interface SurveyCreateParams {
 }
 
 export interface SurveyUpdateParams extends Partial<SurveyCreateParams> {}
+
+export interface ResponseSummary {
+  id: number;
+  respondent_name: string;
+  respondent_email: string;
+  respondent_line_display_name: string;
+  respondent_honorific: string;
+  submitted_at: string;
+  updated_at: string;
+  email_sent_at: string | null;
+  email_error: string | null;
+}
+
+export interface ResponseDetail {
+  id: number;
+  answer_json: Record<string, any>;
+  survey_snapshot_json: QuestionsJSON;
+  submitted_at: string;
+  updated_at: string;
+  email_sent_at: string | null;
+  email_error: string | null;
+  respondent: {
+    name: string;
+    email: string;
+    line_display_name: string;
+    honorific: string;
+    is_manually_entered: boolean;
+    respondent_master_id: number | null;
+  };
+}
