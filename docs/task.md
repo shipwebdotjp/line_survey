@@ -157,12 +157,12 @@
 
 > **前提: タスク 0-1 完了後に着手する**
 
-- [ ] 7-1. Basic 認証ミドルウェアを作る
+- [x] 7-1. Basic 認証ミドルウェアを作る
   - `/api/admin/*` に適用する
   - 認証情報は `ADMIN_USER` / `ADMIN_PASS` 環境変数から読む
   - 401 時は `WWW-Authenticate: Basic realm="Admin"` を返す
 
-- [ ] 7-2. フロントエンドの `/admin/*` ルートと Basic 認証の整合を確認する
+- [x] 7-2. フロントエンドの `/admin/*` ルートと Basic 認証の整合を確認する
   - Coreserver に静的ビルドを配置する場合、`.htaccess` でBasic認証を掛ける方針を決める
   - Vite 開発サーバーでは認証をスキップする方針を明示する
 
@@ -172,22 +172,22 @@
 
 > **前提: タスク 1-3、7-1 完了後に着手する**
 
-- [ ] 8-1. `GET /api/admin/surveys` を実装する
+- [x] 8-1. `GET /api/admin/surveys` を実装する
   - 一覧（id, title, status, 回答数, allow_multiple, allow_edit, starts_at, ends_at）を返す
 
-- [ ] 8-2. `POST /api/admin/surveys` を実装する
+- [x] 8-2. `POST /api/admin/surveys` を実装する
   - `public_id` を生成して保存する
   - `questions_json` の JSON 構文バリデーションを行う
 
-- [ ] 8-3. `GET /api/admin/surveys/{id}` を実装する
+- [x] 8-3. `GET /api/admin/surveys/{id}` を実装する
   - 編集画面用に全カラムを返す
   - 回答数も含めて返す（編集画面の補助情報として使う）
 
-- [ ] 8-4. `PUT /api/admin/surveys/{id}` を実装する
+- [x] 8-4. `PUT /api/admin/surveys/{id}` を実装する
   - `questions_json` を含む全フィールドを更新可能にする
   - `questions_json` は JSON 構文バリデーションを行う
 
-- [ ] 8-5. `DELETE /api/admin/surveys/{id}` を実装する
+- [x] 8-5. `DELETE /api/admin/surveys/{id}` を実装する
   - 回答数 ≥ 1 のとき削除を拒否する（409）
   - 回答 0 件のときのみ削除する
 
@@ -237,22 +237,22 @@
 
 > **前提: タスク 2-3、3-1、4-2 完了後に着手する**
 
-- [ ] 11-1. LIFF 初期化と ID Token 取得の共通フックを作る
+- [x] 11-1. LIFF 初期化と ID Token 取得の共通フックを作る
   - `useLiff()` フックで初期化・ログイン・IDトークン取得をカプセル化する
   - **LIFF ブラウザ外（開発環境）からのアクセス時にエラーメッセージを表示する**
 
-- [ ] 11-2. `/s/:public_id` のルーティングと Survey 取得を作る
+- [x] 11-2. `/s/:public_id` のルーティングと Survey 取得を作る
   - アンケート情報を取得し、回答不可なら理由を表示する
 
-- [ ] 11-3. 名寄せ結果による表示分岐を実装する
+- [x] 11-3. 名寄せ結果による表示分岐を実装する
   - `existing` / `matched`: 氏名・メール・敬称を表示（編集不可）
   - `manual_required`: 手入力フォームを表示（メール必須バリデーション）
 
-- [ ] 11-4. SurveyJS フォームを表示する
+- [x] 11-4. SurveyJS フォームを表示する
   - `questions_json` を `survey.fromJSON()` に渡して描画する
   - 送信ハンドラで `POST /api/surveys/public/{public_id}/responses` を呼ぶ
 
-- [ ] 11-5. 回答完了画面を作る
+- [x] 11-5. 回答完了画面を作る
   - 回答控えメール送信済みの案内を出す
   - `allow_edit=true` のときだけ編集 URL を表示する
 

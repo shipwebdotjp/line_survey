@@ -1,4 +1,4 @@
-.PHONY: up build init down restart ps logs composer-install test npm-install npm-dev npm-build migrate seed
+.PHONY: up build init down fresh restart ps logs composer-install test npm-install npm-dev npm-build migrate seed
 
 # --- Docker Commands ---
 up:
@@ -9,11 +9,15 @@ build:
 
 init:
 	docker compose up -d --build
-	docker compose exec web composer install -d backend
-	if [ ! -f backend/.env ]; then cp backend/.env.example backend/.env; fi
+	docker compose exec web composer install -d /var/www/backend
+	docker compose exec web sh -lc 'if [ ! -f /var/www/backend/.env ]; then cp /var/www/backend/.env.example /var/www/backend/.env; fi'
 
 down:
 	docker compose down --remove-orphans
+
+fresh:
+	docker compose down -v --remove-orphans
+	docker compose up -d --build
 
 restart:
 	@make down
@@ -27,24 +31,24 @@ logs:
 
 # --- Backend Commands ---
 composer-install:
-	docker compose exec web composer install -d backend
+	docker compose exec web composer install -d /var/www/backend
 
 test:
-	docker compose exec web backend/vendor/bin/phpunit -c backend/phpunit.xml
+	docker compose exec web /var/www/backend/vendor/bin/phpunit -c /var/www/backend/phpunit.xml
 
 # --- Frontend Commands ---
 npm-install:
-	docker compose exec web npm install --prefix frontend
+	npm --prefix frontend install
 
 npm-dev:
-	docker compose exec web npm run dev --prefix frontend
+	npm --prefix frontend run dev
 
 npm-build:
-	docker compose exec web npm run build --prefix frontend
+	npm --prefix frontend run build
 
 # --- Database Commands ---
 migrate:
-	docker compose exec web backend/vendor/bin/phinx migrate -c backend/phinx.php
+	docker compose exec web /var/www/backend/vendor/bin/phinx migrate -c /var/www/backend/phinx.php
 
 seed:
-	docker compose exec web backend/vendor/bin/phinx seed:run -c backend/phinx.php
+	docker compose exec web /var/www/backend/vendor/bin/phinx seed:run -c /var/www/backend/phinx.php

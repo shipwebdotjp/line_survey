@@ -44,7 +44,7 @@ final class InitialMigration extends AbstractMigration
         $table = $this->table('respondents');
         $table->addColumn('line_user_id', 'string', ['limit' => 255])
               ->addColumn('line_display_name', 'string', ['limit' => 255])
-              ->addColumn('respondent_master_id', 'integer', ['null' => true])
+              ->addColumn('respondent_master_id', 'integer', ['null' => true, 'signed' => false])
               ->addColumn('name', 'string', ['limit' => 255])
               ->addColumn('email', 'string', ['limit' => 255])
               ->addColumn('honorific', 'string', ['limit' => 50, 'null' => true])
@@ -57,8 +57,8 @@ final class InitialMigration extends AbstractMigration
 
         // responses
         $table = $this->table('responses');
-        $table->addColumn('survey_id', 'integer')
-              ->addColumn('respondent_id', 'integer')
+        $table->addColumn('survey_id', 'integer', ['signed' => false])
+              ->addColumn('respondent_id', 'integer', ['signed' => false])
               ->addColumn('edit_token', 'string', ['limit' => 128])
               ->addColumn('answer_json', 'json')
               ->addColumn('survey_snapshot_json', 'json', ['null' => true])

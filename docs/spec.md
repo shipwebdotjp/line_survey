@@ -705,3 +705,6 @@ CREATE TABLE responses (
   INDEX idx_respondent_id (respondent_id),
   INDEX idx_survey_respondent (survey_id,
 ```
+
+## 18. LIFFアプリの初期化とルーティング
+エンドポイントに s/ をつけて、s/ の場合はいつでもinit させるなどしないと 単にルートをエンドポイントに指定しているとliff initは実行されない

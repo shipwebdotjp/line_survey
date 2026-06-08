@@ -5,7 +5,7 @@
  * Delegates processing to the backend Slim application.
  */
 
-require __DIR__ . '/../../backend/vendor/autoload.php';
+require '/var/www/backend/vendor/autoload.php';
 
-$app = require __DIR__ . '/../../backend/bootstrap/app.php';
+$app = require '/var/www/backend/bootstrap/app.php';
 $app->run();
