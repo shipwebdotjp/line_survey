@@ -37,3 +37,17 @@ export interface SaveResponseResult {
   error?: string;
   code?: string;
 }
+
+export interface SurveyData {
+  can_answer: boolean;
+  reason: 'not_published' | 'not_started' | 'closed' | null;
+  survey: {
+    title: string;
+    description: string;
+    questions_json: Record<string, any>;
+    allow_multiple: boolean;
+    allow_edit: boolean;
+    starts_at: string | null;
+    ends_at: string | null;
+  } | null;
+}

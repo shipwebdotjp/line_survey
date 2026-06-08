@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
+import EditResponsePage from './pages/public-survey/EditResponsePage';
 import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
 import SurveyCreatePage from './pages/admin/SurveyCreatePage';
@@ -51,6 +52,14 @@ const AppContent = () => {
             element={
               <div className="public-survey-root">
                 <PublicSurveyPage />
+              </div>
+            }
+          />
+          <Route
+            path="/s/:public_id/r/:edit_token/edit"
+            element={
+              <div className="public-survey-root">
+                <EditResponsePage />
               </div>
             }
           />

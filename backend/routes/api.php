@@ -16,6 +16,9 @@ use App\Presentation\Http\Liff\IdentifyManualAction;
 use App\Presentation\Http\Middleware\BasicAuthMiddleware;
 use App\Presentation\Http\Survey\GetPublicSurveyAction;
 use App\Presentation\Http\Survey\SaveResponseAction;
+use App\Presentation\Http\Survey\GetCurrentResponseAction;
+use App\Presentation\Http\Survey\GetEditResponseAction;
+use App\Presentation\Http\Survey\UpdateResponseAction;
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -33,6 +36,9 @@ return function (App $app) {
     // Public Survey
     $app->get('/api/surveys/public/{public_id}', GetPublicSurveyAction::class);
     $app->post('/api/surveys/public/{public_id}/responses', SaveResponseAction::class);
+    $app->get('/api/surveys/public/{public_id}/responses/current', GetCurrentResponseAction::class);
+    $app->get('/api/surveys/public/{public_id}/responses/{edit_token}', GetEditResponseAction::class);
+    $app->put('/api/surveys/public/{public_id}/responses/{edit_token}', UpdateResponseAction::class);
 
     // Admin API (Basic Auth protected)
     $app->group('/api/admin', function (RouteCollectorProxy $group) {
