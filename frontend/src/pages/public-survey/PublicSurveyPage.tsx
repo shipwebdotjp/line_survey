@@ -10,6 +10,7 @@ import { createLiffUrl } from '../../lib/liffUrl';
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
   const { isLoggedIn, idToken } = useLiffContext();
+  const navigate = useNavigate();
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
   const [identifyStatus, setIdentifyStatus] = useState<IdentifyStatus | null>(null);
   const [respondent, setRespondent] = useState<Respondent | null>(null);
@@ -21,6 +22,7 @@ const PublicSurveyPage: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
   const [existingResponse, setExistingResponse] = useState<SurveyResponse | null>(null);
+  const isDebugMode = import.meta.env.DEV || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'));
 
   useEffect(() => {
     // LiffGate ensures we are initialized before this component renders.
@@ -209,8 +211,6 @@ const PublicSurveyPage: React.FC = () => {
 
   const showSurvey = identifyStatus === 'existing' || identifyStatus === 'matched' || identifyStatus === 'manual_saved';
 
-  const navigate = useNavigate();
-
   if (submittedResponse) {
     const editUrl = createLiffUrl(`/s/${public_id}/r/${submittedResponse.edit_token}/edit`);
 
@@ -286,6 +286,38 @@ const PublicSurveyPage: React.FC = () => {
       <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
       {surveyData.survey?.description && (
         <p style={{ marginBottom: '1.5rem', color: '#666' }}>{surveyData.survey.description}</p>
+      )}
+
+      {isDebugMode && (
+        <details style={{
+          marginBottom: '1rem',
+          padding: '0.75rem 1rem',
+          border: '1px solid #d0d7de',
+          borderRadius: '8px',
+          background: '#f6f8fa'
+        }}>
+          <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Debug info</summary>
+          <pre style={{
+            margin: '0.75rem 0 0',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            fontSize: '0.8rem'
+          }}>
+            {JSON.stringify({
+              public_id,
+              isLoggedIn,
+              hasIdToken: !!idToken,
+              isLoading,
+              error,
+              identifyStatus,
+              respondent,
+              surveyLoaded: !!surveyData,
+              canAnswer: surveyData?.can_answer ?? null,
+              existingResponseLoaded: !!existingResponse,
+              showSurvey,
+            }, null, 2)}
+          </pre>
+        </details>
       )}
 
       {identifyStatus && (

@@ -51,7 +51,7 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
       try {
         await liff.init({
           liffId,
-          // withLoginOnExternalBrowser: true
+          withLoginOnExternalBrowser: true
         });
 
         if (runIdRef.current !== currentRunId) return;
