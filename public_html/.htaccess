@@ -19,6 +19,6 @@ RewriteRule ^ index.html [QSA,L]
     AuthType Basic
     AuthName "Admin"
     # AuthUserFile will be managed in the target environment (e.g., Coreserver)
-    # AuthUserFile /path/to/.htpasswd
+    AuthUserFile /var/www/backend/.htpasswd
     Require valid-user
 </If>

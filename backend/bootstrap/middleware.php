@@ -60,12 +60,21 @@ return function (App $app) {
         }
 
         if ($displayErrorDetails) {
-            $payload['debug'] = [
+            $debug = [
                 'type' => get_class($exception),
+                'message' => $exception->getMessage(),
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
                 'trace' => explode("\n", $exception->getTraceAsString()),
             ];
+
+            if ($exception instanceof \Illuminate\Database\QueryException) {
+                $debug['sql'] = $exception->getSql();
+                $debug['bindings'] = $exception->getBindings();
+                $debug['error_info'] = $exception->errorInfo;
+            }
+
+            $payload['debug'] = $debug;
         }
 
         $response = $app->getResponseFactory()->createResponse($statusCode);

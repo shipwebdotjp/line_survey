@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
 import type { Respondent, IdentifyStatus } from './types';
 
+const DEFAULT_HONORIFICS = ['さん', '様', '先生'];
+
+const parseHonorificOptions = (value: string | undefined): string[] => {
+  const parsed = (value ?? '')
+    .split(/[,、]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const unique = Array.from(new Set(parsed));
+  return unique.length > 0 ? unique : DEFAULT_HONORIFICS;
+};
+
+const HONORIFIC_OPTIONS = parseHonorificOptions(import.meta.env.VITE_RESPONDENT_HONORIFICS);
+const DEFAULT_HONORIFIC = HONORIFIC_OPTIONS[0] ?? '';
+
 interface RespondentIdentificationProps {
   status: IdentifyStatus;
   respondent: Respondent | null;
@@ -19,7 +34,7 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    honorific: 'さん',
+    honorific: DEFAULT_HONORIFIC,
   });
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
 
@@ -144,9 +159,11 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
               onChange={handleChange}
               style={{ ...inputStyle, width: 'auto' }}
             >
-              <option value="さん">さん</option>
-              <option value="様">様</option>
-              <option value="先生">先生</option>
+              {HONORIFIC_OPTIONS.map((honorific) => (
+                <option key={honorific} value={honorific}>
+                  {honorific}
+                </option>
+              ))}
               <option value="">（なし）</option>
             </select>
           </div>

@@ -9,11 +9,13 @@ Vite の環境変数は `frontend/` 配下の `.env` 系ファイルから読み
 - ローカル専用の値は `frontend/.env.local` に置く
 - ブラウザから参照する変数名は `VITE_` で始める
 - LIFF ID は `VITE_LIFF_ID` として定義する
+- 敬称候補は `VITE_RESPONDENT_HONORIFICS` にカンマ区切りで定義する
 
 例:
 
 ```env
 VITE_LIFF_ID=your-liff-id
+VITE_RESPONDENT_HONORIFICS=さん,様,先生
 ```
 
 ## Scripts

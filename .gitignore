@@ -66,3 +66,7 @@ temp/
 *.orig
 
 .jules-agent/
+
+.htpasswd
+
+cache/

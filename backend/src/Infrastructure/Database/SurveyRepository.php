@@ -76,10 +76,13 @@ class SurveyRepository
                 s.ends_at,
                 s.created_at,
                 s.updated_at,
-                COUNT(r.id) as response_count
+                COALESCE(rc.response_count, 0) as response_count
              FROM %s s
-             LEFT JOIN responses r ON s.id = r.survey_id
-             GROUP BY s.id
+             LEFT JOIN (
+                SELECT survey_id, COUNT(*) as response_count
+                FROM responses
+                GROUP BY survey_id
+             ) rc ON s.id = rc.survey_id
              ORDER BY s.created_at DESC',
             self::TABLE
         );
@@ -105,11 +108,14 @@ class SurveyRepository
                 s.ends_at,
                 s.created_at,
                 s.updated_at,
-                COUNT(r.id) as response_count
+                COALESCE(rc.response_count, 0) as response_count
              FROM %s s
-             LEFT JOIN responses r ON s.id = r.survey_id
+             LEFT JOIN (
+                SELECT survey_id, COUNT(*) as response_count
+                FROM responses
+                GROUP BY survey_id
+             ) rc ON s.id = rc.survey_id
              WHERE s.id = ?
-             GROUP BY s.id
              LIMIT 1',
             self::TABLE
         );

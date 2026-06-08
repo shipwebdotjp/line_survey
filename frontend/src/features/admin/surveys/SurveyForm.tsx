@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { SurveyCreateParams, SurveyStatus } from './types';
+import type { SurveyCreateParams } from './types';
 import { toDatetimeLocal, fromDatetimeLocal } from './dateUtils';
 
 interface SurveyFormProps {
@@ -22,8 +22,8 @@ const SurveyForm: React.FC<SurveyFormProps> = ({
     questions_json: initialValues?.questions_json || { pages: [{ name: 'page1', elements: [] }] },
     allow_multiple: initialValues?.allow_multiple ?? false,
     allow_edit: initialValues?.allow_edit ?? false,
-    starts_at: toDatetimeLocal(initialValues?.starts_at || null) || null,
-    ends_at: toDatetimeLocal(initialValues?.ends_at || null) || null,
+    starts_at: toDatetimeLocal(initialValues?.starts_at || undefined) || undefined,
+    ends_at: toDatetimeLocal(initialValues?.ends_at || undefined) || undefined,
     send_confirmation_email: initialValues?.send_confirmation_email ?? true,
     include_answers_in_email: initialValues?.include_answers_in_email ?? true,
   });
