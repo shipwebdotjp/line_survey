@@ -256,10 +256,10 @@ DELETE
 Origin: https://example.com
 ```
 
-期待値は `APP_URL` を基準に管理する。
+期待値は `APP_ORIGIN_URL` を基準に管理する。
 
 ```txt
-APP_URL=https://example.com
+APP_ORIGIN_URL=https://example.com
 ```
 
 不一致なら 403。

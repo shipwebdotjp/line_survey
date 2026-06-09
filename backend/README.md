@@ -56,6 +56,8 @@ MAIL_PORT=1025
 MAIL_FROM_ADDRESS=onboarding@resend.dev
 MAIL_FROM_NAME="Survey App"
 ADMIN_MAIL=admin@example.com
+APP_ORIGIN_URL=http://localhost:5173
+APP_PUBLIC_URL=http://localhost:8080
 ```
 
 ## 既存データを消してやり直す場合

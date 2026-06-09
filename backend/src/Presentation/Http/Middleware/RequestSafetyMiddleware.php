@@ -44,9 +44,9 @@ final class RequestSafetyMiddleware implements MiddlewareInterface
 
     private function isOriginSafe(ServerRequestInterface $request): bool
     {
-        $appUrl = $this->settings->get('app.url');
+        $appUrl = $this->settings->get('app.origin_url');
         if (!$appUrl) {
-            error_log('RequestSafetyMiddleware: app.url is not configured. Failing closed.');
+            error_log('RequestSafetyMiddleware: app.origin_url is not configured. Failing closed.');
             return false;
         }
 
