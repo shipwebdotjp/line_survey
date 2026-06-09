@@ -254,7 +254,7 @@ const PublicSurveyPage: React.FC = () => {
               <a href={editUrl}>{editUrl}</a>
             </p>
             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
-              ※このURLを保存しておくと、後から回答を修正できます。
+              ※後から回答を修正するためのURLはメールでもお送りしています。
             </p>
           </div>
         )}

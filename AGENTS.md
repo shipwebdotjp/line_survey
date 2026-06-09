@@ -3,6 +3,10 @@
 ## Project Specs
 Follow `docs/spec.md` as the project specs.
 
+## Rueles
+- Backward compatibility does not need to be maintained during this phase.
+
+
 ## AI Wiki
 
 - `ai_wiki/` is the shared wiki for AI coding agents such as Codex, Jules, and OpenCode
@@ -48,14 +52,7 @@ Prefer PSR-12 style for PHP and standard Vite/TypeScript formatting for frontend
 
 ## Testing Guidelines
 
-It's development stage currently, so don't need to create a test for now.
-Backward compatibility does not need to be maintained during this phase.
-
-- Put backend tests in `tests/backend/`
-- Put frontend tests in `tests/frontend/`
-- Store shared fixtures in `tests/fixtures/`
-
-Name tests after behavior or the unit under test. Add tests for API routes, domain rules, and regressions before merging changes. Run `make test` before opening a PR.
+It's development stage currently, so don't need to create a test.
 
 ## Security & Configuration Tips
 

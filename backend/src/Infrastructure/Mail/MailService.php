@@ -173,7 +173,7 @@ class MailService
         if ($survey['allow_edit'] ?? false) {
             $editUrl = "{$this->appUrl}/s/{$survey['public_id']}/r/{$response['edit_token']}/edit";
             $lines[] = "■回答の編集";
-            $lines[] = "以下のURLから回答を修正することが可能です。";
+            $lines[] = "回答を編集するには下記のURLにアクセスしてください。";
             $lines[] = $editUrl;
             $lines[] = "";
         }
