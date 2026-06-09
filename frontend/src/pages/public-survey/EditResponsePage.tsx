@@ -21,6 +21,18 @@ const EditResponsePage: React.FC = () => {
   const [emailStatus, setEmailStatus] = useState<{ sent: boolean; error: string | null } | null>(null);
 
   useEffect(() => {
+    if (isLoading && !error) {
+      document.title = '読み込み中...';
+    } else if (error) {
+      document.title = 'エラー';
+    } else if (isSuccess) {
+      document.title = '回答更新完了';
+    } else if (surveyData) {
+      document.title = `回答の修正: ${surveyData.survey?.title || ''}`;
+    }
+  }, [isLoading, error, surveyData, isSuccess]);
+
+  useEffect(() => {
     if (!public_id || !edit_token) {
       setError('不正なURLです。');
       setIsLoading(false);

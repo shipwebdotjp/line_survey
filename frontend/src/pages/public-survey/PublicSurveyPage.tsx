@@ -26,6 +26,28 @@ const PublicSurveyPage: React.FC = () => {
   const isDebugMode = import.meta.env.DEV || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'));
 
   useEffect(() => {
+    if (isLoading && !error) {
+      document.title = '読み込み中...';
+    } else if (error) {
+      document.title = 'エラー';
+    } else if (submittedResponse) {
+      document.title = '回答完了';
+    } else if (surveyData) {
+      if (!surveyData.can_answer) {
+        if (surveyData.reason === 'not_started') {
+          document.title = '開始前';
+        } else if (surveyData.reason === 'closed') {
+          document.title = '終了';
+        } else {
+          document.title = '回答不可';
+        }
+      } else {
+        document.title = surveyData.survey?.title || 'アンケート回答';
+      }
+    }
+  }, [isLoading, error, surveyData, submittedResponse]);
+
+  useEffect(() => {
     // LiffGate ensures we are initialized before this component renders.
 
     if (!public_id) {
