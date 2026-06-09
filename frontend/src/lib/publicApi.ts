@@ -1,5 +1,8 @@
+import type { Respondent } from '../features/survey/types';
+
 export interface ApiError extends Error {
   code?: string;
+   details?: Record<string, string>;
 }
 
 export const fetchWithSession = async (
@@ -46,4 +49,31 @@ export const fetchWithSession = async (
   }
 
   return response;
+};
+
+export const getRespondentProfile = async (onSessionRequired?: () => Promise<boolean>): Promise<Respondent> => {
+  const response = await fetchWithSession('/api/respondent', {}, { onSessionRequired });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to fetch respondent profile');
+  }
+  return result.data;
+};
+
+export const updateRespondentProfile = async (
+  data: { name: string; email: string },
+  onSessionRequired?: () => Promise<boolean>
+): Promise<Respondent> => {
+  const response = await fetchWithSession('/api/respondent', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }, { onSessionRequired });
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.error || 'Failed to update respondent profile') as ApiError;
+    error.code = result.code;
+    error.details = result.details;
+    throw error;
+  }
+  return result.data;
 };

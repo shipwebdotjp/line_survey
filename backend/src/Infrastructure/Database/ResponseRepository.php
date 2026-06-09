@@ -117,7 +117,6 @@ class ResponseRepository
             'SELECT
                 r.submitted_at,
                 r.updated_at,
-                r.edit_token,
                 s.public_id as survey_public_id,
                 s.title as survey_title
              FROM %s r

@@ -3,6 +3,8 @@ export interface Respondent {
   name: string;
   email: string;
   honorific: string | null;
+  /** API fields are snake_case to match backend response */
+  line_display_name?: string;
 }
 
 export type IdentifyStatus = 'existing' | 'matched' | 'manual_required' | 'manual_saved';
@@ -56,7 +58,6 @@ export interface ResponseHistoryItem {
   response_public_id: string; // Not actually used yet as we use edit_token for editing, but the API returns it
   submitted_at: string;
   updated_at: string;
-  edit_token: string;
   survey_public_id: string | null;
   survey_title: string | null;
 }

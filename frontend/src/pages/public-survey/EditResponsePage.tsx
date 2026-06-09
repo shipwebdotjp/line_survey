@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
+import Footer from '../../features/survey/Footer';
 import type { SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 
@@ -130,6 +131,7 @@ const EditResponsePage: React.FC = () => {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <p>読み込み中...</p>
+        <Footer />
       </div>
     );
   }
@@ -145,6 +147,7 @@ const EditResponsePage: React.FC = () => {
         >
           アンケートトップへ
         </button>
+        <Footer />
       </div>
     );
   }
@@ -171,6 +174,7 @@ const EditResponsePage: React.FC = () => {
         >
           アンケートトップへ
         </button>
+        <Footer />
       </div>
     );
   }
@@ -201,6 +205,7 @@ const EditResponsePage: React.FC = () => {
           isSubmitting={isSubmitting}
         />
       )}
+      <Footer />
     </div>
   );
 };

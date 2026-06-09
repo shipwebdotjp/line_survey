@@ -21,10 +21,6 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
   const survey = useMemo(() => {
     const model = new Model(questions);
     model.showCompletedPage = false;
-    // 送信ボタンのラベル
-    model.completeText = '回答を送信する';
-    model.pageNextText = '次へ';
-    model.pagePrevText = '戻る';
     if (data) {
       model.data = data;
     }
