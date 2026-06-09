@@ -9,21 +9,17 @@ use RuntimeException;
 trait SurveyResolutionTrait
 {
     /**
-     * @param string $idToken
+     * @param array $respondent
      * @return array
      * @throws RuntimeException
      */
-    protected function resolveRespondentFromToken(string $idToken): array
+    protected function resolveRespondent(array $respondent): array
     {
-        $claims = $this->idTokenVerifier->verify($idToken);
-        $lineUserId = $claims['sub'];
-
-        $respondents = $this->respondentRepository->findBy(['line_user_id' => $lineUserId]);
-        if (empty($respondents)) {
+        if (empty($respondent)) {
             throw new RuntimeException('Respondent not found', 404);
         }
 
-        return $respondents[0];
+        return $respondent;
     }
 
     /**

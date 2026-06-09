@@ -24,8 +24,8 @@ final class GetCurrentResponseAction
         $publicId = $args['public_id'] ?? '';
 
         try {
-            $idToken = $this->extractTokenFromHeader($request);
-            $result = $this->useCase->execute($publicId, $idToken);
+            $respondent = $request->getAttribute('respondent');
+            $result = $this->useCase->execute($publicId, $respondent);
             return JsonResponse::success($response, $result);
         } catch (Throwable $e) {
             return $this->handleUseCaseException($e, $response);

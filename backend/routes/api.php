@@ -13,7 +13,11 @@ use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
+use App\Presentation\Http\Liff\LogoutAction;
+use App\Presentation\Http\Middleware\AuthSessionMiddleware;
 use App\Presentation\Http\Middleware\BasicAuthMiddleware;
+use App\Presentation\Http\Middleware\RequestSafetyMiddleware;
+use App\Presentation\Http\Middleware\SessionMiddleware;
 use App\Presentation\Http\Survey\GetPublicSurveyAction;
 use App\Presentation\Http\Survey\SaveResponseAction;
 use App\Presentation\Http\Survey\GetCurrentResponseAction;
@@ -29,16 +33,30 @@ return function (App $app) {
         return JsonResponse::success($response, ['status' => 'ok']);
     });
 
-    // LIFF Identification
-    $app->post('/api/liff/identify', IdentifyAction::class);
-    $app->post('/api/liff/identify/manual', IdentifyManualAction::class);
+    // LIFF & Public Survey APIs
+    $app->group('/api', function (RouteCollectorProxy $group) {
+        // Identification
+        $group->post('/liff/identify', IdentifyAction::class)
+            ->add(RequestSafetyMiddleware::class);
+        $group->post('/liff/identify/manual', IdentifyManualAction::class)
+            ->add(RequestSafetyMiddleware::class);
+        $group->post('/liff/logout', LogoutAction::class)
+            ->add(RequestSafetyMiddleware::class);
 
-    // Public Survey
-    $app->get('/api/surveys/public/{public_id}', GetPublicSurveyAction::class);
-    $app->post('/api/surveys/public/{public_id}/responses', SaveResponseAction::class);
-    $app->get('/api/surveys/public/{public_id}/responses/current', GetCurrentResponseAction::class);
-    $app->get('/api/surveys/public/{public_id}/responses/{edit_token}', GetEditResponseAction::class);
-    $app->put('/api/surveys/public/{public_id}/responses/{edit_token}', UpdateResponseAction::class);
+        // Public Survey
+        $group->get('/surveys/public/{public_id}', GetPublicSurveyAction::class);
+
+        // Session-required Public Survey APIs
+        $group->group('', function (RouteCollectorProxy $sessionGroup) {
+            $sessionGroup->post('/surveys/public/{public_id}/responses', SaveResponseAction::class)
+                ->add(RequestSafetyMiddleware::class);
+            $sessionGroup->get('/surveys/public/{public_id}/responses/current', GetCurrentResponseAction::class);
+            $sessionGroup->get('/surveys/public/{public_id}/responses/{edit_token}', GetEditResponseAction::class);
+            $sessionGroup->put('/surveys/public/{public_id}/responses/{edit_token}', UpdateResponseAction::class)
+                ->add(RequestSafetyMiddleware::class);
+        })->add(AuthSessionMiddleware::class);
+
+    })->add(SessionMiddleware::class);
 
     // Admin API (Basic Auth protected)
     $app->group('/api/admin', function (RouteCollectorProxy $group) {

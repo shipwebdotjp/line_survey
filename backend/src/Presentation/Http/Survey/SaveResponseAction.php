@@ -31,8 +31,8 @@ final class SaveResponseAction
         }
 
         try {
-            $idToken = $this->extractTokenFromHeader($request);
-            $result = $this->useCase->execute($publicId, $idToken, $answerJson);
+            $respondent = $request->getAttribute('respondent');
+            $result = $this->useCase->execute($publicId, $respondent, $answerJson);
             return JsonResponse::success($response, $result);
         } catch (Throwable $e) {
             return $this->handleUseCaseException($e, $response);
