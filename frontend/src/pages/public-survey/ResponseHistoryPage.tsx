@@ -3,6 +3,7 @@ import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import type { ResponseHistoryItem } from '../../features/survey/types';
 import { createLiffUrl } from '../../lib/liffUrl';
+import Footer from '../../features/survey/Footer';
 
 const ResponseHistoryPage: React.FC = () => {
   const { isLoggedIn, idToken, identify } = useLiffContext();
@@ -131,6 +132,7 @@ const ResponseHistoryPage: React.FC = () => {
           ))}
         </div>
       )}
+      <Footer />
     </div>
   );
 };

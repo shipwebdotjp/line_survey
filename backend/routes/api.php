@@ -15,6 +15,8 @@ use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
 use App\Presentation\Http\Liff\LogoutAction;
+use App\Presentation\Http\Respondent\GetRespondentAction;
+use App\Presentation\Http\Respondent\UpdateRespondentAction;
 use App\Presentation\Http\Middleware\AuthSessionMiddleware;
 use App\Presentation\Http\Middleware\BasicAuthMiddleware;
 use App\Presentation\Http\Middleware\RequestSafetyMiddleware;
@@ -50,6 +52,11 @@ return function (App $app) {
 
         // Session-required Public Survey APIs
         $group->group('', function (RouteCollectorProxy $sessionGroup) {
+            // Respondent Profile
+            $sessionGroup->get('/respondent', GetRespondentAction::class);
+            $sessionGroup->put('/respondent', UpdateRespondentAction::class)
+                ->add(RequestSafetyMiddleware::class);
+
             $sessionGroup->get('/surveys/responses/history', GetResponseHistoryAction::class);
             $sessionGroup->post('/surveys/public/{public_id}/responses', SaveResponseAction::class)
                 ->add(RequestSafetyMiddleware::class);

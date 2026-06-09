@@ -4,6 +4,7 @@ import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
+import Footer from '../../features/survey/Footer';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 import { createLiffUrl } from '../../lib/liffUrl';
@@ -258,6 +259,7 @@ const PublicSurveyPage: React.FC = () => {
             </p>
           </div>
         )}
+        <Footer />
       </div>
     );
   }
@@ -369,6 +371,7 @@ const PublicSurveyPage: React.FC = () => {
           />
         </div>
       )}
+        <Footer />
     </div>
   );
 };

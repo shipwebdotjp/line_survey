@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { Respondent, IdentifyStatus } from './types';
 
 const DEFAULT_HONORIFICS = ['さん', '様', '先生'];
@@ -31,6 +32,8 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
   isSubmitting,
   submitError,
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -123,6 +126,22 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
         <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '1rem' }}>
           {status === 'manual_saved' ? '情報を保存しました。' : 'ご登録済みの情報で回答を受け付けます。'}
         </p>
+        <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem', textAlign: 'right' }}>
+          <button
+            onClick={() => navigate(`/respondent/edit?return_to=${encodeURIComponent(location.pathname + location.search)}`)}
+            style={{
+              backgroundColor: 'transparent',
+              color: '#666',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '0.4rem 1rem',
+              cursor: 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            編集する
+          </button>
+        </div>
       </div>
     );
   }

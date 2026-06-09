@@ -3,6 +3,7 @@ export interface Respondent {
   name: string;
   email: string;
   honorific: string | null;
+  line_display_name?: string;
 }
 
 export type IdentifyStatus = 'existing' | 'matched' | 'manual_required' | 'manual_saved';
