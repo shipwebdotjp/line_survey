@@ -15,7 +15,6 @@ final class GetCurrentResponseUseCase
     use SurveyResolutionTrait;
 
     public function __construct(
-        private IdTokenVerifier $idTokenVerifier,
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository
@@ -24,13 +23,13 @@ final class GetCurrentResponseUseCase
 
     /**
      * @param string $publicId
-     * @param string $idToken
+     * @param array $respondent
      * @return array
      * @throws RuntimeException
      */
-    public function execute(string $publicId, string $idToken): array
+    public function execute(string $publicId, array $respondent): array
     {
-        $respondent = $this->resolveRespondentFromToken($idToken);
+        $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
         $responses = $this->responseRepository->findBy([

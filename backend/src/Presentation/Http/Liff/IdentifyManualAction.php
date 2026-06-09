@@ -52,6 +52,16 @@ final class IdentifyManualAction
                 'honorific' => $honorific
             ]);
 
+            // Establish session on success
+            if (isset($respondent['id'])) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                session_regenerate_id(true);
+                $_SESSION['respondent_id'] = $respondent['id'];
+                $_SESSION['authenticated_at'] = time();
+            }
+
             $response->getBody()->write(json_encode([
                 'status' => IdentifyService::STATUS_MANUAL_SAVED,
                 'respondent' => $respondent

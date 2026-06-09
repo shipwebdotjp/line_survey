@@ -15,7 +15,6 @@ final class GetEditResponseUseCase
     use SurveyResolutionTrait;
 
     public function __construct(
-        private IdTokenVerifier $idTokenVerifier,
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository
@@ -25,13 +24,13 @@ final class GetEditResponseUseCase
     /**
      * @param string $publicId
      * @param string $editToken
-     * @param string $idToken
+     * @param array $respondent
      * @return array
      * @throws RuntimeException
      */
-    public function execute(string $publicId, string $editToken, string $idToken): array
+    public function execute(string $publicId, string $editToken, array $respondent): array
     {
-        $respondent = $this->resolveRespondentFromToken($idToken);
+        $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
         $responses = $this->responseRepository->findBy(['edit_token' => $editToken]);

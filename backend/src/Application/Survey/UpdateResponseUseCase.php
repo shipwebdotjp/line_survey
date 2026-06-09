@@ -17,7 +17,6 @@ final class UpdateResponseUseCase
     use SurveyResolutionTrait;
 
     public function __construct(
-        private IdTokenVerifier $idTokenVerifier,
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository,
@@ -28,14 +27,14 @@ final class UpdateResponseUseCase
     /**
      * @param string $publicId
      * @param string $editToken
-     * @param string $idToken
+     * @param array $respondent
      * @param array $answerJson
      * @return array
      * @throws RuntimeException
      */
-    public function execute(string $publicId, string $editToken, string $idToken, array $answerJson): array
+    public function execute(string $publicId, string $editToken, array $respondent, array $answerJson): array
     {
-        $respondent = $this->resolveRespondentFromToken($idToken);
+        $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
         if (!($survey['allow_edit'] ?? false)) {

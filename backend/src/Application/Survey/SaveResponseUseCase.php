@@ -18,7 +18,6 @@ final class SaveResponseUseCase
     use SurveyResolutionTrait;
 
     public function __construct(
-        private IdTokenVerifier $idTokenVerifier,
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository,
@@ -28,14 +27,14 @@ final class SaveResponseUseCase
 
     /**
      * @param string $publicId
-     * @param string $idToken
+     * @param array $respondent
      * @param array $answerJson
      * @return array
      * @throws RuntimeException
      */
-    public function execute(string $publicId, string $idToken, array $answerJson): array
+    public function execute(string $publicId, array $respondent, array $answerJson): array
     {
-        $respondent = $this->resolveRespondentFromToken($idToken);
+        $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
         $this->validateSurveyAvailability($survey);

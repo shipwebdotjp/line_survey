@@ -41,6 +41,17 @@ final class IdentifyAction
         try {
             $result = $this->identifyService->identify($claims['sub'], $claims['name']);
 
+            // Establish session on success
+            if (isset($result['respondent']['id'])) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    // This action should be under SessionMiddleware, but just in case
+                    session_start();
+                }
+                session_regenerate_id(true);
+                $_SESSION['respondent_id'] = $result['respondent']['id'];
+                $_SESSION['authenticated_at'] = time();
+            }
+
             $response->getBody()->write(json_encode($result, JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Throwable $e) {
