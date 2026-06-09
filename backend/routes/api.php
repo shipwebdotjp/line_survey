@@ -1,6 +1,7 @@
 <?php
 
 use App\Presentation\Http\Admin\Survey\CreateSurveyAction;
+use App\Presentation\Http\Admin\Survey\DuplicateSurveyAction;
 use App\Presentation\Http\Admin\Survey\DeleteSurveyAction;
 use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
@@ -63,6 +64,7 @@ return function (App $app) {
         $group->get('/surveys', ListSurveysAction::class);
         $group->post('/surveys', CreateSurveyAction::class);
         $group->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
+        $group->post('/surveys/{id:[0-9]+}/duplicate', DuplicateSurveyAction::class);
         $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
         $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
