@@ -21,6 +21,7 @@ use App\Presentation\Http\Middleware\SessionMiddleware;
 use App\Presentation\Http\Survey\GetPublicSurveyAction;
 use App\Presentation\Http\Survey\SaveResponseAction;
 use App\Presentation\Http\Survey\GetCurrentResponseAction;
+use App\Presentation\Http\Survey\GetResponseHistoryAction;
 use App\Presentation\Http\Survey\GetEditResponseAction;
 use App\Presentation\Http\Survey\UpdateResponseAction;
 use Slim\App;
@@ -48,6 +49,7 @@ return function (App $app) {
 
         // Session-required Public Survey APIs
         $group->group('', function (RouteCollectorProxy $sessionGroup) {
+            $sessionGroup->get('/surveys/responses/history', GetResponseHistoryAction::class);
             $sessionGroup->post('/surveys/public/{public_id}/responses', SaveResponseAction::class)
                 ->add(RequestSafetyMiddleware::class);
             $sessionGroup->get('/surveys/public/{public_id}/responses/current', GetCurrentResponseAction::class);
