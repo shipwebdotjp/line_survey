@@ -20,7 +20,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
         $this->useCase = new DuplicateSurveyUseCase($this->surveyRepository);
     }
 
-    public function test_execute_duplicates_survey_successfully(): void
+    public function testExecuteDuplicatesSurveySuccessfully(): void
     {
         $sourceId = 1;
         $sourceSurvey = [
@@ -71,7 +71,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
         $this->assertEquals(2, $newId);
     }
 
-    public function test_execute_handles_empty_title(): void
+    public function testExecuteHandlesEmptyTitle(): void
     {
         $sourceId = 1;
         $sourceSurvey = [
@@ -103,7 +103,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
         $this->assertEquals(3, $newId);
     }
 
-    public function test_execute_throws_exception_if_survey_not_found(): void
+    public function testExecuteThrowsExceptionIfSurveyNotFound(): void
     {
         $sourceId = 999;
 

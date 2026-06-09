@@ -27,7 +27,7 @@ class DuplicateSurveyActionTest extends TestCase
         $this->response = (new ResponseFactory())->createResponse();
     }
 
-    public function test_invoke_returns_201_on_success(): void
+    public function testInvokeReturns201OnSuccess(): void
     {
         $sourceId = 1;
         $newId = 2;
@@ -44,7 +44,7 @@ class DuplicateSurveyActionTest extends TestCase
         $this->assertEquals(['data' => ['id' => $newId]], $payload);
     }
 
-    public function test_invoke_returns_404_when_survey_not_found(): void
+    public function testInvokeReturns404WhenSurveyNotFound(): void
     {
         $sourceId = 999;
 
@@ -60,7 +60,7 @@ class DuplicateSurveyActionTest extends TestCase
         $this->assertEquals('NOT_FOUND', $payload['code']);
     }
 
-    public function test_invoke_returns_500_on_internal_error(): void
+    public function testInvokeReturns500OnInternalError(): void
     {
         $sourceId = 1;
 
@@ -76,7 +76,7 @@ class DuplicateSurveyActionTest extends TestCase
         $this->assertEquals('INTERNAL_ERROR', $payload['code']);
     }
 
-    public function test_invoke_returns_500_on_runtime_exception_with_non_404_code(): void
+    public function testInvokeReturns500OnRuntimeExceptionWithNon404Code(): void
     {
         $sourceId = 1;
 
