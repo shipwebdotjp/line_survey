@@ -181,7 +181,6 @@ const PublicSurveyPage: React.FC = () => {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <p>読み込み中...</p>
-        <Footer />
       </div>
     );
   }
@@ -191,7 +190,6 @@ const PublicSurveyPage: React.FC = () => {
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
         <p>{error}</p>
-        <Footer />
       </div>
     );
   }
@@ -201,7 +199,6 @@ const PublicSurveyPage: React.FC = () => {
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
         <p>アンケートデータの取得に失敗しました。</p>
-        <Footer />
       </div>
     );
   }
@@ -227,7 +224,6 @@ const PublicSurveyPage: React.FC = () => {
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h1>
         <p style={{ whiteSpace: 'pre-wrap' }}>{message}</p>
-        <Footer />
       </div>
     );
   }
@@ -259,7 +255,7 @@ const PublicSurveyPage: React.FC = () => {
               <a href={editUrl}>{editUrl}</a>
             </p>
             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
-              ※このURLを保存しておくと、後から回答を修正できます。
+              ※後から回答を修正するためのURLはメールでもお送りしています。
             </p>
           </div>
         )}
@@ -270,38 +266,62 @@ const PublicSurveyPage: React.FC = () => {
 
   if (existingResponse && !surveyData.survey?.allow_multiple) {
     return (
-      <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
-        <p style={{ marginBottom: '1rem', color: '#666' }}>既にご回答いただいています。</p>
+      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{surveyData.survey?.title}</h1>
+        <p style={{ marginBottom: '2rem', color: '#666' }}>既にご回答いただいています。</p>
 
-        <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>前回の回答内容</h2>
-          <SurveyRenderer
-            questions={existingResponse.survey_snapshot_json || surveyData.survey?.questions_json}
-            data={existingResponse.answer_json}
-            readOnly={true}
-          />
-        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          <button
+            onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}`)}
+            style={{
+              padding: '0.75rem 2rem',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              width: '100%'
+            }}
+          >
+            回答内容を確認する
+          </button>
 
-        {surveyData.survey?.allow_edit && (
-          <div style={{ textAlign: 'center' }}>
+          {surveyData.survey?.allow_edit && (
             <button
               onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
               style={{
                 padding: '0.75rem 2rem',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#007bff',
+                border: '1px solid #007bff',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                width: '100%'
               }}
             >
               回答を修正する
             </button>
-          </div>
-        )}
-        <Footer />
+          )}
+
+          <button
+            onClick={() => navigate('/s')}
+            style={{
+              padding: '0.75rem 2rem',
+              backgroundColor: 'transparent',
+              color: '#666',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              width: '100%',
+              marginTop: '1rem'
+            }}
+          >
+            回答履歴へ
+          </button>
+        </div>
       </div>
     );
   }

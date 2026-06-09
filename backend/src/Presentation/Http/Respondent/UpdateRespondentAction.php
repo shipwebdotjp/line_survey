@@ -20,29 +20,17 @@ final class UpdateRespondentAction
     {
         /** @var array $respondent */
         $respondent = $request->getAttribute('respondent');
-        if (!is_array($respondent)) {
-            throw new \RuntimeException('Respondent attribute must be an array. Ensure AuthSessionMiddleware is active.');
-        }
-
         $params = $request->getParsedBody();
-        if (!is_array($params)) {
-            $params = [];
-        }
 
-        $name = trim((string)($params['name'] ?? ''));
-        $email = trim((string)($params['email'] ?? ''));
+        $name = trim($params['name'] ?? '');
+        $email = trim($params['email'] ?? '');
 
         $errors = [];
         if (empty($name)) {
             $errors['name'] = 'お名前は必須です。';
-        } elseif (mb_strlen($name) > 255) {
-            $errors['name'] = 'お名前は255文字以内で入力してください。';
         }
-
         if (empty($email)) {
             $errors['email'] = 'メールアドレスは必須です。';
-        } elseif (mb_strlen($email) > 320) {
-            $errors['email'] = 'メールアドレスは320文字以内で入力してください。';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = '有効なメールアドレスを入力してください。';
         }
@@ -57,10 +45,6 @@ final class UpdateRespondentAction
         ]);
 
         $updated = $this->respondentRepository->findById((int)$respondent['id']);
-
-        if (!$updated) {
-            return JsonResponse::error($response, 'NOT_FOUND', 'Respondent not found', null, 404);
-        }
 
         return JsonResponse::success($response, [
             'id' => $updated['id'],

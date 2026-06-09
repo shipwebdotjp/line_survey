@@ -131,7 +131,6 @@ const EditResponsePage: React.FC = () => {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <p>読み込み中...</p>
-        <Footer />
       </div>
     );
   }
@@ -174,7 +173,6 @@ const EditResponsePage: React.FC = () => {
         >
           アンケートトップへ
         </button>
-        <Footer />
       </div>
     );
   }
