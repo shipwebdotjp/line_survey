@@ -45,15 +45,29 @@ const EditRespondentsPage: React.FC = () => {
     };
 
     fetchProfile();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, identify]);
 
   const validateReturnTo = (path: string | null): string => {
     if (!path) return '/s';
-    // Only allow absolute paths within the app (starting with / but not //)
-    if (path.startsWith('/') && !path.startsWith('//')) {
-      return path;
+    try {
+      const decoded = decodeURIComponent(path);
+      // Normalize and tighten validation:
+      // 1. Must start with exactly one '/' (rejects //, \, or schemes like http:)
+      if (!/^\/([^\/\\]|$)/.test(decoded)) {
+        return '/s';
+      }
+      // 2. Reject percent-encoded slashes/backslashes or schemes after decoding
+      if (/[%:]|(\.\.\/)/i.test(decoded)) {
+        return '/s';
+      }
+      // 3. Simple character whitelist for the path itself
+      if (!/^[a-zA-Z0-9\/\-\._~?=&%#]+$/.test(decoded)) {
+        return '/s';
+      }
+      return decoded;
+    } catch (e) {
+      return '/s';
     }
-    return '/s';
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,8 +90,8 @@ const EditRespondentsPage: React.FC = () => {
     } catch (err) {
       if (err instanceof Error) {
         const apiErr = err as ApiError;
-        if (apiErr.code === 'VALIDATION_ERROR' && (apiErr as any).details) {
-          setFieldErrors((apiErr as any).details);
+        if (apiErr.code === 'VALIDATION_ERROR' && apiErr.details) {
+          setFieldErrors(apiErr.details);
         } else {
           setError(err.message || '更新に失敗しました。');
         }

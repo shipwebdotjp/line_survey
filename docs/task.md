@@ -114,7 +114,7 @@
   - 新規保存時: `answer_json`、`survey_snapshot_json`、`edit_token`、`submitted_at` を保存する
   - 保存後に `MailService` を呼ぶ。失敗時は `email_error` に記録し、回答は成功扱い
 
-- [x] 4-3. `GET /api/surveys/public/{public_id}/responses/current` を実装する
+- [ ] 4-3. `GET /api/surveys/public/{public_id}/responses/current` を実装する
   - `respondent_id` に紐づく最新 response を返す
   - `allow_edit` の値も含めてフロントの表示分岐に使える形にする
 
@@ -124,12 +124,12 @@
 
 > **前提: タスク 4-2 完了後に着手する**
 
-- [x] 5-1. `GET /api/surveys/public/{public_id}/responses/{edit_token}` を実装する
+- [ ] 5-1. `GET /api/surveys/public/{public_id}/responses/{edit_token}` を実装する
   - `edit_token` の一致 + `respondent_id` の一致を検証する（URLだけでは編集不可）
   - `ends_at` 超過時は 403 を返す
   - `allow_edit=false` の survey では 403 を返す
 
-- [x] 5-2. `PUT /api/surveys/public/{public_id}/responses/{edit_token}` を実装する
+- [ ] 5-2. `PUT /api/surveys/public/{public_id}/responses/{edit_token}` を実装する
   - 上記と同じ検証を行う
   - `answer_json` を上書き、`updated_at` を更新、`submitted_at` は変更しない
   - `survey_snapshot_json` は編集時も上書きする（最新版を保持する）
@@ -141,13 +141,13 @@
 
 > **前提: タスク 4-1 完了後に着手する**
 
-- [x] 6-1. 回答控えメールの本文テンプレートを実装する
+- [ ] 6-1. 回答控えメールの本文テンプレートを実装する
   - 宛名（`{name}{honorific}` / honorific なしなら `{name}さん`）
   - アンケート名、回答日時、回答内容
   - `allow_edit=true` のときだけ編集 URL を含める
   - 件名: 新規「【回答控え】{title}」/ 編集「【回答修正控え】{title}」
 
-- [x] 6-2. メール送信結果の記録を実装する
+- [ ] 6-2. メール送信結果の記録を実装する
   - 成功時: `email_sent_at` に現在時刻を保存する
   - 失敗時: `email_error` にエラーメッセージを保存する
 
@@ -218,15 +218,15 @@
 
 > **前提: タスク 1-3、7-1 完了後に着手する**
 
-- [x] 10-1. `GET /api/admin/respondent-masters` を実装する
+- [ ] 10-1. `GET /api/admin/respondent-masters` を実装する
   - 全件一覧を返す（master_code / line_display_name / name / email / honorific / note）
 
-- [x] 10-2. `POST /api/admin/respondent-masters/import` を実装する
+- [ ] 10-2. `POST /api/admin/respondent-masters/import` を実装する
   - CSV を読み込み、`master_code` 単位で upsert する
   - 一部エラーがあっても成功行は保存する
   - レスポンスに `{ "imported": N, "errors": [ { "row": N, "reason": "..." } ] }` を返す
 
-- [x] 10-3. CSV インポートのバリデーションを実装する
+- [ ] 10-3. CSV インポートのバリデーションを実装する
   - 必須項目不足（master_code / line_display_name / name / email）
   - `line_display_name` の重複（CSV内重複 + DB既存との重複）
   - メールアドレス形式不正
@@ -256,7 +256,7 @@
   - 回答控えメール送信済みの案内を出す
   - `allow_edit=true` のときだけ編集 URL を表示する
 
-- [x] 11-6. 再訪時の表示分岐を作る（`responses/current` 使用）
+- [ ] 11-6. 再訪時の表示分岐を作る（`responses/current` 使用）
   - `allow_multiple=false, allow_edit=false`: 前回回答内容を表示。編集ボタンなし
   - `allow_multiple=false, allow_edit=true`: 既存回答を編集フォームに復元
   - `allow_multiple=true`: 最新回答を参照しつつ新規回答フォームを出す
@@ -267,14 +267,14 @@
 
 > **前提: タスク 5-1、5-2、11-4 完了後に着手する**
 
-- [x] 12-1. `/s/:public_id/r/:edit_token/edit` の編集ルーティングを作る
+- [ ] 12-1. `/s/:public_id/r/:edit_token/edit` の編集ルーティングを作る
   - LIFF 認証後に `GET responses/{edit_token}` を呼ぶ
   - 本人不一致・期限超過は適切なエラー表示にする
 
-- [x] 12-2. 既存回答をフォームへ復元する
+- [ ] 12-2. 既存回答をフォームへ復元する
   - `answer_json` を `survey.data` にセットして SurveyJS に戻す
 
-- [x] 12-3. 編集送信と完了画面を作る
+- [ ] 12-3. 編集送信と完了画面を作る
   - `PUT responses/{edit_token}` を呼ぶ
   - 完了画面で再送メールの案内と編集 URL を表示する
 
@@ -308,7 +308,7 @@
   - 同一回答者の response 切り替え UI は不要
   - CSV ダウンロードボタン
 
-- [x] 13-6. respondent_masters 一覧と CSV インポート画面を作る
+- [ ] 13-6. respondent_masters 一覧と CSV インポート画面を作る
   - インポート結果: 成功 N 件 + エラー行一覧（行番号・理由）を表示する
 
 ---

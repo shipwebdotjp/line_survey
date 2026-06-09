@@ -2,6 +2,7 @@ import type { Respondent } from '../features/survey/types';
 
 export interface ApiError extends Error {
   code?: string;
+   details?: Record<string, string>;
 }
 
 export const fetchWithSession = async (
@@ -71,7 +72,7 @@ export const updateRespondentProfile = async (
   if (!response.ok) {
     const error = new Error(result.error || 'Failed to update respondent profile') as ApiError;
     error.code = result.code;
-    (error as any).details = result.details;
+    error.details = result.details;
     throw error;
   }
   return result.data;
