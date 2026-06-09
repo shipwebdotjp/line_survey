@@ -108,9 +108,9 @@ const ResponseHistoryPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-                {item.survey_public_id && (
+                {item.survey_public_id && item.edit_token && (
                   <a
-                    href={createLiffUrl(`/s/${item.survey_public_id}`)}
+                    href={createLiffUrl(`/s/${item.survey_public_id}/r/${item.edit_token}`)}
                     style={{
                       display: 'inline-block',
                       padding: '0.5rem 1rem',
