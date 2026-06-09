@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
-import Footer from '../../features/survey/Footer';
 import type { SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 
@@ -129,81 +128,103 @@ const EditResponsePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p>読み込み中...</p>
+      <div className="public-container">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>読み込み中...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
-        <p>{error}</p>
-        <button
-          onClick={() => navigate(`/s/${public_id}`)}
-          style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
-        >
-          アンケートトップへ
-        </button>
-        <Footer />
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+          <p>{error}</p>
+          <button
+            onClick={() => navigate(`/s/${public_id}`)}
+            style={{
+              marginTop: '1.5rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#4f46e5',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            アンケートトップへ
+          </button>
+        </div>
       </div>
     );
   }
 
   if (isSuccess) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>回答を更新しました</h1>
-        <p style={{ marginBottom: '1rem' }}>ご協力ありがとうございました。</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>回答を更新しました</h1>
+          <p style={{ marginBottom: '1rem' }}>ご協力ありがとうございました。</p>
 
-        {emailStatus?.error ? (
-          <p style={{ marginBottom: '1.5rem', color: '#dc3545' }}>
-            ※修正控えメールの送信に失敗しました。回答の更新は完了しています。
-          </p>
-        ) : emailStatus?.sent ? (
-          <p style={{ marginBottom: '1.5rem', color: '#28a745' }}>
-            修正内容の控えをメールでお送りしました。ご確認ください。
-          </p>
-        ) : null}
+          {emailStatus?.error ? (
+            <p style={{ marginBottom: '1.5rem', color: '#dc3545' }}>
+              ※修正控えメールの送信に失敗しました。回答の更新は完了しています。
+            </p>
+          ) : emailStatus?.sent ? (
+            <p style={{ marginBottom: '1.5rem', color: '#28a745' }}>
+              修正内容の控えをメールでお送りしました。ご確認ください。
+            </p>
+          ) : null}
 
-        <button
-          onClick={() => navigate(`/s/${public_id}`)}
-          style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
-        >
-          アンケートトップへ
-        </button>
+          <button
+            onClick={() => navigate(`/s/${public_id}`)}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#4f46e5',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            アンケートトップへ
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>回答の修正: {surveyData?.survey?.title}</h1>
-      <p style={{ marginBottom: '1.5rem', color: '#666' }}>回答内容を修正して、再度送信してください。</p>
+    <div className="public-container">
+      <div className="public-card">
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>回答の修正: {surveyData?.survey?.title}</h1>
+        <p style={{ marginBottom: '1.5rem', color: '#6b7280' }}>回答内容を修正して、再度送信してください。</p>
 
-      {submitError && (
-        <div style={{
-          padding: '1rem',
-          marginBottom: '1rem',
-          backgroundColor: '#fff5f5',
-          color: '#c53030',
-          borderRadius: '4px',
-          border: '1px solid #feb2b2'
-        }}>
-          {submitError}
-        </div>
-      )}
+        {submitError && (
+          <div style={{
+            padding: '1rem',
+            marginBottom: '1rem',
+            backgroundColor: '#fef2f2',
+            color: '#991b1b',
+            borderRadius: '4px',
+            border: '1px solid #fecaca'
+          }}>
+            {submitError}
+          </div>
+        )}
 
-      {surveyData?.survey && existingResponse && (
-        <SurveyRenderer
-          questions={surveyData.survey.questions_json}
-          data={existingResponse.answer_json}
-          onComplete={handleUpdateComplete}
-          isSubmitting={isSubmitting}
-        />
-      )}
-      <Footer />
+        {surveyData?.survey && existingResponse && (
+          <SurveyRenderer
+            questions={surveyData.survey.questions_json}
+            data={existingResponse.answer_json}
+            onComplete={handleUpdateComplete}
+            isSubmitting={isSubmitting}
+          />
+        )}
+      </div>
     </div>
   );
 };
