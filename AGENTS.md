@@ -3,6 +3,12 @@
 ## Project Specs
 Follow `docs/spec.md` as the project specs.
 
+## AI Wiki
+
+- `ai_wiki/` is the shared wiki for AI coding agents such as Codex, Jules, and OpenCode
+- Use it for decisions, implementation notes, and repo memory that should persist across sessions
+- Start from `ai_wiki/00-Index.md` when looking for the current map of that wiki
+
 ## Project Structure & Module Organization
 
 Follow `docs/structure.md` as the source of truth for layout. The intended shape is:
@@ -11,6 +17,7 @@ Follow `docs/structure.md` as the source of truth for layout. The intended shape
 - `backend/` for the PHP API and application logic
 - `frontend/` for the React/Vite/TypeScript UI
 - `docs/` for requirements, design, tasks, and structure notes
+- `ai_wiki/` for AI agent-specific memory and working notes
 - `tests/` for backend tests, frontend tests, and fixtures
 
 Keep business logic out of `public_html/`. Public PHP entry points should stay thin and delegate into `backend/`.
@@ -41,7 +48,8 @@ Prefer PSR-12 style for PHP and standard Vite/TypeScript formatting for frontend
 
 ## Testing Guidelines
 
-It's development stage currently, So Don't need to create a test for now.
+It's development stage currently, so don't need to create a test for now.
+Backward compatibility does not need to be maintained during this phase.
 
 - Put backend tests in `tests/backend/`
 - Put frontend tests in `tests/frontend/`
@@ -54,4 +62,3 @@ Name tests after behavior or the unit under test. Add tests for API routes, doma
 - Never commit secrets or local overrides
 - Keep `.env` values out of version control
 - Avoid committing generated artifacts such as `vendor/`, `node_modules/`, `dist/`, or log files
-

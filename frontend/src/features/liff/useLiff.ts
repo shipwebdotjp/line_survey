@@ -27,6 +27,35 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
   useEffect(() => {
     const currentRunId = ++runIdRef.current;
 
+  // liff関連のlocalStorageのキーのリストを取得
+  const getLiffLocalStorageKeys = (prefix: string) => {
+      const keys: string[] = []
+      for (var i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.indexOf(prefix) === 0) {
+          keys.push(key)
+        }
+      }
+      return keys
+  }
+  // 期限切れのIDTokenをクリアする
+  const clearExpiredIdToken = (liffId: string) => {
+    const keyPrefix = `LIFF_STORE:${liffId}:`
+    const key = keyPrefix + 'decodedIDToken'
+    const decodedIDTokenString = localStorage.getItem(key)
+    if (!decodedIDTokenString) {
+      return
+    }
+    const decodedIDToken = JSON.parse(decodedIDTokenString)
+    // 有効期限をチェック
+    if (new Date().getTime() > decodedIDToken.exp * 1000) {
+        const keys = getLiffLocalStorageKeys(keyPrefix)
+        keys.forEach(function(key) {
+          localStorage.removeItem(key)
+        })
+    }
+  }
+
     // Reset state when enabled changes or on re-run
     setIsInitialized(false);
     setIsLoggedIn(false);
@@ -50,9 +79,10 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
       }
 
       try {
+        clearExpiredIdToken(liffId);
         await liff.init({
           liffId,
-          withLoginOnExternalBrowser: true
+          // withLoginOnExternalBrowser: true
         });
 
         if (runIdRef.current !== currentRunId) return;

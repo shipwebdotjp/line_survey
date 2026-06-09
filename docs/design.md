@@ -183,18 +183,22 @@ SurveyJS の定義と公開状態を保持する。
 1. 回答者が LIFF URL を開く
 2. `public_id` から対象アンケートを取得する
 3. LIFF が `line_user_id` と `display_name` を取得する
-4. `respondents` に `line_user_id` が既に存在するか確認する
-5. 存在する場合は `respondents` の `name`, `email`, `honorific` を使用する
-6. 存在しない場合は `respondent_masters.line_display_name` を完全一致で検索する
-7. 一致したら `respondents` を作成し、`respondent_master_id` を設定する
-8. 一致しない場合は `name`, `email`, `honorific` を手入力させ、`respondents` に保存する
-9. SurveyJS の `questions_json` を返してフォームを表示する
+4. フロントが `POST /api/liff/identify` に `id_token` を送信する
+5. バックエンドでLINE ID Tokenを検証する
+6. `respondents` に `line_user_id` が既に存在するか確認する
+7. 存在する場合は `respondents` の `name`, `email`, `honorific` を使用する
+8. 存在しない場合は `respondent_masters.line_display_name` を完全一致で検索する
+9. 一致したら `respondents` を作成し、`respondent_master_id` を設定する
+10. 一致しない場合は `name`, `email`, `honorific` を手入力させ（`POST /api/liff/identify/manual`）、`respondents` に保存する
+11. 名寄せ成功後（または手入力完了後）にPHPセッションを確立する
+12. 以降のAPI呼び出しはセッションCookieで認証する
+13. SurveyJS の `questions_json` を返してフォームを表示する
 
 ### 5.2 回答送信
 
 1. 回答者が SurveyJS で回答する
 2. フロントで必須条件や表示条件を制御する
-3. バックエンドで `public_id`、`line_user_id`、`answer_json` を検証する
+3. バックエンドで `public_id`、`answer_json` を検証し、セッションの `respondent_id` から回答者を特定する
 4. 各 `response` に `survey_snapshot_json` を保存する
 5. `responses` に新規保存する
 6. `send_confirmation_email` が有効なら回答控えメールを送信する
@@ -203,12 +207,11 @@ SurveyJS の定義と公開状態を保持する。
 ### 5.3 回答編集
 
 1. 回答者が `edit_token` 付き URL を開く
-2. バックエンドが `edit_token` と `respondent_id` を検証する
-3. `line_user_id` が一致することも確認する
-4. 既存の `answer_json` を復元する
-5. `ends_at` を過ぎていれば編集不可とする
-6. `allow_edit = true` の場合のみ更新を受け付ける
-7. 更新後は `responses` を上書きし、必要に応じてメールを再送する
+2. バックエンドがセッションの `respondent_id` を解決し、`edit_token` と一致することを確認する
+3. 既存の `answer_json` を復元する
+4. `ends_at` を過ぎていれば編集不可とする
+5. `allow_edit = true` の場合のみ更新を受け付ける
+6. 更新後は `responses` を上書きし、必要に応じてメールを再送する
 
 ### 5.4 CSV 出力
 
@@ -329,24 +332,28 @@ SurveyJS の定義と公開状態を保持する。
 ## 15. 認証・セキュリティ
 
 - 回答者認証は LIFF ログインを使う
-- フロントでは `liff.getIDToken()` を取得する
-- バックエンドで LINE API により ID Token を検証する
-- 取得した `line_user_id` と `display_name` で回答者を識別する
+- `POST /api/liff/identify` / `POST /api/liff/identify/manual` でLINE ID Tokenを検証し、成功時にPHP標準セッションを確立する
+- セッションには `respondent_id`、`authenticated_at` のみ保存する
+- Cookie名は `__Host-survey_session`、属性は `HttpOnly` / `Secure` / `SameSite=Lax`、有効期限は14日
+- 保存先は `backend/storage/sessions/`（Web公開ディレクトリ外）、DBテーブルは作らない
+- 以降の回答者側APIはセッションCookieで認証する（`Authorization: Bearer` は使わない）
+- `AuthSessionMiddleware` で `$_SESSION['respondent_id']` の有無を確認し、なければ401を返す
+- CSRF対策は `SameSite=Lax` + `Origin`/`Referer` チェック + `Content-Type: application/json` 強制で行う（CSRFトークンは使わない）
 - 管理画面は Basic 認証とする
 - 対象は `/admin` と `/api/admin`
-- 回答者側 API は LIFF ID Token で本人確認する
 - 編集時は `edit_token` と `respondent_id` の一致を確認する
 
 ## 16. API 設計
 
 ### 16.1 回答者側
 
-- `POST /api/liff/identify`
-- `GET /api/surveys/public/{public_id}`
-- `POST /api/surveys/public/{public_id}/responses`
-- `GET /api/surveys/public/{public_id}/responses/current`
-- `GET /api/surveys/public/{public_id}/responses/{edit_token}`
-- `PUT /api/surveys/public/{public_id}/responses/{edit_token}`
+- `POST /api/liff/identify` — `id_token` を受け取り、セッションを確立する
+- `POST /api/liff/identify/manual` — `id_token` と手入力情報を受け取り、セッションを確立する
+- `GET /api/surveys/public/{public_id}` — セッション不要
+- `POST /api/surveys/public/{public_id}/responses` — セッション必須
+- `GET /api/surveys/public/{public_id}/responses/current` — セッション必須
+- `GET /api/surveys/public/{public_id}/responses/{edit_token}` — セッション必須
+- `PUT /api/surveys/public/{public_id}/responses/{edit_token}` — セッション必須
 
 ### 16.2 管理側
 

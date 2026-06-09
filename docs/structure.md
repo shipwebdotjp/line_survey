@@ -77,7 +77,7 @@ backend/
 - `src/Domain/` はエンティティ、値オブジェクト、ドメインサービスを置く
 - `src/Infrastructure/` は DB、外部 API、メール送信などを置く
 - `src/Presentation/` は HTTP 入出力の変換を置く
-- `storage/` はログ、CSV 一時ファイル、アップロード一時領域を置く
+- `storage/` はログ、CSV 一時ファイル、アップロード一時領域、セッションファイルを置く
 
 ### 2.3 `frontend/`
 

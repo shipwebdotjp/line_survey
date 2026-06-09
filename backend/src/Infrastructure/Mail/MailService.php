@@ -72,8 +72,10 @@ class MailService
 
         $to = $respondent['email'];
         $subject = ($isUpdate ? '【回答修正控え】' : '【回答控え】') . $survey['title'];
+        $subject_admin = ($isUpdate ? '【回答修正】' : '【新規回答】') . $survey['title'];
 
         $body = $this->buildEmailBody($respondent, $survey, $response, $isUpdate);
+        $body_admin = $this->buildEmailBody($respondent, $survey, $response, $isUpdate, true);
 
         $primaryResult = $this->sendEmail($to, $subject, $body);
         if (($primaryResult['status'] ?? null) !== 'sent') {
@@ -87,7 +89,7 @@ class MailService
         ];
 
         if ($this->shouldSendAdminCopy($to)) {
-            $adminResult = $this->sendEmail($this->adminAddress, $subject, $body);
+            $adminResult = $this->sendEmail($this->adminAddress, $subject_admin, $body_admin);
             $result['admin_result'] = $adminResult;
 
             if (($adminResult['status'] ?? null) !== 'sent') {
@@ -107,7 +109,7 @@ class MailService
         return strcasecmp(trim($primaryRecipient), $this->adminAddress) !== 0;
     }
 
-    private function buildEmailBody(array $respondent, array $survey, array $response, bool $isUpdate = false): string
+    private function buildEmailBody(array $respondent, array $survey, array $response, bool $isUpdate = false, bool $isAdmin = false): string
     {
         $name = $respondent['name'];
         $honorific = $respondent['honorific'] ?? 'さん';
@@ -121,6 +123,16 @@ class MailService
         $submittedAtStr = DateTimeHelper::formatTokyo($submittedAt);
 
         $lines = [];
+
+        if($isAdmin){
+            $view_url = "{$this->appUrl}/admin/surveys/{$survey['id']}/responses/{$response['id']}";
+            $lines[] = "新しいアンケート回答がありました。";
+            $lines[] = "";
+            $lines[] = "管理画面で回答内容を確認するには以下のURLにアクセスしてください。";
+            $lines[] = $view_url;
+            $lines[] = "";
+        }
+
         $lines[] = "{$displayName}";
         $lines[] = "";
         $lines[] = $isUpdate ? "アンケート回答の修正を受け付けました。" : "アンケートへのご回答ありがとうございます。";

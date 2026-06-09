@@ -559,17 +559,48 @@ MVPではCSVインポート対応。
 
 LIFFログインを使用する。
 
-フロントで取得:
+フロントで `liff.getIDToken()` を取得し、`POST /api/liff/identify` または `POST /api/liff/identify/manual` に送信する。
 
-- `liff.getIDToken()`
-
-バックエンドでLINE APIに検証する。
+バックエンドでLINE APIによりID Tokenを検証し、`respondent` を特定した上でPHP標準セッションを確立する。
 
 `ID Token検証`
 ↓
 `line_user_id / display_name取得`
 ↓
 `respondent識別`
+↓
+`セッション確立（$_SESSIONにrespondent_id / authenticated_atを保存）`
+
+セッション確立後のAPI呼び出しは、ID TokenではなくセッションCookieで認証する。
+
+### セッション仕様
+
+- Cookie名: `__Host-survey_session`
+- 属性: `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, `Domain`なし
+- 有効期限: 14日
+- 保存先: `backend/storage/sessions/`（Web公開ディレクトリ外）
+- セッションDBテーブルは作らない（PHP標準ファイルセッション）
+- セッションに保存する値: `respondent_id`, `authenticated_at` のみ
+
+### セッションによるAPI認証
+
+ログイン後の回答者側APIは、セッションCookieで認証する。
+
+フロントは `credentials: 'include'` 付きでfetchを呼び出す。
+
+バックエンドは `AuthSessionMiddleware` により `$_SESSION['respondent_id']` を確認し、該当するrespondentをDBから取得してリクエストにセットする。
+
+セッションがない場合は 401（`SESSION_REQUIRED`）を返す。
+
+### CSRF対策
+
+CSRFトークンは使わない。以下の組み合わせで防御する。
+
+- `SameSite=Lax`
+- unsafe method（POST/PUT/PATCH/DELETE）に対する `Origin` チェック（`APP_URL` 基準）
+- `Origin` がない場合の `Referer` フォールバック
+- unsafe method では `Content-Type: application/json` を必須とする
+- CORS は最小限に設定する
 
 ### 管理画面認証
 
@@ -580,9 +611,7 @@ MVPではBasic認証。
 - `/admin`
 - `/api/admin`
 
-### API認証
-
-回答者側APIは、LIFF ID Tokenを用いて本人確認する。
+### 編集時認証
 
 編集時はさらに、
 
@@ -595,7 +624,8 @@ MVPではBasic認証。
 
 ### 回答者側
 
-- `POST /api/liff/identify`
+- `POST /api/liff/identify` — `id_token` を受け取り、セッションを確立する
+- `POST /api/liff/identify/manual` — `id_token` と手入力情報を受け取り、セッションを確立する
 - `GET /api/surveys/public/{public_id}`
 - `POST /api/surveys/public/{public_id}/responses`
 - `GET /api/surveys/public/{public_id}/responses/current`
