@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
+import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
@@ -9,7 +10,7 @@ import { createLiffUrl } from '../../lib/liffUrl';
 
 const PublicSurveyPage: React.FC = () => {
   const { public_id } = useParams<{ public_id: string }>();
-  const { isLoggedIn, idToken } = useLiffContext();
+  const { isLoggedIn, idToken, identify } = useLiffContext();
   const navigate = useNavigate();
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
   const [identifyStatus, setIdentifyStatus] = useState<IdentifyStatus | null>(null);
@@ -45,8 +46,13 @@ const PublicSurveyPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
+        const fetchOptions = {
+          onSessionRequired: identify,
+        };
+
         // 1. Fetch survey data
-        const surveyResponse = await fetch(`/api/surveys/public/${public_id}`);
+        const surveyResponse = await fetchWithSession(`/api/surveys/public/${public_id}`, {}, fetchOptions);
         const surveyResult = await surveyResponse.json();
 
         if (!surveyResponse.ok) {
@@ -61,11 +67,10 @@ const PublicSurveyPage: React.FC = () => {
         setSurveyData(surveyResult.data);
 
         // 2. Identification
-        const identifyResponse = await fetch('/api/liff/identify', {
+        const identifyResponse = await fetchWithSession('/api/liff/identify', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id_token: idToken }),
-        });
+        }, fetchOptions);
         const identifyResult: IdentifyResponse = await identifyResponse.json();
 
         if (!identifyResponse.ok) {
@@ -77,11 +82,7 @@ const PublicSurveyPage: React.FC = () => {
         setRespondent(identifyResult.respondent);
 
         // 3. Check for existing response
-        const responseRes = await fetch(`/api/surveys/public/${public_id}/responses/current`, {
-          headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
-        });
+        const responseRes = await fetchWithSession(`/api/surveys/public/${public_id}/responses/current`, {}, fetchOptions);
         if (responseRes.ok) {
           const responseResult = await responseRes.json();
           setExistingResponse(responseResult.data);
@@ -102,14 +103,13 @@ const PublicSurveyPage: React.FC = () => {
     try {
       setIsIdentifying(true);
       setIdentifyError(null);
-      const response = await fetch('/api/liff/identify/manual', {
+      const response = await fetchWithSession('/api/liff/identify/manual', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id_token: idToken,
           ...data,
         }),
-      });
+      }, { onSessionRequired: identify });
       const result: IdentifyResponse = await response.json();
 
       if (!response.ok) {
@@ -131,16 +131,12 @@ const PublicSurveyPage: React.FC = () => {
     try {
       setIsSubmitting(true);
       setSubmitError(null);
-      const response = await fetch(`/api/surveys/public/${public_id}/responses`, {
+      const response = await fetchWithSession(`/api/surveys/public/${public_id}/responses`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
         body: JSON.stringify({
           answer_json: sender.data,
         }),
-      });
+      }, { onSessionRequired: identify });
       const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {
