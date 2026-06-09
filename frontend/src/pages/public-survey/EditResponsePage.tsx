@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
+import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import type { SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 
 const EditResponsePage: React.FC = () => {
   const { public_id, edit_token } = useParams<{ public_id: string, edit_token: string }>();
-  const { isLoggedIn, idToken } = useLiffContext();
+  const { isLoggedIn, idToken, identify } = useLiffContext();
   const navigate = useNavigate();
 
   const [surveyData, setSurveyData] = useState<SurveyData | null>(null);
@@ -35,8 +36,13 @@ const EditResponsePage: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
+        const fetchOptions = {
+          onSessionRequired: identify,
+        };
+
         // 1. Fetch survey data
-        const surveyRes = await fetch(`/api/surveys/public/${public_id}`);
+        const surveyRes = await fetchWithSession(`/api/surveys/public/${public_id}`, {}, fetchOptions);
         const surveyResult = await surveyRes.json();
 
         if (!surveyRes.ok) {
@@ -51,11 +57,7 @@ const EditResponsePage: React.FC = () => {
         }
 
         // 2. Fetch existing response
-        const responseRes = await fetch(`/api/surveys/public/${public_id}/responses/${edit_token}`, {
-          headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
-        });
+        const responseRes = await fetchWithSession(`/api/surveys/public/${public_id}/responses/${edit_token}`, {}, fetchOptions);
         const responseResult = await responseRes.json();
 
         if (!responseRes.ok) {
@@ -85,16 +87,12 @@ const EditResponsePage: React.FC = () => {
     try {
       setIsSubmitting(true);
       setSubmitError(null);
-      const response = await fetch(`/api/surveys/public/${public_id}/responses/${edit_token}`, {
+      const response = await fetchWithSession(`/api/surveys/public/${public_id}/responses/${edit_token}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
         body: JSON.stringify({
           answer_json: sender.data,
         }),
-      });
+      }, { onSessionRequired: identify });
       const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {
