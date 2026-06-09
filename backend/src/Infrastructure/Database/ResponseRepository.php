@@ -108,6 +108,29 @@ class ResponseRepository
         return array_map([$this, 'mapToArray'], $results);
     }
 
+    /**
+     * @return array[]
+     */
+    public function findHistoryByRespondentId(int $respondentId): array
+    {
+        $sql = sprintf(
+            'SELECT
+                r.submitted_at,
+                r.updated_at,
+                s.public_id as survey_public_id,
+                s.title as survey_title
+             FROM %s r
+             LEFT JOIN surveys s ON r.survey_id = s.id
+             WHERE r.respondent_id = ?
+             ORDER BY r.submitted_at DESC, r.id DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql, [$respondentId]);
+
+        return array_map(fn($item) => (array)$item, $results);
+    }
+
     public function save(array $data): int
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');

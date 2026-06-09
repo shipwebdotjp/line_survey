@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
 import EditResponsePage from './pages/public-survey/EditResponsePage';
+import ResponseHistoryPage from './pages/public-survey/ResponseHistoryPage';
 import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
 import SurveyCreatePage from './pages/admin/SurveyCreatePage';
@@ -36,6 +37,7 @@ const AppContent = () => {
   const params = new URLSearchParams(location.search);
 
   const isLiffRequired =
+    location.pathname === '/s' ||
     location.pathname.startsWith('/s/') ||
     params.has('liff.state') ||
     params.has('code') ||
@@ -47,6 +49,14 @@ const AppContent = () => {
       <LiffGate>
         <Routes>
           {/* Public Survey Route */}
+          <Route
+            path="/s"
+            element={
+              <div className="public-survey-root">
+                <ResponseHistoryPage />
+              </div>
+            }
+          />
           <Route
             path="/s/:public_id"
             element={
