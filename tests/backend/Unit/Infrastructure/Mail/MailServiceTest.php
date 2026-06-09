@@ -25,7 +25,8 @@ class MailServiceTest extends TestCase
         'MAIL_USERNAME',
         'MAIL_PASSWORD',
         'MAIL_ENCRYPTION',
-        'APP_URL'
+        'APP_ORIGIN_URL',
+        'APP_PUBLIC_URL'
     ];
 
     protected function setUp(): void
@@ -53,7 +54,7 @@ class MailServiceTest extends TestCase
 
     private function createSettings(array $overrides = []): Settings
     {
-        $_ENV['APP_URL'] = 'http://test.example.com';
+        $_ENV['APP_PUBLIC_URL'] = 'http://test.example.com';
         foreach ($overrides as $key => $value) {
             $_ENV[$key] = $value;
         }
@@ -90,13 +91,13 @@ class MailServiceTest extends TestCase
         $this->assertStringContainsString('Resend API key is not configured', $result['message']);
     }
 
-    public function test_constructor_throws_when_app_url_missing(): void
+    public function test_constructor_throws_when_app_public_url_missing(): void
     {
-        $_ENV['APP_URL'] = '';
+        $_ENV['APP_PUBLIC_URL'] = '';
         $settings = new Settings();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('APP_URL is not configured.');
+        $this->expectExceptionMessage('APP_PUBLIC_URL is not configured.');
 
         new MailService($settings);
     }

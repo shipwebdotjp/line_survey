@@ -49,7 +49,7 @@
 - [ ] `Origin` が無い場合の `Referer` フォールバックを実装する
 - [ ] unsafe method に対して `Content-Type: application/json` を要求する
 - [ ] `POST /api/liff/identify` と `POST /api/liff/identify/manual` も JSON API として扱う
-- [ ] `APP_URL` を基準に許可オリジンを判定する
+- [ ] `APP_ORIGIN_URL` を基準に許可オリジンを判定する
 
 ### 6. セッション終了
 

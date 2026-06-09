@@ -14,7 +14,8 @@ class Settings
                 'env' => $_ENV['APP_ENV'] ?? 'production',
                 'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOL),
                 'timezone' => $_ENV['APP_TIMEZONE'] ?? 'Asia/Tokyo',
-                'url' => $_ENV['APP_URL'] ?? 'http://localhost',
+                'origin_url' => $_ENV['APP_ORIGIN_URL'] ?? null,
+                'public_url' => $_ENV['APP_PUBLIC_URL'] ?? null,
             ],
             'db' => [
                 'driver' => $_ENV['DB_CONNECTION'] ?? 'mysql',

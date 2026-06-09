@@ -44,9 +44,9 @@ class MailService
         $this->adminAddress = trim((string) $settings->get('mail.admin_address', ''));
         $this->phpMailer = $phpMailer;
 
-        $appUrl = $settings->get('app.url');
+        $appUrl = $settings->get('app.public_url');
         if (empty($appUrl)) {
-             throw new RuntimeException('APP_URL is not configured.');
+             throw new RuntimeException('APP_PUBLIC_URL is not configured.');
         }
         $this->appUrl = rtrim($appUrl, '/');
     }
