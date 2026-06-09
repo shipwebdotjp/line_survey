@@ -22,6 +22,7 @@ class MailService
     private string $smtpEncryption;
     private string $fromAddress;
     private string $fromName;
+    private string $adminAddress;
     private string $appUrl;
     private ?PHPMailer $phpMailer = null;
 
@@ -40,6 +41,7 @@ class MailService
         $this->smtpEncryption = $settings->get('mail.encryption', '');
         $this->fromAddress = $settings->get('mail.from_address', 'onboarding@resend.dev');
         $this->fromName = $settings->get('mail.from_name', 'Survey App');
+        $this->adminAddress = trim((string) $settings->get('mail.admin_address', ''));
         $this->phpMailer = $phpMailer;
 
         $appUrl = $settings->get('app.url');
@@ -56,7 +58,7 @@ class MailService
      * @param array $survey
      * @param array $response
      * @param bool $isUpdate
-     * @return array{status: 'sent'|'skipped'|'failed', message: string}
+     * @return array{status: 'sent'|'skipped'|'failed', message: string, admin_result?: array{status: string, message: string}}
      */
     public function sendConfirmation(array $respondent, array $survey, array $response, bool $isUpdate = false): array
     {
@@ -73,7 +75,36 @@ class MailService
 
         $body = $this->buildEmailBody($respondent, $survey, $response, $isUpdate);
 
-        return $this->sendEmail($to, $subject, $body);
+        $primaryResult = $this->sendEmail($to, $subject, $body);
+        if (($primaryResult['status'] ?? null) !== 'sent') {
+            return $primaryResult;
+        }
+
+        $message = $primaryResult['message'] ?? 'Email sent successfully.';
+        $result = [
+            'status' => 'sent',
+            'message' => $message,
+        ];
+
+        if ($this->shouldSendAdminCopy($to)) {
+            $adminResult = $this->sendEmail($this->adminAddress, $subject, $body);
+            $result['admin_result'] = $adminResult;
+
+            if (($adminResult['status'] ?? null) !== 'sent') {
+                $result['message'] = $message . ' Admin copy failed: ' . ($adminResult['message'] ?? 'Unknown error.');
+            }
+        }
+
+        return $result;
+    }
+
+    private function shouldSendAdminCopy(string $primaryRecipient): bool
+    {
+        if ($this->adminAddress === '') {
+            return false;
+        }
+
+        return strcasecmp(trim($primaryRecipient), $this->adminAddress) !== 0;
     }
 
     private function buildEmailBody(array $respondent, array $survey, array $response, bool $isUpdate = false): string

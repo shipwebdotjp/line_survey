@@ -48,6 +48,7 @@ class Settings
                 'resend_api_key' => $_ENV['RESEND_API_KEY'] ?? '',
                 'from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'onboarding@resend.dev',
                 'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Survey App',
+                'admin_address' => $_ENV['ADMIN_MAIL'] ?? '',
             ],
         ];
     }

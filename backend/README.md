@@ -44,6 +44,20 @@ DB_PASS=password
 Docker Compose 環境では、`DB_HOST=db` のままで動作します。  
 環境を変える場合は `backend/.env` を更新してください。
 
+## メール設定
+
+回答控えメールの送信先は `MAIL_*` で設定します。  
+`ADMIN_MAIL` を指定すると、回答者に送る内容と同じ控えを管理者にも別送します。
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_FROM_ADDRESS=onboarding@resend.dev
+MAIL_FROM_NAME="Survey App"
+ADMIN_MAIL=admin@example.com
+```
+
 ## 既存データを消してやり直す場合
 
 開発環境で DB を作り直したい場合は、DB コンテナやデータボリュームを削除してから、改めて `make init` -> `make migrate` -> `make seed` を実行します。

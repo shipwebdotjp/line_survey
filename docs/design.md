@@ -308,6 +308,7 @@ SurveyJS の定義と公開状態を保持する。
 - `allow_edit = true` の場合のみ編集 URL を本文に含める
 - `send_confirmation_email = false` の場合は送信しない
 - `include_answers_in_email = false` の場合は回答本文を省略する
+- `ADMIN_MAIL` が設定されている場合は、回答者と同じ内容を管理者にも別送する
 - 名寄せ成功時はマスター由来のメールアドレスを使う
 - 名寄せ失敗時は本人入力のメールアドレスを使う
 - メール送信失敗時は回答保存を優先し、失敗内容を `email_error` に保存する
