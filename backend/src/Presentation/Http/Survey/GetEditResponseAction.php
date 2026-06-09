@@ -25,8 +25,8 @@ final class GetEditResponseAction
         $editToken = $args['edit_token'] ?? '';
 
         try {
-            $idToken = $this->extractTokenFromHeader($request);
-            $result = $this->useCase->execute($publicId, $editToken, $idToken);
+            $respondent = $request->getAttribute('respondent');
+            $result = $this->useCase->execute($publicId, $editToken, $respondent);
             return JsonResponse::success($response, $result);
         } catch (Throwable $e) {
             return $this->handleUseCaseException($e, $response);
