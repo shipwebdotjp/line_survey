@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import type { ResponseHistoryItem } from '../../features/survey/types';
-import { createLiffUrl } from '../../lib/liffUrl';
 import Footer from '../../features/survey/Footer';
 
 const formatHistoryDate = (value: string): string => {
