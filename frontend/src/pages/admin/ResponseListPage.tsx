@@ -54,7 +54,7 @@ const ResponseListPage: React.FC = () => {
       setResponses((prev) => prev.filter((r) => r.id !== responseId));
     } catch (err) {
       console.error(err);
-      alert('削除に失敗しました。');
+      showToast('削除に失敗しました。', 'error');
     }
   };
 

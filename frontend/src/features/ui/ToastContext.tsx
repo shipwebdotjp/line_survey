@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import './ToastContext.css';
 
 interface Toast {
   id: number;
   message: string;
   type: 'success' | 'error';
+  timerId: number;
 }
 
 interface ToastContextType {
@@ -14,13 +16,31 @@ const ToastContext = React.createContext<ToastContextType | undefined>(undefined
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timersRef = useRef<Record<number, number>>({});
+
+  const removeToast = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+    if (timersRef.current[id]) {
+      window.clearTimeout(timersRef.current[id]);
+      delete timersRef.current[id];
+    }
+  }, []);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+    const timerId = window.setTimeout(() => {
+      removeToast(id);
     }, 3000);
+
+    timersRef.current[id] = timerId;
+    setToasts((prev) => [...prev, { id, message, type, timerId }]);
+  }, [removeToast]);
+
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.values(timersRef.current).forEach((timerId) => window.clearTimeout(timerId));
+    };
   }, []);
 
   return (
@@ -28,37 +48,22 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
       <div className="toast-container">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.type}`}>
+          <div
+            key={toast.id}
+            className={`toast toast-${toast.type}`}
+            onClick={() => removeToast(toast.id)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                removeToast(toast.id);
+              }
+            }}
+          >
             {toast.message}
           </div>
         ))}
       </div>
-      <style>{`
-        .toast-container {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          z-index: 9999;
-        }
-        .toast {
-          padding: 12px 24px;
-          margin-bottom: 10px;
-          border-radius: 4px;
-          color: white;
-          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-          animation: slideIn 0.3s ease-out;
-        }
-        .toast-success {
-          background-color: #28a745;
-        }
-        .toast-error {
-          background-color: #dc3545;
-        }
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-      `}</style>
     </ToastContext.Provider>
   );
 };

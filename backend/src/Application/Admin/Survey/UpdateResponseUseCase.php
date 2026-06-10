@@ -35,6 +35,11 @@ class UpdateResponseUseCase
 
         $this->responseRepository->update($responseId, $updateData);
 
-        return $this->responseRepository->findByIdWithRespondent($responseId);
+        $updatedResponse = $this->responseRepository->findByIdWithRespondent($responseId);
+        if (!$updatedResponse) {
+            throw new HttpNotFoundException($request, 'Response not found after update');
+        }
+
+        return $updatedResponse;
     }
 }

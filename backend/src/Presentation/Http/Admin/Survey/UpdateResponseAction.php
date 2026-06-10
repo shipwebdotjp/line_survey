@@ -22,21 +22,21 @@ class UpdateResponseAction
         $responseIdStr = $args['responseId'] ?? '';
 
         if (!is_numeric($surveyIdStr) || !is_numeric($responseIdStr)) {
-            return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid ID');
         }
 
         $id = (int)$surveyIdStr;
         $responseId = (int)$responseIdStr;
 
         if ($id <= 0 || $responseId <= 0) {
-            return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid ID');
         }
 
         $body = $request->getParsedBody();
         $answerJson = $body['answer_json'] ?? null;
 
         if ($answerJson === null) {
-            return JsonResponse::error($response, 'answer_json is required', 'VALIDATION_ERROR', 400);
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'answer_json is required');
         }
 
         $data = $this->useCase->execute($id, $responseId, $answerJson, $request);

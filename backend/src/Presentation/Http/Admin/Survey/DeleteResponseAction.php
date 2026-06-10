@@ -22,14 +22,14 @@ class DeleteResponseAction
         $responseIdStr = $args['responseId'] ?? '';
 
         if (!is_numeric($surveyIdStr) || !is_numeric($responseIdStr)) {
-            return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid ID');
         }
 
         $id = (int)$surveyIdStr;
         $responseId = (int)$responseIdStr;
 
         if ($id <= 0 || $responseId <= 0) {
-            return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid ID');
         }
 
         $this->useCase->execute($id, $responseId, $request);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Model } from 'survey-core';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { ResponseDetail } from '../../features/admin/surveys/types';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
@@ -41,7 +42,7 @@ const ResponseEditPage: React.FC = () => {
     fetchData();
   }, [surveyId, rid]);
 
-  const handleComplete = async (sender: any) => {
+  const handleComplete = async (sender: Model) => {
     setIsSubmitting(true);
     try {
       await adminSurveyApi.updateResponse(surveyId, rid, sender.data);
@@ -49,7 +50,7 @@ const ResponseEditPage: React.FC = () => {
       navigate(`/admin/surveys/${surveyId}/responses/${rid}`);
     } catch (err) {
       console.error(err);
-      alert('更新に失敗しました。');
+      showToast('更新に失敗しました。', 'error');
     } finally {
       setIsSubmitting(false);
     }
