@@ -25,6 +25,7 @@ class GetRespondentActionTest extends TestCase
             'id' => 123,
             'name' => 'John Doe',
             'email' => 'john@example.com',
+            'honorific' => '様',
             'line_display_name' => 'JohnD',
             'other_field' => 'hidden'
         ];
@@ -38,6 +39,7 @@ class GetRespondentActionTest extends TestCase
         $this->assertEquals(123, $body['data']['id']);
         $this->assertEquals('John Doe', $body['data']['name']);
         $this->assertEquals('john@example.com', $body['data']['email']);
+        $this->assertEquals('様', $body['data']['honorific']);
         $this->assertEquals('JohnD', $body['data']['line_display_name']);
         $this->assertArrayNotHasKey('other_field', $body['data']);
     }

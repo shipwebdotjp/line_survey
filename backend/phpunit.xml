@@ -5,10 +5,7 @@
          colors="true">
     <testsuites>
         <testsuite name="Unit">
-            <directory>../tests/backend/Unit</directory>
-        </testsuite>
-        <testsuite name="Integration">
-            <directory>../tests/backend/Integration</directory>
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

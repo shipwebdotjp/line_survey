@@ -19,6 +19,7 @@ final class GetRespondentAction
             'id' => $respondent['id'],
             'name' => $respondent['name'],
             'email' => $respondent['email'],
+            'honorific' => $respondent['honorific'],
             'line_display_name' => $respondent['line_display_name'],
         ]);
     }

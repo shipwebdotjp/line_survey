@@ -50,6 +50,7 @@ final class UpdateRespondentAction
             'id' => $updated['id'],
             'name' => $updated['name'],
             'email' => $updated['email'],
+            'honorific' => $updated['honorific'],
             'line_display_name' => $updated['line_display_name'],
         ]);
     }

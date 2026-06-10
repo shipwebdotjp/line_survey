@@ -27,6 +27,7 @@ class UpdateRespondentActionTest extends TestCase
             'id' => 123,
             'name' => 'Old Name',
             'email' => 'old@example.com',
+            'honorific' => 'さん',
             'line_display_name' => 'JohnD'
         ];
 
@@ -49,6 +50,7 @@ class UpdateRespondentActionTest extends TestCase
                 'id' => 123,
                 'name' => 'New Name',
                 'email' => 'new@example.com',
+                'honorific' => 'さん',
                 'line_display_name' => 'JohnD'
             ]);
 
@@ -58,6 +60,7 @@ class UpdateRespondentActionTest extends TestCase
         $body = json_decode((string)$result->getBody(), true);
         $this->assertEquals('New Name', $body['data']['name']);
         $this->assertEquals('new@example.com', $body['data']['email']);
+        $this->assertEquals('さん', $body['data']['honorific']);
     }
 
     public function testInvokeReturnsValidationErrorOnEmptyFields(): void

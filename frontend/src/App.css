@@ -4,6 +4,18 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #f3f4f6;
+  color-scheme: light;
+  --text: #6b7280;
+  --text-h: #111827;
+  --bg: #ffffff;
+  --border: #e5e7eb;
+  --code-bg: #f4f3ec;
+  --accent: #4f46e5;
+  --accent-bg: rgba(79, 70, 229, 0.1);
+  --accent-border: rgba(79, 70, 229, 0.35);
+  --social-bg: rgba(243, 244, 246, 0.75);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 }
 
 .public-header {
@@ -117,6 +129,18 @@
   text-align: center;
   border-inline: 1px solid var(--border);
   flex-grow: 1;
+  color-scheme: light;
+  --text: #6b7280;
+  --text-h: #111827;
+  --bg: #ffffff;
+  --border: #e5e7eb;
+  --code-bg: #f4f3ec;
+  --accent: #4f46e5;
+  --accent-bg: rgba(79, 70, 229, 0.1);
+  --accent-border: rgba(79, 70, 229, 0.35);
+  --social-bg: rgba(243, 244, 246, 0.75);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 }
 
 .admin-layout ul {
