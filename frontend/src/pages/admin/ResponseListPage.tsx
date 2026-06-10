@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
+import { useToast } from '../../features/ui/ToastContext';
 import type { ResponseSummary, Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 
@@ -12,6 +13,7 @@ const ResponseListPage: React.FC = () => {
   const [responses, setResponses] = useState<ResponseSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +42,21 @@ const ResponseListPage: React.FC = () => {
 
     fetchData();
   }, [surveyId]);
+
+  const handleDelete = async (responseId: number) => {
+    if (!window.confirm('回答を削除してもよろしいですか？')) {
+      return;
+    }
+
+    try {
+      await adminSurveyApi.deleteResponse(surveyId, responseId);
+      showToast('回答を削除しました');
+      setResponses((prev) => prev.filter((r) => r.id !== responseId));
+    } catch (err) {
+      console.error(err);
+      alert('削除に失敗しました。');
+    }
+  };
 
   if (loading) {
     return (
@@ -105,12 +122,26 @@ const ResponseListPage: React.FC = () => {
                   <td>{res.respondent_email}</td>
                   <td>{formatDisplayDate(res.submitted_at)}</td>
                   <td>
-                    <Link
-                      to={`/admin/surveys/${surveyId}/responses/${res.id}`}
-                      className="btn btn-outline btn-sm"
-                    >
-                      詳細
-                    </Link>
+                    <div className="actions-cell">
+                      <Link
+                        to={`/admin/surveys/${surveyId}/responses/${res.id}`}
+                        className="btn btn-outline btn-sm"
+                      >
+                        詳細
+                      </Link>
+                      <Link
+                        to={`/admin/surveys/${surveyId}/responses/${res.id}/edit`}
+                        className="btn btn-outline btn-sm"
+                      >
+                        編集
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(res.id)}
+                        className="btn btn-danger btn-sm"
+                      >
+                        削除
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

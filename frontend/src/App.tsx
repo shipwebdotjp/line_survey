@@ -12,9 +12,11 @@ import SurveyCreatePage from './pages/admin/SurveyCreatePage';
 import SurveyEditPage from './pages/admin/SurveyEditPage';
 import ResponseListPage from './pages/admin/ResponseListPage';
 import ResponseDetailPage from './pages/admin/ResponseDetailPage';
+import ResponseEditPage from './pages/admin/ResponseEditPage';
 import RespondentMasterListPage from './pages/admin/RespondentMasterListPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
+import { ToastProvider } from './features/ui/ToastContext';
 import LiffError from './features/liff/LiffError';
 import React from 'react';
 
@@ -52,6 +54,7 @@ const AppContent = () => {
   return (
     <LiffProvider enabled={isLiffRequired}>
       <LiffGate>
+        <ToastProvider>
         <Routes>
           {/* Public Survey Routes */}
           <Route element={<PublicLayout />}>
@@ -71,6 +74,7 @@ const AppContent = () => {
             <Route path="surveys/:id/edit" element={<SurveyEditPage />} />
             <Route path="surveys/:id/responses" element={<ResponseListPage />} />
             <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
+            <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
             <Route path="respondent-masters" element={<RespondentMasterListPage />} />
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
@@ -86,6 +90,7 @@ const AppContent = () => {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ToastProvider>
       </LiffGate>
     </LiffProvider>
   );

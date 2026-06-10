@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { ResponseDetail } from '../../features/admin/surveys/types';
-import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
+import { useToast } from '../../features/ui/ToastContext';
 
-const ResponseDetailPage: React.FC = () => {
+const ResponseEditPage: React.FC = () => {
   const { id, responseId } = useParams<{ id: string; responseId: string }>();
   const surveyId = Number(id);
   const rid = Number(responseId);
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [response, setResponse] = useState<ResponseDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +40,20 @@ const ResponseDetailPage: React.FC = () => {
 
     fetchData();
   }, [surveyId, rid]);
+
+  const handleComplete = async (sender: any) => {
+    setIsSubmitting(true);
+    try {
+      await adminSurveyApi.updateResponse(surveyId, rid, sender.data);
+      showToast('回答を更新しました');
+      navigate(`/admin/surveys/${surveyId}/responses/${rid}`);
+    } catch (err) {
+      console.error(err);
+      alert('更新に失敗しました。');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -63,66 +80,27 @@ const ResponseDetailPage: React.FC = () => {
   return (
     <div>
       <div className="admin-header-actions">
-        <h2>回答詳細</h2>
+        <h2>回答編集</h2>
         <div className="actions">
           <Link
-            to={`/admin/surveys/${surveyId}/responses/${rid}/edit`}
+            to={`/admin/surveys/${surveyId}/responses/${rid}`}
             className="btn btn-outline"
           >
-            編集
+            詳細に戻る
           </Link>
-          <Link to={`/admin/surveys/${surveyId}/responses`} className="btn btn-outline">
-            回答一覧に戻る
-          </Link>
-        </div>
-      </div>
-
-      <div className="admin-card" style={{ marginBottom: '2rem' }}>
-        <div className="admin-card-header">
-          <h3>回答者情報</h3>
-        </div>
-        <div className="admin-card-body">
-          <table className="admin-detail-table">
-            <tbody>
-              <tr>
-                <th>氏名</th>
-                <td>
-                  {response.respondent.name}
-                  {response.respondent.honorific}
-                </td>
-              </tr>
-              <tr>
-                <th>LINE表示名</th>
-                <td>{response.respondent.line_display_name}</td>
-              </tr>
-              <tr>
-                <th>メールアドレス</th>
-                <td>{response.respondent.email}</td>
-              </tr>
-              <tr>
-                <th>回答日時</th>
-                <td>{formatDisplayDate(response.submitted_at)}</td>
-              </tr>
-              {response.updated_at !== response.submitted_at && (
-                <tr>
-                  <th>最終更新日時</th>
-                  <td>{formatDisplayDate(response.updated_at)}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
       </div>
 
       <div className="admin-card">
         <div className="admin-card-header">
-          <h3>回答内容</h3>
+          <h3>回答内容の編集</h3>
         </div>
         <div className="admin-card-body">
           <SurveyRenderer
             questions={response.survey_snapshot_json}
             data={response.answer_json}
-            readOnly={true}
+            onComplete={handleComplete}
+            isSubmitting={isSubmitting}
           />
         </div>
       </div>
@@ -130,4 +108,4 @@ const ResponseDetailPage: React.FC = () => {
   );
 };
 
-export default ResponseDetailPage;
+export default ResponseEditPage;

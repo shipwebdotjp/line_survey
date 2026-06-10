@@ -3,6 +3,7 @@
 use App\Presentation\Http\Admin\Survey\CreateSurveyAction;
 use App\Presentation\Http\Admin\Survey\DuplicateSurveyAction;
 use App\Presentation\Http\Admin\Survey\DeleteSurveyAction;
+use App\Presentation\Http\Admin\Survey\DeleteResponseAction;
 use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
@@ -10,6 +11,7 @@ use App\Presentation\Http\Admin\Survey\ListResponsesAction;
 use App\Presentation\Http\Admin\RespondentMaster\ImportRespondentMastersAction;
 use App\Presentation\Http\Admin\RespondentMaster\ListRespondentMastersAction;
 use App\Presentation\Http\Admin\Survey\ListSurveysAction;
+use App\Presentation\Http\Admin\Survey\UpdateResponseAction as AdminUpdateResponseAction;
 use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
@@ -78,6 +80,8 @@ return function (App $app) {
         $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', GetResponseAction::class);
+        $group->put('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', AdminUpdateResponseAction::class);
+        $group->delete('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', DeleteResponseAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
 
         // Respondent Masters
