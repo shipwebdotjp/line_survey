@@ -18,7 +18,7 @@ const SurveyCreatePage: React.FC = () => {
 
   return (
     <div>
-      <div className="admin-header-actions" style={{ marginBottom: '1.5rem' }}>
+      <div className="admin-page-header">
         <h1>アンケート新規作成</h1>
       </div>
       <SurveyForm

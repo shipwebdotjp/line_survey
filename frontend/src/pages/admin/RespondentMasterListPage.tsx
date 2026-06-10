@@ -51,10 +51,16 @@ const RespondentMasterListPage: React.FC = () => {
 
   return (
     <div>
-      <div className="admin-header-actions">
-        <h2>回答者マスター管理</h2>
-        <div className="admin-header-buttons">
-          <label className="admin-button secondary" style={{ cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.7 : 1 }}>
+      <div className="admin-page-header">
+        <h1>回答者マスター管理</h1>
+        <div className="admin-actions">
+          <label
+            className="admin-button admin-button-outline"
+            style={{
+              cursor: importing ? 'not-allowed' : 'pointer',
+              opacity: importing ? 0.7 : 1,
+            }}
+          >
             {importing ? 'インポート中...' : 'CSVインポート'}
             <input
               type="file"

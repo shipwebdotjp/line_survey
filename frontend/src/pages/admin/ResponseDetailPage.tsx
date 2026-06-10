@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { ResponseDetail } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
+import AdminButton from '../../components/admin/AdminButton';
 
 const ResponseDetailPage: React.FC = () => {
   const { id, responseId } = useParams<{ id: string; responseId: string }>();
@@ -50,30 +51,30 @@ const ResponseDetailPage: React.FC = () => {
     return (
       <div className="error-container">
         <p>{error || 'データが見つかりませんでした。'}</p>
-        <Link
-          to={Number.isNaN(surveyId) ? '/admin/surveys' : `/admin/surveys/${surveyId}/responses`}
-          className="btn btn-outline"
+        <AdminButton
+          to={
+            Number.isNaN(surveyId)
+              ? '/admin/surveys'
+              : `/admin/surveys/${surveyId}/responses`
+          }
         >
           回答一覧に戻る
-        </Link>
+        </AdminButton>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="admin-header-actions">
-        <h2>回答詳細</h2>
-        <div className="actions">
-          <Link
-            to={`/admin/surveys/${surveyId}/responses/${rid}/edit`}
-            className="btn btn-outline"
-          >
+      <div className="admin-page-header">
+        <h1>回答詳細</h1>
+        <div className="admin-actions">
+          <AdminButton to={`/admin/surveys/${surveyId}/responses/${rid}/edit`}>
             編集
-          </Link>
-          <Link to={`/admin/surveys/${surveyId}/responses`} className="btn btn-outline">
+          </AdminButton>
+          <AdminButton to={`/admin/surveys/${surveyId}/responses`}>
             回答一覧に戻る
-          </Link>
+          </AdminButton>
         </div>
       </div>
 

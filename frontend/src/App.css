@@ -527,17 +527,19 @@
 }
 
 /* Admin Survey Features */
-.admin-toolbar {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.admin-header-actions {
+.admin-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-h);
 }
 
 .admin-table-container {
@@ -574,9 +576,17 @@
   background: var(--accent-bg);
 }
 
-.btn {
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -587,54 +597,51 @@
   transition: all 0.2s;
   text-decoration: none;
   line-height: 1.25rem;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
-.btn-primary {
+.admin-button-primary {
   background: var(--accent);
   color: white;
 }
 
-.btn-primary:hover {
+.admin-button-primary:hover:not(:disabled) {
   opacity: 0.9;
 }
 
-.btn-outline {
+.admin-button-outline {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
 }
 
-.btn-outline:hover {
+.admin-button-outline:hover:not(:disabled) {
   background: var(--social-bg);
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.btn-outline:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  border-color: var(--border);
-  color: var(--text);
-}
-
-.btn-danger {
-  background: #fee2e2;
-  color: #b91c1c;
+.admin-button-danger {
+  background: transparent;
   border: 1px solid #fecaca;
+  color: #b91c1c;
 }
 
-.btn-danger:hover:not(:disabled) {
-  background: #fecaca;
+.admin-button-danger:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #b91c1c;
 }
 
-.btn-danger:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-sm {
+.admin-button-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.admin-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .badge {
@@ -651,11 +658,6 @@
 .badge-closed { background: #fee2e2; color: #b91c1c; }
 .badge-archived { background: #fef9c3; color: #a16207; }
 
-.actions-cell {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
 
 .admin-form {
   max-width: 800px;
@@ -790,33 +792,6 @@
   border-bottom: none;
 }
 
-/* Respondent Master Management */
-.admin-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-  text-decoration: none;
-  line-height: 1.25rem;
-}
-
-.admin-button.secondary {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
-
-.admin-button.secondary:hover {
-  background: var(--social-bg);
-  border-color: var(--accent);
-  color: var(--accent);
-}
 
 .admin-error-message {
   background: #fee2e2;

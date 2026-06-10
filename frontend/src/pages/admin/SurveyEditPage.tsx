@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import SurveyForm from '../../features/admin/surveys/SurveyForm';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { Survey, SurveyCreateParams } from '../../features/admin/surveys/types';
+import AdminButton from '../../components/admin/AdminButton';
 
 const SurveyEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,9 +67,7 @@ const SurveyEditPage: React.FC = () => {
       <div className="error-banner">
         {error || 'アンケートが見つかりませんでした。'}
         <div style={{ marginTop: '1rem' }}>
-          <button onClick={handleCancel} className="btn btn-outline">
-            一覧に戻る
-          </button>
+          <AdminButton onClick={handleCancel}>一覧に戻る</AdminButton>
         </div>
       </div>
     );
@@ -76,7 +75,7 @@ const SurveyEditPage: React.FC = () => {
 
   return (
     <div>
-      <div className="admin-header-actions" style={{ marginBottom: '1.5rem' }}>
+      <div className="admin-page-header">
         <h1>アンケート編集</h1>
       </div>
       <SurveyForm

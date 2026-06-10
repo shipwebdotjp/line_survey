@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import { useToast } from '../../features/ui/ToastContext';
 import type { ResponseSummary, Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
+import AdminButton from '../../components/admin/AdminButton';
 
 const ResponseListPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -70,28 +71,20 @@ const ResponseListPage: React.FC = () => {
     return (
       <div className="error-container">
         <p>{error || 'アンケートが見つかりませんでした。'}</p>
-        <Link to="/admin/surveys" className="btn btn-outline">
-          アンケート一覧に戻る
-        </Link>
+        <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="admin-header-actions">
-        <h2>{survey.title} - 回答一覧</h2>
-        <div className="actions">
-          <a
-            href={adminSurveyApi.getCsvUrl(surveyId)}
-            className="btn btn-outline"
-            download
-          >
+      <div className="admin-page-header">
+        <h1>{survey.title} - 回答一覧</h1>
+        <div className="admin-actions">
+          <AdminButton href={adminSurveyApi.getCsvUrl(surveyId)} download>
             CSVダウンロード
-          </a>
-          <Link to="/admin/surveys" className="btn btn-outline">
-            アンケート一覧に戻る
-          </Link>
+          </AdminButton>
+          <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
         </div>
       </div>
 
@@ -122,25 +115,26 @@ const ResponseListPage: React.FC = () => {
                   <td>{res.respondent_email}</td>
                   <td>{formatDisplayDate(res.submitted_at)}</td>
                   <td>
-                    <div className="actions-cell">
-                      <Link
+                    <div className="admin-actions">
+                      <AdminButton
                         to={`/admin/surveys/${surveyId}/responses/${res.id}`}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         詳細
-                      </Link>
-                      <Link
+                      </AdminButton>
+                      <AdminButton
                         to={`/admin/surveys/${surveyId}/responses/${res.id}/edit`}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         編集
-                      </Link>
-                      <button
+                      </AdminButton>
+                      <AdminButton
+                        variant="danger"
+                        size="sm"
                         onClick={() => handleDelete(res.id)}
-                        className="btn btn-danger btn-sm"
                       >
                         削除
-                      </button>
+                      </AdminButton>
                     </div>
                   </td>
                 </tr>
