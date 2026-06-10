@@ -164,6 +164,11 @@
   width: 100%;
 }
 
+.public-btn-compact {
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+}
+
 .public-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -184,7 +189,7 @@
   height: auto !important;
 }
 
-.public-survey-renderer .sd-navigation__complete-btn:hover {
+.public-survey-renderer .sd-navigation__complete-btn:hover:not(:disabled) {
   background-color: #05b34c !important;
 }
 

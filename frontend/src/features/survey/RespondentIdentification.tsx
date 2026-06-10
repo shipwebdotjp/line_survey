@@ -118,8 +118,7 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
         <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem', textAlign: 'right' }}>
           <button
             onClick={() => navigate(`/respondent/edit?return_to=${encodeURIComponent(location.pathname + location.search)}`)}
-            className="public-btn public-btn-secondary"
-            style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}
+            className="public-btn public-btn-secondary public-btn-compact"
           >
             編集する
           </button>
