@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { adminRespondentMasterApi } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
 import type { RespondentMaster, ImportResult } from '../../features/admin/respondent-masters/types';
+import AdminButton from '../../components/admin/AdminButton';
 
 const RespondentMasterListPage: React.FC = () => {
   const [masters, setMasters] = useState<RespondentMaster[]>([]);
@@ -54,23 +55,31 @@ const RespondentMasterListPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>回答者マスター管理</h1>
         <div className="admin-actions">
-          <label
-            className="admin-button admin-button-outline"
-            style={{
-              cursor: importing ? 'not-allowed' : 'pointer',
-              opacity: importing ? 0.7 : 1,
-            }}
+          <AdminButton
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importing}
           >
             {importing ? 'インポート中...' : 'CSVインポート'}
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleImport}
-              style={{ display: 'none' }}
-              disabled={importing}
-              ref={fileInputRef}
-            />
-          </label>
+          </AdminButton>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleImport}
+            style={{
+              position: 'absolute',
+              width: '1px',
+              height: '1px',
+              padding: '0',
+              margin: '-1px',
+              overflow: 'hidden',
+              clip: 'rect(0,0,0,0)',
+              border: '0',
+            }}
+            disabled={importing}
+            ref={fileInputRef}
+            aria-hidden="true"
+            tabIndex={-1}
+          />
         </div>
       </div>
 

@@ -44,7 +44,7 @@ const AdminButton: React.FC<AdminButtonProps> = (props) => {
   const sizeClass = size === 'sm' ? 'admin-button-sm' : '';
   const combinedClassName = `${baseClass} ${variantClass} ${sizeClass} ${className}`.trim();
 
-  if ('to' in rest && rest.to) {
+  if ('to' in rest && rest.to !== undefined) {
     const { to, ...linkProps } = rest as LinkButtonProps;
     return (
       <Link to={to} className={combinedClassName} {...linkProps}>
@@ -53,7 +53,7 @@ const AdminButton: React.FC<AdminButtonProps> = (props) => {
     );
   }
 
-  if ('href' in rest && rest.href) {
+  if ('href' in rest && rest.href !== undefined) {
     const { href, ...anchorProps } = rest as ExternalAnchorProps;
     return (
       <a href={href} className={combinedClassName} {...anchorProps}>
