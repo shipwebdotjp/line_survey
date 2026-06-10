@@ -4,6 +4,8 @@ import EditResponsePage from './pages/public-survey/EditResponsePage';
 import ShowResponsePage from './pages/public-survey/ShowResponsePage';
 import ResponseHistoryPage from './pages/public-survey/ResponseHistoryPage';
 import EditRespondentsPage from './pages/public-survey/EditRespondentsPage';
+import AboutUsPage from './pages/public-survey/AboutUsPage';
+import PublicLayout from './features/survey/PublicLayout';
 import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
 import SurveyCreatePage from './pages/admin/SurveyCreatePage';
@@ -51,47 +53,15 @@ const AppContent = () => {
     <LiffProvider enabled={isLiffRequired}>
       <LiffGate>
         <Routes>
-          {/* Public Survey Route */}
-          <Route
-            path="/s"
-            element={
-              <div className="public-survey-root">
-                <ResponseHistoryPage />
-              </div>
-            }
-          />
-          <Route
-            path="/s/:public_id"
-            element={
-              <div className="public-survey-root">
-                <PublicSurveyPage />
-              </div>
-            }
-          />
-          <Route
-            path="/s/:public_id/r/:edit_token"
-            element={
-              <div className="public-survey-root">
-                <ShowResponsePage />
-              </div>
-            }
-          />
-          <Route
-            path="/s/:public_id/r/:edit_token/edit"
-            element={
-              <div className="public-survey-root">
-                <EditResponsePage />
-              </div>
-            }
-          />
-          <Route
-            path="/respondent/edit"
-            element={
-              <div className="public-survey-root">
-                <EditRespondentsPage />
-              </div>
-            }
-          />
+          {/* Public Survey Routes */}
+          <Route element={<PublicLayout />}>
+            <Route path="/s" element={<ResponseHistoryPage />} />
+            <Route path="/s/:public_id" element={<PublicSurveyPage />} />
+            <Route path="/s/:public_id/r/:edit_token" element={<ShowResponsePage />} />
+            <Route path="/s/:public_id/r/:edit_token/edit" element={<EditResponsePage />} />
+            <Route path="/respondent/edit" element={<EditRespondentsPage />} />
+            <Route path="/about-us" element={<AboutUsPage />} />
+          </Route>
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminShell />}>

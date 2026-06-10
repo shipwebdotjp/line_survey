@@ -84,84 +84,104 @@ const ShowResponsePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p>読み込み中...</p>
+      <div className="public-container">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>読み込み中...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
-        <p>{error}</p>
-        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <button
-            onClick={() => navigate('/s')}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            回答履歴へ
-          </button>
-          <button
-            onClick={() => navigate(`/s/${public_id}`)}
-            style={{ padding: '0.5rem 1rem' }}
-          >
-            アンケートトップへ
-          </button>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+          <p>{error}</p>
+          <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => navigate('/s')}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: 'transparent',
+                color: '#6b7280',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                cursor: 'pointer'
+              }}
+            >
+              回答履歴へ
+            </button>
+            <button
+              onClick={() => navigate(`/s/${public_id}`)}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                cursor: 'pointer'
+              }}
+            >
+              アンケートトップへ
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData?.survey?.title}</h1>
-      <p style={{ marginBottom: '1rem', color: '#666' }}>回答内容</p>
+    <div className="public-container">
+      <div className="public-card">
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData?.survey?.title}</h1>
+        <p style={{ marginBottom: '1rem', color: '#6b7280' }}>回答内容</p>
 
-      <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', backgroundColor: '#fff' }}>
-        {surveyData?.survey && existingResponse && (
-          <SurveyRenderer
-            questions={existingResponse.survey_snapshot_json || surveyData.survey.questions_json}
-            data={existingResponse.answer_json}
-            readOnly={true}
-          />
-        )}
-      </div>
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', backgroundColor: '#fff' }}>
+          {surveyData?.survey && existingResponse && (
+            <SurveyRenderer
+              questions={existingResponse.survey_snapshot_json || surveyData.survey.questions_json}
+              data={existingResponse.answer_json}
+              readOnly={true}
+            />
+          )}
+        </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-        {surveyData?.survey?.allow_edit && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          {surveyData?.survey?.allow_edit && (
+            <button
+              onClick={() => navigate(`/s/${public_id}/r/${edit_token}/edit`)}
+              style={{
+                padding: '0.75rem 2rem',
+                backgroundColor: '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                width: '100%'
+              }}
+            >
+              回答を修正する
+            </button>
+          )}
+
           <button
-            onClick={() => navigate(`/s/${public_id}/r/${edit_token}/edit`)}
+            onClick={() => navigate('/s')}
             style={{
               padding: '0.75rem 2rem',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
+              backgroundColor: 'transparent',
+              color: '#6b7280',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
               cursor: 'pointer',
               fontWeight: 'bold',
               width: '100%'
             }}
           >
-            回答を修正する
+            回答履歴に戻る
           </button>
-        )}
-
-        <button
-          onClick={() => navigate('/s')}
-          style={{
-            padding: '0.75rem 2rem',
-            backgroundColor: 'transparent',
-            color: '#666',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            width: '100%'
-          }}
-        >
-          回答履歴に戻る
-        </button>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
-import Footer from '../../features/survey/Footer';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
 import type { Model } from 'survey-core';
 import { createLiffUrl } from '../../lib/liffUrl';
@@ -179,26 +178,32 @@ const PublicSurveyPage: React.FC = () => {
 
   if (isLoading && !error) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p>読み込み中...</p>
+      <div className="public-container">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>読み込み中...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
-        <p>{error}</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+          <p>{error}</p>
+        </div>
       </div>
     );
   }
 
   if (!surveyData || !surveyData.survey || !surveyData.survey.questions_json) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
-        <p>アンケートデータの取得に失敗しました。</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>エラー</h1>
+          <p>アンケートデータの取得に失敗しました。</p>
+        </div>
       </div>
     );
   }
@@ -221,9 +226,11 @@ const PublicSurveyPage: React.FC = () => {
     }
 
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h1>
-        <p style={{ whiteSpace: 'pre-wrap' }}>{message}</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h1>
+          <p style={{ whiteSpace: 'pre-wrap' }}>{message}</p>
+        </div>
       </div>
     );
   }
@@ -234,169 +241,173 @@ const PublicSurveyPage: React.FC = () => {
     const editUrl = createLiffUrl(`/s/${public_id}/r/${submittedResponse.edit_token}/edit`);
 
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>回答が完了しました</h1>
-        <p style={{ marginBottom: '1rem' }}>ご協力ありがとうございました。</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>回答が完了しました</h1>
+          <p style={{ marginBottom: '1rem' }}>ご協力ありがとうございました。</p>
 
-        {submittedResponse.email_error ? (
-          <p style={{ marginBottom: '1.5rem', color: '#dc3545' }}>
-            ※回答控えメールの送信に失敗しました。回答自体は保存されています。
-          </p>
-        ) : submittedResponse.email_sent_at ? (
-          <p style={{ marginBottom: '1.5rem', color: '#28a745' }}>
-            回答の控えをメールでお送りしました。ご確認ください。
-          </p>
-        ) : null}
+          {submittedResponse.email_error ? (
+            <p style={{ marginBottom: '1.5rem', color: '#dc3545' }}>
+              ※回答控えメールの送信に失敗しました。回答自体は保存されています。
+            </p>
+          ) : submittedResponse.email_sent_at ? (
+            <p style={{ marginBottom: '1.5rem', color: '#28a745' }}>
+              回答の控えをメールでお送りしました。ご確認ください。
+            </p>
+          ) : null}
 
-        {surveyData.survey?.allow_edit && (
-          <div style={{ marginTop: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-            <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>回答の修正用URL:</p>
-            <p style={{ fontSize: '0.8rem', wordBreak: 'break-all', color: '#007bff' }}>
-              <a href={editUrl}>{editUrl}</a>
-            </p>
-            <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
-              ※後から回答を修正するためのURLはメールでもお送りしています。
-            </p>
-          </div>
-        )}
-        <Footer />
+          {surveyData.survey?.allow_edit && (
+            <div style={{ marginTop: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
+              <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>回答の修正用URL:</p>
+              <p style={{ fontSize: '0.8rem', wordBreak: 'break-all', color: '#4f46e5' }}>
+                <a href={editUrl}>{editUrl}</a>
+              </p>
+              <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#666' }}>
+                ※後から回答を修正するためのURLはメールでもお送りしています。
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   if (existingResponse && !surveyData.survey?.allow_multiple) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{surveyData.survey?.title}</h1>
-        <p style={{ marginBottom: '2rem', color: '#666' }}>既にご回答いただいています。</p>
+      <div className="public-container">
+        <div className="public-card" style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{surveyData.survey?.title}</h1>
+          <p style={{ marginBottom: '2rem', color: '#6b7280' }}>既にご回答いただいています。</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-          <button
-            onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}`)}
-            style={{
-              padding: '0.75rem 2rem',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              width: '100%'
-            }}
-          >
-            回答内容を確認する
-          </button>
-
-          {surveyData.survey?.allow_edit && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
             <button
-              onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
+              onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}`)}
               style={{
                 padding: '0.75rem 2rem',
-                backgroundColor: 'transparent',
-                color: '#007bff',
-                border: '1px solid #007bff',
-                borderRadius: '4px',
+                backgroundColor: '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
                 cursor: 'pointer',
                 fontWeight: 'bold',
                 width: '100%'
               }}
             >
-              回答を修正する
+              回答内容を確認する
             </button>
-          )}
 
-          <button
-            onClick={() => navigate('/s')}
-            style={{
-              padding: '0.75rem 2rem',
-              backgroundColor: 'transparent',
-              color: '#666',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              width: '100%',
-              marginTop: '1rem'
-            }}
-          >
-            回答履歴へ
-          </button>
+            {surveyData.survey?.allow_edit && (
+              <button
+                onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
+                style={{
+                  padding: '0.75rem 2rem',
+                  backgroundColor: 'transparent',
+                  color: '#4f46e5',
+                  border: '1px solid #4f46e5',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  width: '100%'
+                }}
+              >
+                回答を修正する
+              </button>
+            )}
+
+            <button
+              onClick={() => navigate('/s')}
+              style={{
+                padding: '0.75rem 2rem',
+                backgroundColor: 'transparent',
+                color: '#6b7280',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                width: '100%',
+                marginTop: '1rem'
+              }}
+            >
+              回答履歴へ
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
-      {surveyData.survey?.description && (
-        <p style={{ marginBottom: '1.5rem', color: '#666' }}>{surveyData.survey.description}</p>
-      )}
+    <div className="public-container">
+      <div className="public-card">
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData.survey?.title}</h1>
+        {surveyData.survey?.description && (
+          <p style={{ marginBottom: '1.5rem', color: '#6b7280' }}>{surveyData.survey.description}</p>
+        )}
 
-      {isDebugMode && (
-        <details style={{
-          marginBottom: '1rem',
-          padding: '0.75rem 1rem',
-          border: '1px solid #d0d7de',
-          borderRadius: '8px',
-          background: '#f6f8fa'
-        }}>
-          <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Debug info</summary>
-          <pre style={{
-            margin: '0.75rem 0 0',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            fontSize: '0.8rem'
+        {isDebugMode && (
+          <details style={{
+            marginBottom: '1rem',
+            padding: '0.75rem 1rem',
+            border: '1px solid #d1d5db',
+            borderRadius: '8px',
+            background: '#f9fafb'
           }}>
-            {JSON.stringify({
-              public_id,
-              isLoggedIn,
-              hasIdToken: !!idToken,
-              isLoading,
-              error,
-              identifyStatus,
-              respondent,
-              surveyLoaded: !!surveyData,
-              canAnswer: surveyData?.can_answer ?? null,
-              existingResponseLoaded: !!existingResponse,
-              showSurvey,
-            }, null, 2)}
-          </pre>
-        </details>
-      )}
-
-      {identifyStatus && (
-        <RespondentIdentification
-          status={identifyStatus}
-          respondent={respondent}
-          onManualSubmit={handleManualSubmit}
-          isSubmitting={isIdentifying}
-          submitError={identifyError}
-        />
-      )}
-
-      {showSurvey && (
-        <div style={{ marginTop: '1rem' }}>
-          {submitError && (
-            <div style={{
-              padding: '1rem',
-              marginBottom: '1rem',
-              backgroundColor: '#fff5f5',
-              color: '#c53030',
-              borderRadius: '4px',
-              border: '1px solid #feb2b2'
+            <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Debug info</summary>
+            <pre style={{
+              margin: '0.75rem 0 0',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              fontSize: '0.8rem'
             }}>
-              {submitError}
-            </div>
-          )}
-          <SurveyRenderer
-            questions={surveyData.survey?.questions_json}
-            onComplete={handleSurveyComplete}
-            isSubmitting={isSubmitting}
+              {JSON.stringify({
+                public_id,
+                isLoggedIn,
+                hasIdToken: !!idToken,
+                isLoading,
+                error,
+                identifyStatus,
+                respondent,
+                surveyLoaded: !!surveyData,
+                canAnswer: surveyData?.can_answer ?? null,
+                existingResponseLoaded: !!existingResponse,
+                showSurvey,
+              }, null, 2)}
+            </pre>
+          </details>
+        )}
+
+        {identifyStatus && (
+          <RespondentIdentification
+            status={identifyStatus}
+            respondent={respondent}
+            onManualSubmit={handleManualSubmit}
+            isSubmitting={isIdentifying}
+            submitError={identifyError}
           />
-        </div>
-      )}
-        <Footer />
+        )}
+
+        {showSurvey && (
+          <div style={{ marginTop: '1rem' }}>
+            {submitError && (
+              <div style={{
+                padding: '1rem',
+                marginBottom: '1rem',
+                backgroundColor: '#fef2f2',
+                color: '#991b1b',
+                borderRadius: '4px',
+                border: '1px solid #fecaca'
+              }}>
+                {submitError}
+              </div>
+            )}
+            <SurveyRenderer
+              questions={surveyData.survey?.questions_json}
+              onComplete={handleSurveyComplete}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
