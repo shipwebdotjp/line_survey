@@ -9,6 +9,7 @@ interface SurveyRendererProps {
   isSubmitting?: boolean;
   data?: Record<string, any>;
   readOnly?: boolean;
+  isPublic?: boolean;
 }
 
 const SurveyRenderer: React.FC<SurveyRendererProps> = ({
@@ -17,6 +18,7 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
   isSubmitting = false,
   data,
   readOnly = false,
+  isPublic = false,
 }) => {
   const survey = useMemo(() => {
     const model = new Model(questions);
@@ -52,9 +54,14 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
     }
   }, [survey, onComplete]);
 
+  const containerClassName = [
+    isSubmitting ? 'survey-submitting' : '',
+    isPublic ? 'public-survey-renderer' : ''
+  ].filter(Boolean).join(' ');
+
   return (
     <div
-      className={isSubmitting ? 'survey-submitting' : ''}
+      className={containerClassName}
       style={{ position: 'relative' }}
       aria-busy={isSubmitting}
     >

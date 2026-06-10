@@ -101,27 +101,13 @@ const ShowResponsePage: React.FC = () => {
           <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             <button
               onClick={() => navigate('/s')}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'transparent',
-                color: '#6b7280',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                cursor: 'pointer'
-              }}
+              className="public-btn public-btn-secondary"
             >
               回答履歴へ
             </button>
             <button
               onClick={() => navigate(`/s/${public_id}`)}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: '#4f46e5',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.375rem',
-                cursor: 'pointer'
-              }}
+              className="public-btn public-btn-primary"
             >
               アンケートトップへ
             </button>
@@ -151,16 +137,7 @@ const ShowResponsePage: React.FC = () => {
           {surveyData?.survey?.allow_edit && (
             <button
               onClick={() => navigate(`/s/${public_id}/r/${edit_token}/edit`)}
-              style={{
-                padding: '0.75rem 2rem',
-                backgroundColor: '#4f46e5',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '100%'
-              }}
+              className="public-btn public-btn-primary public-btn-full"
             >
               回答を修正する
             </button>
@@ -168,16 +145,7 @@ const ShowResponsePage: React.FC = () => {
 
           <button
             onClick={() => navigate('/s')}
-            style={{
-              padding: '0.75rem 2rem',
-              backgroundColor: 'transparent',
-              color: '#6b7280',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              width: '100%'
-            }}
+            className="public-btn public-btn-secondary public-btn-full"
           >
             回答履歴に戻る
           </button>

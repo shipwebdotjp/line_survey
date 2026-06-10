@@ -104,15 +104,8 @@ const EditRespondentsPage: React.FC = () => {
           <p>{error}</p>
           <button
             onClick={() => navigate(validateReturnTo(returnTo))}
-            style={{
-              marginTop: '1.5rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: 'transparent',
-              color: '#6b7280',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
+            className="public-btn public-btn-secondary"
+            style={{ marginTop: '1.5rem' }}
           >
             戻る
           </button>
@@ -177,16 +170,7 @@ const EditRespondentsPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              style={{
-                backgroundColor: '#00b900',
-                color: 'white',
-                padding: '1rem',
-                border: 'none',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: 'bold'
-              }}
+              className="public-btn public-btn-primary public-btn-full"
             >
               {isSubmitting ? '保存中...' : '保存する'}
             </button>
@@ -195,15 +179,7 @@ const EditRespondentsPage: React.FC = () => {
               type="button"
               onClick={() => navigate(validateReturnTo(returnTo))}
               disabled={isSubmitting}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#6b7280',
-                padding: '1rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}
+              className="public-btn public-btn-secondary public-btn-full"
             >
               キャンセル
             </button>
