@@ -39,7 +39,33 @@ build_public_html() {
     exit 1
   fi
 
-  cp "$ROOT_DIR/public_html/.htaccess" "$staging_public_html/.htaccess"
+  cat > "$staging_public_html/.htaccess" <<'PHP'
+RewriteEngine On
+
+# Route /api and /api/* to public_html/api/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api(?:/(.*))?$ api/index.php [QSA,L]
+
+# For frontend (React router support)
+# Exclude /api and /api/* from SPA catch-all
+RewriteCond %{REQUEST_URI} !^/api(?:/|$)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
+
+# Basic Auth for /admin
+# We use <If> to apply Basic Auth only to /admin and its sub-paths.
+# This ensures it doesn't interfere with /api or public survey routes.
+<If "%{REQUEST_URI} =~ m#^/admin#">
+    AuthType Basic
+    AuthName "Admin"
+    # AuthUserFile will be managed in the target environment (e.g., Coreserver)
+    AuthUserFile /home/shipweb/domains/survey.shipweb.jp/backend/.htpasswd
+    Require valid-user
+</If>
+
+PHP
 
   cat > "$staging_public_html/api/index.php" <<'PHP'
 <?php
