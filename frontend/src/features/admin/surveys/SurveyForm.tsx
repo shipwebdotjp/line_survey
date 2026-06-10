@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { SurveyCreateParams } from './types';
 import { toDatetimeLocal, fromDatetimeLocal } from './dateUtils';
+import AdminButton from '../../../components/admin/AdminButton';
 
 interface SurveyFormProps {
   initialValues?: Partial<SurveyCreateParams>;
@@ -213,21 +214,12 @@ const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       <div className="form-actions">
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={submitting}
-        >
+        <AdminButton type="submit" variant="primary" disabled={submitting}>
           {submitting ? '保存中...' : submitLabel}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="btn btn-outline"
-          disabled={submitting}
-        >
+        </AdminButton>
+        <AdminButton type="button" onClick={onCancel} disabled={submitting}>
           キャンセル
-        </button>
+        </AdminButton>
       </div>
     </form>
   );

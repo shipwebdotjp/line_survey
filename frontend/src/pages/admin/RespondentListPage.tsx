@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { adminRespondentApi } from '../../features/admin/respondents/adminRespondentApi';
 import type { RespondentSummary } from '../../features/admin/respondents/types';
+import AdminButton from '../../components/admin/AdminButton';
 
 const RespondentListPage: React.FC = () => {
   const [respondents, setRespondents] = useState<RespondentSummary[]>([]);
@@ -83,16 +83,35 @@ const RespondentListPage: React.FC = () => {
                   <td>{respondent.response_count}</td>
                   <td>{respondent.latest_submitted_at || '-'}</td>
                   <td>{respondent.updated_at}</td>
-                  <td className="admin-table-actions">
-                    <Link to={`/admin/respondents/${respondent.id}`} className="btn btn-sm">詳細</Link>
-                    <Link to={`/admin/respondents/${respondent.id}/edit`} className="btn btn-sm">編集</Link>
-                    <button
-                      onClick={() => handleDelete(respondent.id, respondent.name || respondent.line_display_name, respondent.response_count)}
-                      className="btn btn-sm btn-danger"
-                      disabled={deletingId === respondent.id}
-                    >
-                      {deletingId === respondent.id ? '削除中...' : '削除'}
-                    </button>
+                  <td>
+                    <div className="admin-actions">
+                      <AdminButton
+                        to={`/admin/respondents/${respondent.id}`}
+                        size="sm"
+                      >
+                        詳細
+                      </AdminButton>
+                      <AdminButton
+                        to={`/admin/respondents/${respondent.id}/edit`}
+                        size="sm"
+                      >
+                        編集
+                      </AdminButton>
+                      <AdminButton
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                          handleDelete(
+                            respondent.id,
+                            respondent.name || respondent.line_display_name,
+                            respondent.response_count
+                          )
+                        }
+                        disabled={deletingId === respondent.id}
+                      >
+                        {deletingId === respondent.id ? '削除中...' : '削除'}
+                      </AdminButton>
+                    </div>
                   </td>
                 </tr>
               ))

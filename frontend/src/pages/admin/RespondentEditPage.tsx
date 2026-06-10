@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { adminRespondentApi } from '../../features/admin/respondents/adminRespondentApi';
 import type { RespondentDetail } from '../../features/admin/respondents/types';
+import AdminButton from '../../components/admin/AdminButton';
 
 const RespondentEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -159,11 +160,13 @@ const RespondentEditPage: React.FC = () => {
             <input type="text" value={respondent.respondent_master_id || '(未紐付け)'} disabled className="form-control" />
           </div>
 
-          <div className="admin-form-actions">
-            <button type="submit" className="btn" disabled={isSaving}>
+          <div className="form-actions">
+            <AdminButton type="submit" variant="primary" disabled={isSaving}>
               {isSaving ? '保存中...' : '保存する'}
-            </button>
-            <Link to={`/admin/respondents/${respondent.id}`} className="btn btn-secondary">キャンセル</Link>
+            </AdminButton>
+            <AdminButton to={`/admin/respondents/${respondent.id}`}>
+              キャンセル
+            </AdminButton>
           </div>
         </form>
       </div>

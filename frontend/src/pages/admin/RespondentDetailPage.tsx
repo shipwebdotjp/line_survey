@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { adminRespondentApi } from '../../features/admin/respondents/adminRespondentApi';
 import type { RespondentDetail } from '../../features/admin/respondents/types';
+import AdminButton from '../../components/admin/AdminButton';
 
 const RespondentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,10 +58,14 @@ const RespondentDetailPage: React.FC = () => {
     <div className="admin-respondent-detail">
       <div className="admin-page-header">
         <h1>回答者詳細</h1>
-        <div className="admin-page-actions">
-          <Link to={`/admin/respondents/${respondent.id}/edit`} className="btn">編集</Link>
-          <button onClick={handleDelete} className="btn btn-danger">削除</button>
-          <Link to="/admin/respondents" className="btn btn-secondary">一覧へ戻る</Link>
+        <div className="admin-actions">
+          <AdminButton to={`/admin/respondents/${respondent.id}/edit`}>
+            編集
+          </AdminButton>
+          <AdminButton variant="danger" onClick={handleDelete}>
+            削除
+          </AdminButton>
+          <AdminButton to="/admin/respondents">一覧へ戻る</AdminButton>
         </div>
       </div>
 
@@ -134,12 +139,14 @@ const RespondentDetailPage: React.FC = () => {
                   <td>{history.updated_at}</td>
                   <td>
                     {history.survey_id && (
-                      <Link
-                        to={`/admin/surveys/${history.survey_id}/responses/${history.response_id}`}
-                        className="btn btn-sm"
-                      >
-                        詳細
-                      </Link>
+                      <div className="admin-actions">
+                        <AdminButton
+                          to={`/admin/surveys/${history.survey_id}/responses/${history.response_id}`}
+                          size="sm"
+                        >
+                          詳細
+                        </AdminButton>
+                      </div>
                     )}
                   </td>
                 </tr>

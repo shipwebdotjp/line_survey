@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import type { Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import { createLiffUrl } from '../../lib/liffUrl';
+import AdminButton from '../../components/admin/AdminButton';
 
 const SurveyListPage: React.FC = () => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -87,10 +87,13 @@ const SurveyListPage: React.FC = () => {
 
   return (
     <div>
-      <div className="admin-toolbar">
-        <Link to="/admin/surveys/new" className="btn btn-primary">
-          新規作成
-        </Link>
+      <div className="admin-page-header">
+        <h1>アンケート管理</h1>
+        <div className="admin-actions">
+          <AdminButton to="/admin/surveys/new" variant="primary">
+            新規作成
+          </AdminButton>
+        </div>
       </div>
 
       {error && <div className="error-banner">{error}</div>}
@@ -131,28 +134,29 @@ const SurveyListPage: React.FC = () => {
                   <td>{formatDisplayDate(survey.starts_at)}</td>
                   <td>{formatDisplayDate(survey.ends_at)}</td>
                   <td>
-                    <div className="actions-cell">
-                      <Link
+                    <div className="admin-actions">
+                      <AdminButton
                         to={`/admin/surveys/${survey.id}/edit`}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         編集
-                      </Link>
-                      <button
+                      </AdminButton>
+                      <AdminButton
                         onClick={() => handleCopyUrl(survey.public_id)}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         URLコピー
-                      </button>
-                      <button
+                      </AdminButton>
+                      <AdminButton
                         onClick={() => handleDuplicate(survey.id)}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         複製
-                      </button>
-                      <button
+                      </AdminButton>
+                      <AdminButton
+                        variant="danger"
+                        size="sm"
                         onClick={() => handleDelete(survey.id, survey.title)}
-                        className="btn btn-danger btn-sm"
                         disabled={(survey.response_count || 0) > 0}
                         title={
                           (survey.response_count || 0) > 0
@@ -161,13 +165,13 @@ const SurveyListPage: React.FC = () => {
                         }
                       >
                         削除
-                      </button>
-                      <Link
+                      </AdminButton>
+                      <AdminButton
                         to={`/admin/surveys/${survey.id}/responses`}
-                        className="btn btn-outline btn-sm"
+                        size="sm"
                       >
                         回答一覧
-                      </Link>
+                      </AdminButton>
                     </div>
                   </td>
                 </tr>
