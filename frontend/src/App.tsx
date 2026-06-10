@@ -14,6 +14,9 @@ import ResponseListPage from './pages/admin/ResponseListPage';
 import ResponseDetailPage from './pages/admin/ResponseDetailPage';
 import ResponseEditPage from './pages/admin/ResponseEditPage';
 import RespondentMasterListPage from './pages/admin/RespondentMasterListPage';
+import RespondentListPage from './pages/admin/RespondentListPage';
+import RespondentDetailPage from './pages/admin/RespondentDetailPage';
+import RespondentEditPage from './pages/admin/RespondentEditPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
 import { ToastProvider } from './features/ui/ToastContext';
@@ -76,6 +79,9 @@ const AppContent = () => {
             <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
             <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
             <Route path="respondent-masters" element={<RespondentMasterListPage />} />
+            <Route path="respondents" element={<RespondentListPage />} />
+            <Route path="respondents/:id" element={<RespondentDetailPage />} />
+            <Route path="respondents/:id/edit" element={<RespondentEditPage />} />
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
 

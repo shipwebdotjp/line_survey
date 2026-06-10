@@ -13,6 +13,10 @@ use App\Presentation\Http\Admin\RespondentMaster\ListRespondentMastersAction;
 use App\Presentation\Http\Admin\Survey\ListSurveysAction;
 use App\Presentation\Http\Admin\Survey\UpdateResponseAction as AdminUpdateResponseAction;
 use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
+use App\Presentation\Http\Admin\Respondent\ListRespondentsAction;
+use App\Presentation\Http\Admin\Respondent\GetRespondentAction as AdminGetRespondentAction;
+use App\Presentation\Http\Admin\Respondent\UpdateRespondentAction as AdminUpdateRespondentAction;
+use App\Presentation\Http\Admin\Respondent\DeleteRespondentAction;
 use App\Presentation\Http\JsonResponse;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
@@ -87,5 +91,11 @@ return function (App $app) {
         // Respondent Masters
         $group->get('/respondent-masters', ListRespondentMastersAction::class);
         $group->post('/respondent-masters/import', ImportRespondentMastersAction::class);
+
+        // Respondents
+        $group->get('/respondents', ListRespondentsAction::class);
+        $group->get('/respondents/{id:[0-9]+}', AdminGetRespondentAction::class);
+        $group->put('/respondents/{id:[0-9]+}', AdminUpdateRespondentAction::class);
+        $group->delete('/respondents/{id:[0-9]+}', DeleteRespondentAction::class);
     })->add(BasicAuthMiddleware::class);
 };
