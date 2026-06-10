@@ -282,16 +282,7 @@ const PublicSurveyPage: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
             <button
               onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}`)}
-              style={{
-                padding: '0.75rem 2rem',
-                backgroundColor: '#4f46e5',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '100%'
-              }}
+              className="public-btn public-btn-primary public-btn-full"
             >
               回答内容を確認する
             </button>
@@ -299,16 +290,7 @@ const PublicSurveyPage: React.FC = () => {
             {surveyData.survey?.allow_edit && (
               <button
                 onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
-                style={{
-                  padding: '0.75rem 2rem',
-                  backgroundColor: 'transparent',
-                  color: '#4f46e5',
-                  border: '1px solid #4f46e5',
-                  borderRadius: '0.375rem',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  width: '100%'
-                }}
+                className="public-btn public-btn-secondary public-btn-full"
               >
                 回答を修正する
               </button>
@@ -316,17 +298,8 @@ const PublicSurveyPage: React.FC = () => {
 
             <button
               onClick={() => navigate('/s')}
-              style={{
-                padding: '0.75rem 2rem',
-                backgroundColor: 'transparent',
-                color: '#6b7280',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                width: '100%',
-                marginTop: '1rem'
-              }}
+              className="public-btn public-btn-secondary public-btn-full"
+              style={{ marginTop: '1rem' }}
             >
               回答履歴へ
             </button>
@@ -404,6 +377,7 @@ const PublicSurveyPage: React.FC = () => {
               questions={surveyData.survey?.questions_json}
               onComplete={handleSurveyComplete}
               isSubmitting={isSubmitting}
+              isPublic={true}
             />
           </div>
         )}

@@ -94,17 +94,6 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
     boxSizing: 'border-box',
   };
 
-  const buttonStyle: React.CSSProperties = {
-    backgroundColor: '#00b900',
-    color: 'white',
-    padding: '0.75rem 1.5rem',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    width: '100%',
-  };
-
   const errorTextStyle: React.CSSProperties = {
     color: '#ff4d4f',
     fontSize: '0.8rem',
@@ -129,15 +118,8 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
         <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem', textAlign: 'right' }}>
           <button
             onClick={() => navigate(`/respondent/edit?return_to=${encodeURIComponent(location.pathname + location.search)}`)}
-            style={{
-              backgroundColor: 'transparent',
-              color: '#666',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '0.4rem 1rem',
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
+            className="public-btn public-btn-secondary"
+            style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}
           >
             編集する
           </button>
@@ -202,7 +184,11 @@ const RespondentIdentification: React.FC<RespondentIdentificationProps> = ({
           />
           {errors.email && <div style={errorTextStyle}>{errors.email}</div>}
         </div>
-        <button type="submit" style={buttonStyle} disabled={isSubmitting}>
+        <button
+          type="submit"
+          className="public-btn public-btn-primary public-btn-full"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? '送信中...' : '保存して回答へ進む'}
         </button>
       </form>

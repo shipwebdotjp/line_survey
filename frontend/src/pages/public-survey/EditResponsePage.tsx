@@ -144,15 +144,8 @@ const EditResponsePage: React.FC = () => {
           <p>{error}</p>
           <button
             onClick={() => navigate(`/s/${public_id}`)}
-            style={{
-              marginTop: '1.5rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
+            className="public-btn public-btn-primary"
+            style={{ marginTop: '1.5rem' }}
           >
             アンケートトップへ
           </button>
@@ -180,15 +173,8 @@ const EditResponsePage: React.FC = () => {
 
           <button
             onClick={() => navigate(`/s/${public_id}`)}
-            style={{
-              marginTop: '1rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
+            className="public-btn public-btn-primary"
+            style={{ marginTop: '1rem' }}
           >
             アンケートトップへ
           </button>
@@ -222,6 +208,7 @@ const EditResponsePage: React.FC = () => {
             data={existingResponse.answer_json}
             onComplete={handleUpdateComplete}
             isSubmitting={isSubmitting}
+            isPublic={true}
           />
         )}
       </div>
