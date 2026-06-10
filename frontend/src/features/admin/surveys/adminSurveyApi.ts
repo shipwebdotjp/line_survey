@@ -117,6 +117,32 @@ export const adminSurveyApi = {
     );
   },
 
+  async updateResponse(
+    surveyId: number,
+    responseId: number,
+    answerJson: Record<string, any>
+  ): Promise<void> {
+    await fetchJson<void>(
+      `${API_BASE}/${surveyId}/responses/${responseId}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer_json: answerJson }),
+      },
+      '回答の更新に失敗しました'
+    );
+  },
+
+  async deleteResponse(surveyId: number, responseId: number): Promise<void> {
+    await fetchJson<void>(
+      `${API_BASE}/${surveyId}/responses/${responseId}`,
+      {
+        method: 'DELETE',
+      },
+      '回答の削除に失敗しました'
+    );
+  },
+
   getCsvUrl(surveyId: number): string {
     return `${API_BASE}/${surveyId}/responses.csv`;
   },
