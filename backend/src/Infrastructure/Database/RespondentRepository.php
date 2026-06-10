@@ -92,4 +92,33 @@ class RespondentRepository
 
         return $affected > 0;
     }
+
+    /**
+     * @return array[]
+     */
+    public function findAllWithSummary(): array
+    {
+        $sql = sprintf(
+            'SELECT
+                r.*,
+                COUNT(res.id) as response_count,
+                MAX(res.submitted_at) as latest_submitted_at
+             FROM %s r
+             LEFT JOIN responses res ON r.id = res.respondent_id
+             GROUP BY r.id
+             ORDER BY r.updated_at DESC, r.id DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql);
+
+        return array_map(fn($item) => (array)$item, $results);
+    }
+
+    public function delete(int $id): bool
+    {
+        $sql = sprintf('DELETE FROM %s WHERE id = ?', self::TABLE);
+        $affected = $this->db->delete($sql, [$id]);
+        return $affected > 0;
+    }
 }
