@@ -24,7 +24,7 @@ const PublicFooter: React.FC = () => {
     <footer className="public-footer">
       <div className="public-footer-inner">
         <div className="public-footer-top">
-          <div className="public-footer-brand">Survey System</div>
+          <div className="public-footer-brand">アンケートフォーム</div>
           {respondent && (
             <div className="public-footer-user">
               {respondent.name} {respondent.honorific || 'さん'}
@@ -49,7 +49,7 @@ const PublicFooter: React.FC = () => {
         </nav>
 
         <div className="public-footer-copyright">
-          &copy; {new Date().getFullYear()} Survey System
+          &copy; {new Date().getFullYear()} アンケートフォーム
         </div>
       </div>
     </footer>

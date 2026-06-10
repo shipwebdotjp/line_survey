@@ -88,7 +88,7 @@ const AppContent = () => {
           {/* Root Route - Redirect to admin or show a landing page */}
           <Route path="/" element={
             <div className="public-survey-root" style={{ padding: '2rem' }}>
-              <h1>Survey System</h1>
+              <h1>アンケートフォーム</h1>
               <p><Link to="/admin">Go to Admin</Link></p>
             </div>
           } />

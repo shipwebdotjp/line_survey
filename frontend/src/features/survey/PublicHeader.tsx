@@ -6,7 +6,7 @@ const PublicHeader: React.FC = () => {
     <header className="public-header">
       <div className="public-header-inner">
         <Link to="/" className="public-header-brand">
-          Survey System
+          アンケートフォーム
         </Link>
       </div>
     </header>

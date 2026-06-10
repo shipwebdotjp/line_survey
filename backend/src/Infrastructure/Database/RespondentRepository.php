@@ -101,11 +101,17 @@ class RespondentRepository
         $sql = sprintf(
             'SELECT
                 r.*,
-                COUNT(res.id) as response_count,
-                MAX(res.submitted_at) as latest_submitted_at
+                COALESCE(rs.response_count, 0) as response_count,
+                rs.latest_submitted_at
              FROM %s r
-             LEFT JOIN responses res ON r.id = res.respondent_id
-             GROUP BY r.id
+             LEFT JOIN (
+                SELECT
+                    respondent_id,
+                    COUNT(*) as response_count,
+                    MAX(submitted_at) as latest_submitted_at
+                FROM responses
+                GROUP BY respondent_id
+             ) rs ON r.id = rs.respondent_id
              ORDER BY r.updated_at DESC, r.id DESC',
             self::TABLE
         );

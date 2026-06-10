@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 const AboutUsPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'About Us | Survey System';
+    document.title = 'About Us | アンケートフォーム';
   }, []);
 
   return (
@@ -10,11 +10,13 @@ const AboutUsPage: React.FC = () => {
       <div className="public-card">
         <h1 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>About Us</h1>
         <p style={{ lineHeight: '1.6', color: '#4b5563' }}>
-          Survey System は、LINE を活用した手軽なアンケート回答プラットフォームです。
-          ユーザーの皆様からの貴重な意見を収集し、より良いサービスの向上に役立てています。
+          LINEと連携してアンケートに回答する際の煩雑なお名前やメールアドレスの入力の手間を省いていただけるアンケートフォームです。          
         </p>
         <p style={{ marginTop: '1rem', lineHeight: '1.6', color: '#4b5563' }}>
-          お問い合わせ等がある場合は、公式 LINE アカウントまでご連絡ください。
+          LINE表示名をLINE連携時に取得し、あらかじめ管理者が把握しているお名前とメールアドレスのリストと突き合わせることで、ご本人かどうかを特定しています。
+        </p>
+        <p style={{ marginTop: '1rem', lineHeight: '1.6', color: '#4b5563' }}>
+          ご不明な点は管理者までお問い合わせください。
         </p>
       </div>
     </div>
