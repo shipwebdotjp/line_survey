@@ -188,6 +188,37 @@ class ResponseRepository
         return $affected > 0;
     }
 
+    public function deleteByRespondentId(int $respondentId): int
+    {
+        $sql = sprintf('DELETE FROM %s WHERE respondent_id = ?', self::TABLE);
+        return $this->db->delete($sql, [$respondentId]);
+    }
+
+    /**
+     * @return array[]
+     */
+    public function findHistoryForAdmin(int $respondentId): array
+    {
+        $sql = sprintf(
+            'SELECT
+                r.id as response_id,
+                r.survey_id,
+                s.public_id as survey_public_id,
+                s.title as survey_title,
+                r.submitted_at,
+                r.updated_at
+             FROM %s r
+             LEFT JOIN surveys s ON r.survey_id = s.id
+             WHERE r.respondent_id = ?
+             ORDER BY r.submitted_at DESC, r.id DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql, [$respondentId]);
+
+        return array_map(fn($item) => (array)$item, $results);
+    }
+
     private function encodeJsonColumns(array $data): array
     {
         $jsonColumns = ['answer_json', 'survey_snapshot_json'];
