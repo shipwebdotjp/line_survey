@@ -8,8 +8,12 @@ use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
 use App\Presentation\Http\Admin\Survey\ListResponsesAction;
+use App\Presentation\Http\Admin\RespondentMaster\CreateRespondentMasterAction;
+use App\Presentation\Http\Admin\RespondentMaster\DeleteRespondentMasterAction;
+use App\Presentation\Http\Admin\RespondentMaster\GetRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\ImportRespondentMastersAction;
 use App\Presentation\Http\Admin\RespondentMaster\ListRespondentMastersAction;
+use App\Presentation\Http\Admin\RespondentMaster\UpdateRespondentMasterAction;
 use App\Presentation\Http\Admin\Survey\ListSurveysAction;
 use App\Presentation\Http\Admin\Survey\UpdateResponseAction as AdminUpdateResponseAction;
 use App\Presentation\Http\Admin\Survey\UpdateSurveyAction;
@@ -90,6 +94,10 @@ return function (App $app) {
 
         // Respondent Masters
         $group->get('/respondent-masters', ListRespondentMastersAction::class);
+        $group->post('/respondent-masters', CreateRespondentMasterAction::class);
+        $group->get('/respondent-masters/{id:[0-9]+}', GetRespondentMasterAction::class);
+        $group->put('/respondent-masters/{id:[0-9]+}', UpdateRespondentMasterAction::class);
+        $group->delete('/respondent-masters/{id:[0-9]+}', DeleteRespondentMasterAction::class);
         $group->post('/respondent-masters/import', ImportRespondentMastersAction::class);
 
         // Respondents

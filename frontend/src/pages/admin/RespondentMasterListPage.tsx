@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { adminRespondentMasterApi } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
 import type { RespondentMaster, ImportResult } from '../../features/admin/respondent-masters/types';
 import AdminButton from '../../components/admin/AdminButton';
+import { useToast } from '../../features/ui/ToastContext';
 
 const RespondentMasterListPage: React.FC = () => {
   const [masters, setMasters] = useState<RespondentMaster[]>([]);
@@ -10,6 +11,7 @@ const RespondentMasterListPage: React.FC = () => {
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useToast();
 
   const fetchMasters = async () => {
     try {
@@ -39,6 +41,7 @@ const RespondentMasterListPage: React.FC = () => {
       setImportResult(result);
       if (result.imported > 0) {
         await fetchMasters();
+        showToast('インポートが完了しました', 'success');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'インポートに失敗しました');
@@ -50,11 +53,31 @@ const RespondentMasterListPage: React.FC = () => {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('このマスターを削除してもよろしいですか？')) {
+      return;
+    }
+
+    try {
+      await adminRespondentMasterApi.delete(id);
+      showToast('マスターを削除しました', 'success');
+      fetchMasters();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '削除に失敗しました');
+    }
+  };
+
   return (
     <div>
       <div className="admin-page-header">
         <h1>回答者マスター管理</h1>
         <div className="admin-actions">
+          <AdminButton
+            to="/admin/respondent-masters/new"
+            variant="primary"
+          >
+            新規登録
+          </AdminButton>
           <AdminButton
             onClick={() => fileInputRef.current?.click()}
             disabled={importing}
@@ -108,7 +131,7 @@ const RespondentMasterListPage: React.FC = () => {
           {loading ? (
             <p>読み込み中...</p>
           ) : masters.length === 0 ? (
-            <p>データがありません。CSVインポートから登録してください。</p>
+            <p>データがありません。新規登録またはCSVインポートから登録してください。</p>
           ) : (
             <div className="admin-table-container">
               <table className="admin-table">
@@ -120,7 +143,7 @@ const RespondentMasterListPage: React.FC = () => {
                     <th>メール</th>
                     <th>敬称</th>
                     <th>備考</th>
-                    <th>更新日時</th>
+                    <th>アクション</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -134,7 +157,24 @@ const RespondentMasterListPage: React.FC = () => {
                       <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={master.note || ''}>
                         {master.note}
                       </td>
-                      <td>{master.updated_at}</td>
+                      <td>
+                        <div className="admin-table-actions">
+                          <AdminButton
+                            to={`/admin/respondent-masters/${master.id}/edit`}
+                            variant="outline"
+                            size="sm"
+                          >
+                            編集
+                          </AdminButton>
+                          <AdminButton
+                            onClick={() => handleDelete(master.id)}
+                            variant="danger"
+                            size="sm"
+                          >
+                            削除
+                          </AdminButton>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

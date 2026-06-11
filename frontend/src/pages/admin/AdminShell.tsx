@@ -28,6 +28,15 @@ const AdminShell: React.FC = () => {
       }
     } else if (matchPath('/admin/respondent-masters/*', pathname) || pathname === '/admin/respondent-masters') {
       breadcrumbs.push({ label: 'マスター管理', path: '/admin/respondent-masters' });
+
+      const newMatch = matchPath('/admin/respondent-masters/new', pathname);
+      const editMatch = matchPath('/admin/respondent-masters/:id/edit', pathname);
+
+      if (newMatch) {
+        breadcrumbs.push({ label: '新規登録', path: pathname });
+      } else if (editMatch) {
+        breadcrumbs.push({ label: '編集', path: pathname });
+      }
     } else if (matchPath('/admin/respondents/*', pathname) || pathname === '/admin/respondents') {
       breadcrumbs.push({ label: '回答者管理', path: '/admin/respondents' });
 

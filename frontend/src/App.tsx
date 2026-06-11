@@ -15,6 +15,8 @@ import ResponseListPage from './pages/admin/ResponseListPage';
 import ResponseDetailPage from './pages/admin/ResponseDetailPage';
 import ResponseEditPage from './pages/admin/ResponseEditPage';
 import RespondentMasterListPage from './pages/admin/RespondentMasterListPage';
+import RespondentMasterCreatePage from './pages/admin/RespondentMasterCreatePage';
+import RespondentMasterEditPage from './pages/admin/RespondentMasterEditPage';
 import RespondentListPage from './pages/admin/RespondentListPage';
 import RespondentDetailPage from './pages/admin/RespondentDetailPage';
 import RespondentEditPage from './pages/admin/RespondentEditPage';
@@ -79,6 +81,8 @@ const AppContent = () => {
             <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
             <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
             <Route path="respondent-masters" element={<RespondentMasterListPage />} />
+            <Route path="respondent-masters/new" element={<RespondentMasterCreatePage />} />
+            <Route path="respondent-masters/:id/edit" element={<RespondentMasterEditPage />} />
             <Route path="respondents" element={<RespondentListPage />} />
             <Route path="respondents/:id" element={<RespondentDetailPage />} />
             <Route path="respondents/:id/edit" element={<RespondentEditPage />} />
