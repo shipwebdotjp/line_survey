@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import PublicHomePage from './pages/public-home/PublicHomePage';
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
 import EditResponsePage from './pages/public-survey/EditResponsePage';
 import ShowResponsePage from './pages/public-survey/ShowResponsePage';
@@ -59,17 +60,16 @@ const AppContent = () => {
       <LiffGate>
         <ToastProvider>
         <Routes>
-          {/* Public Survey Routes */}
           <Route element={<PublicLayout />}>
-            <Route path="/s" element={<ResponseHistoryPage />} />
-            <Route path="/s/:public_id" element={<PublicSurveyPage />} />
-            <Route path="/s/:public_id/r/:edit_token" element={<ShowResponsePage />} />
-            <Route path="/s/:public_id/r/:edit_token/edit" element={<EditResponsePage />} />
-            <Route path="/respondent/edit" element={<EditRespondentsPage />} />
-            <Route path="/about-us" element={<AboutUsPage />} />
+            <Route index element={<PublicHomePage />} />
+            <Route path="s" element={<ResponseHistoryPage />} />
+            <Route path="s/:public_id" element={<PublicSurveyPage />} />
+            <Route path="s/:public_id/r/:edit_token" element={<ShowResponsePage />} />
+            <Route path="s/:public_id/r/:edit_token/edit" element={<EditResponsePage />} />
+            <Route path="respondent/edit" element={<EditRespondentsPage />} />
+            <Route path="about-us" element={<AboutUsPage />} />
           </Route>
 
-          {/* Admin Routes */}
           <Route path="/admin" element={<AdminShell />}>
             <Route index element={<Navigate to="surveys" replace />} />
             <Route path="surveys" element={<SurveyListPage />} />
@@ -85,15 +85,6 @@ const AppContent = () => {
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
 
-          {/* Root Route - Redirect to admin or show a landing page */}
-          <Route path="/" element={
-            <div className="public-survey-root" style={{ padding: '2rem' }}>
-              <h1>アンケートフォーム</h1>
-              <p><Link to="/admin">Go to Admin</Link></p>
-            </div>
-          } />
-
-          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         </ToastProvider>

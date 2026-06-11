@@ -24,6 +24,7 @@ This directory is the project wiki for AI coding agents.
 ## Recorded Notes
 
 - [10-Decisions.md](./10-Decisions.md): LIFF の期限切れ IDToken クリア方針などの技術判断
+- [20-Worklog.md](./20-Worklog.md): デプロイ時の環境変数、`.htaccess`、権限調整の作業記録
 
 ## Source References
 
