@@ -16,8 +16,12 @@ const RespondentMasterEditPage: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (id) {
-      loadMaster(parseInt(id, 10));
+    const parsedId = Number.isInteger(Number(id)) ? Number(id) : NaN;
+    if (!isNaN(parsedId)) {
+      loadMaster(parsedId);
+    } else if (id) {
+      setError('無効なIDです。');
+      setIsLoading(false);
     }
   }, [id]);
 
@@ -34,12 +38,14 @@ const RespondentMasterEditPage: React.FC = () => {
   };
 
   const handleSubmit = async (data: UpdateRespondentMasterRequest) => {
-    if (!id) return;
+    const parsedId = Number.isInteger(Number(id)) ? Number(id) : NaN;
+    if (isNaN(parsedId)) return;
+
     try {
       setIsSaving(true);
       setError(null);
       setValidationErrors({});
-      await adminRespondentMasterApi.update(parseInt(id, 10), data);
+      await adminRespondentMasterApi.update(parsedId, data);
       showToast('マスターを更新しました', 'success');
       navigate('/admin/respondent-masters');
     } catch (err: any) {
@@ -55,6 +61,7 @@ const RespondentMasterEditPage: React.FC = () => {
   };
 
   if (isLoading) return <div>読み込み中...</div>;
+  if (error && !master) return <div className="admin-error-message">エラー: {error}</div>;
   if (!master) return <div>データが見つかりません。</div>;
 
   return (

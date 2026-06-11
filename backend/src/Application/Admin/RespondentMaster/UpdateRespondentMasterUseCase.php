@@ -52,8 +52,8 @@ final class UpdateRespondentMasterUseCase
         }
 
         // Normalization
-        $data['honorific'] = !empty($data['honorific']) ? $data['honorific'] : null;
-        $data['note'] = !empty($data['note']) ? $data['note'] : null;
+        $data['honorific'] = ($data['honorific'] ?? '') !== '' ? $data['honorific'] : null;
+        $data['note'] = ($data['note'] ?? '') !== '' ? $data['note'] : null;
 
         return $this->respondentMasterRepository->update($id, $data);
     }

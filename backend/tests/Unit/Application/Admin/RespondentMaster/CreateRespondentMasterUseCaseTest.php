@@ -47,6 +47,29 @@ class CreateRespondentMasterUseCaseTest extends TestCase
         $this->assertEquals(1, $id);
     }
 
+    public function testExecuteWithZeroValues(): void
+    {
+        $data = [
+            'master_code' => 'M001',
+            'line_display_name' => 'User One',
+            'name' => 'Name One',
+            'email' => 'one@example.com',
+            'honorific' => '0',
+            'note' => '0'
+        ];
+
+        $this->repository->method('findBy')->willReturn([]);
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function ($d) {
+                return $d['honorific'] === '0' && $d['note'] === '0';
+            }))
+            ->willReturn(1);
+
+        $id = $this->useCase->execute($data);
+        $this->assertEquals(1, $id);
+    }
+
     public function testExecuteDuplicateMasterCode(): void
     {
         $data = [

@@ -26,6 +26,19 @@ const RespondentMasterForm: React.FC<Props> = ({
     note: initialData?.note || '',
   });
 
+  React.useEffect(() => {
+    if (initialData) {
+      setFormData({
+        master_code: initialData.master_code || '',
+        line_display_name: initialData.line_display_name || '',
+        name: initialData.name || '',
+        email: initialData.email || '',
+        honorific: initialData.honorific || '',
+        note: initialData.note || '',
+      });
+    }
+  }, [initialData]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
