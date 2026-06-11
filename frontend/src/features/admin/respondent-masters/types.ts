@@ -17,3 +17,21 @@ export interface ImportResult {
     reason: string;
   }>;
 }
+
+export interface CreateRespondentMasterRequest {
+  master_code: string;
+  line_display_name: string;
+  name: string;
+  email: string;
+  honorific?: string | null;
+  note?: string | null;
+}
+
+export interface UpdateRespondentMasterRequest {
+  master_code: string;
+  line_display_name: string;
+  name: string;
+  email: string;
+  honorific?: string | null;
+  note?: string | null;
+}

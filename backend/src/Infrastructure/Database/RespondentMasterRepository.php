@@ -92,4 +92,11 @@ class RespondentMasterRepository
 
         return $affected > 0;
     }
+
+    public function delete(int $id): bool
+    {
+        $sql = sprintf('DELETE FROM %s WHERE id = ?', self::TABLE);
+        $affected = $this->db->delete($sql, [$id]);
+        return $affected > 0;
+    }
 }
