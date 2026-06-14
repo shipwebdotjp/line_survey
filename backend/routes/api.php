@@ -8,6 +8,9 @@ use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
 use App\Presentation\Http\Admin\Survey\ListResponsesAction;
+use App\Presentation\Http\Admin\Survey\ListResponseDraftsAction;
+use App\Presentation\Http\Admin\Survey\GetResponseDraftAdminAction;
+use App\Presentation\Http\Admin\Survey\CleanupResponseDraftsAction;
 use App\Presentation\Http\Admin\RespondentMaster\CreateRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\DeleteRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\GetRespondentMasterAction;
@@ -101,6 +104,11 @@ return function (App $app) {
         $group->put('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', AdminUpdateResponseAction::class);
         $group->delete('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', DeleteResponseAction::class);
         $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
+
+        // Response Drafts
+        $group->get('/response-drafts', ListResponseDraftsAction::class);
+        $group->get('/response-drafts/{id:[0-9]+}', GetResponseDraftAdminAction::class);
+        $group->post('/response-drafts/cleanup', CleanupResponseDraftsAction::class);
 
         // Respondent Masters
         $group->get('/respondent-masters', ListRespondentMastersAction::class);

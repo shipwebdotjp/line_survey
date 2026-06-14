@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
-import { fetchWithSession } from '../../lib/publicApi';
+import { fetchWithSession, getResponseDraft, saveResponseDraft, deleteResponseDraft } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
-import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData } from '../../features/survey/types';
-import type { Model } from 'survey-core';
+import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData, ResponseDraft } from '../../features/survey/types';
+import { Model } from 'survey-core';
 import { createLiffUrl } from '../../lib/liffUrl';
 
 const PublicSurveyPage: React.FC = () => {
@@ -23,6 +23,8 @@ const PublicSurveyPage: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
   const [existingResponse, setExistingResponse] = useState<SurveyResponse | null>(null);
+  const [draft, setDraft] = useState<ResponseDraft | null>(null);
+  const [autoSaveError, setAutoSaveError] = useState<string | null>(null);
   const isDebugMode = import.meta.env.DEV || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'));
 
   useEffect(() => {
@@ -105,9 +107,19 @@ const PublicSurveyPage: React.FC = () => {
 
         // 3. Check for existing response
         const responseRes = await fetchWithSession(`/api/surveys/public/${public_id}/responses/current`, {}, fetchOptions);
+        let hasExistingResponse = false;
         if (responseRes.ok) {
           const responseResult = await responseRes.json();
           setExistingResponse(responseResult.data);
+          if (responseResult.data && !surveyResult.data?.survey?.allow_multiple) {
+            hasExistingResponse = true;
+          }
+        }
+
+        // 4. Fetch draft if no existing response (that blocks new answers)
+        if (!hasExistingResponse) {
+          const draftResult = await getResponseDraft(public_id, identify);
+          setDraft(draftResult.draft);
         }
 
       } catch (err) {
@@ -168,6 +180,13 @@ const PublicSurveyPage: React.FC = () => {
 
       if (result.data) {
         setSubmittedResponse(result.data);
+        // Delete draft after successful submission (already handled by backend but good to sync)
+        try {
+          await deleteResponseDraft(public_id, identify);
+        } catch (e) {
+          // Ignore draft deletion error on frontend as it's not critical
+          console.error('Failed to delete draft on frontend', e);
+        }
       }
     } catch (err) {
       setSubmitError('通信エラーが発生しました。');
@@ -175,6 +194,32 @@ const PublicSurveyPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleValueChanged = (sender: Model) => {
+    if (!public_id) return;
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        setAutoSaveError(null);
+        await saveResponseDraft(public_id, sender.data, identify);
+      } catch (err) {
+        setAutoSaveError('一時保存に失敗しました。入力は続けられます。');
+      }
+    }, 5000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isLoading && !error) {
     return (
@@ -373,9 +418,24 @@ const PublicSurveyPage: React.FC = () => {
                 {submitError}
               </div>
             )}
+            {autoSaveError && (
+              <div style={{
+                padding: '0.5rem 1rem',
+                marginBottom: '1rem',
+                backgroundColor: '#fffbeb',
+                color: '#92400e',
+                borderRadius: '4px',
+                border: '1px solid #fef3c7',
+                fontSize: '0.875rem'
+              }}>
+                {autoSaveError}
+              </div>
+            )}
             <SurveyRenderer
               questions={surveyData.survey?.questions_json}
+              data={draft?.answer_json}
               onComplete={handleSurveyComplete}
+              onValueChanged={handleValueChanged}
               isSubmitting={isSubmitting}
               isPublic={true}
             />

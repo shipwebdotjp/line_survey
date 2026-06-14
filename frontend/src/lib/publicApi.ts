@@ -1,4 +1,4 @@
-import type { Respondent } from '../features/survey/types';
+import type { ResponseDraftResponse, Respondent } from '../features/survey/types';
 
 export interface ApiError extends Error {
   code?: string;
@@ -57,6 +57,47 @@ export const getRespondentProfile = async (onSessionRequired?: () => Promise<boo
     throw new Error(result.error || 'Failed to fetch respondent profile');
   }
   return result.data;
+};
+
+export const getResponseDraft = async (
+  publicId: string,
+  onSessionRequired?: () => Promise<boolean>
+): Promise<ResponseDraftResponse> => {
+  const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {}, { onSessionRequired });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to fetch response draft');
+  }
+  return result;
+};
+
+export const saveResponseDraft = async (
+  publicId: string,
+  answerJson: Record<string, any>,
+  onSessionRequired?: () => Promise<boolean>
+): Promise<ResponseDraftResponse> => {
+  const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {
+    method: 'PUT',
+    body: JSON.stringify({ answer_json: answerJson }),
+  }, { onSessionRequired });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to save response draft');
+  }
+  return result;
+};
+
+export const deleteResponseDraft = async (
+  publicId: string,
+  onSessionRequired?: () => Promise<boolean>
+): Promise<void> => {
+  const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {
+    method: 'DELETE',
+  }, { onSessionRequired });
+  if (!response.ok) {
+    const result = await response.json();
+    throw new Error(result.error || 'Failed to delete response draft');
+  }
 };
 
 export const updateRespondentProfile = async (

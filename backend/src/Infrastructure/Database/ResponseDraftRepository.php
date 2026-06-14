@@ -36,6 +36,53 @@ class ResponseDraftRepository
         return $this->mapToArray($result);
     }
 
+    public function findById(int $id): ?array
+    {
+        $sql = sprintf(
+            'SELECT
+                rd.*,
+                s.title as survey_title,
+                s.public_id as survey_public_id,
+                s.questions_json as survey_questions_json,
+                res.name as respondent_name,
+                res.email as respondent_email
+             FROM %s rd
+             JOIN surveys s ON rd.survey_id = s.id
+             JOIN respondents res ON rd.respondent_id = res.id
+             WHERE rd.id = ? LIMIT 1',
+            self::TABLE
+        );
+
+        $result = $this->db->selectOne($sql, [$id]);
+
+        if (!$result) {
+            return null;
+        }
+
+        return $this->mapWithSurveyQuestions($result);
+    }
+
+    public function findAll(): array
+    {
+        $sql = sprintf(
+            'SELECT
+                rd.*,
+                s.title as survey_title,
+                s.public_id as survey_public_id,
+                res.name as respondent_name,
+                res.email as respondent_email
+             FROM %s rd
+             JOIN surveys s ON rd.survey_id = s.id
+             JOIN respondents res ON rd.respondent_id = res.id
+             ORDER BY rd.updated_at DESC, rd.id DESC',
+            self::TABLE
+        );
+
+        $results = $this->db->select($sql);
+
+        return array_map([$this, 'mapToArray'], $results);
+    }
+
     public function save(array $data): int
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
@@ -144,6 +191,15 @@ class ResponseDraftRepository
             if (isset($array[$column]) && is_string($array[$column])) {
                 $array[$column] = json_decode($array[$column], true);
             }
+        }
+        return $array;
+    }
+
+    private function mapWithSurveyQuestions(object|array $result): array
+    {
+        $array = $this->mapToArray($result);
+        if (isset($array['survey_questions_json']) && is_string($array['survey_questions_json'])) {
+            $array['survey_questions_json'] = json_decode($array['survey_questions_json'], true);
         }
         return $array;
     }
