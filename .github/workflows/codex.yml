@@ -1,0 +1,64 @@
+name: Codex pull request review
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  codex:
+    runs-on: ubuntu-latest
+    # PRのコメントかつ @codex メンションを含む場合のみ実行
+    if: |
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '@codex')
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # issue_comment では pull_request コンテキストがないので取得方法が変わる
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+          persist-credentials: false
+
+      - name: Pre-fetch base and head refs
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # base refはAPIで取得する必要がある
+          BASE_REF=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.base.ref')
+          git fetch --no-tags origin \
+            "$BASE_REF" \
+            "+refs/pull/$PR_NUMBER/head"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Run Codex
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/prompts/review.md
+          output-file: codex-output.md
+
+  post_feedback:
+    runs-on: ubuntu-latest
+    needs: codex
+    if: needs.codex.outputs.final_message != ''
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Post Codex feedback
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: process.env.CODEX_FINAL_MESSAGE,
+            });
+        env:
+          CODEX_FINAL_MESSAGE: ${{ needs.codex.outputs.final_message }}
