@@ -1,4 +1,5 @@
 name: Codex pull request review
+
 on:
   issue_comment:
     types: [created]
@@ -6,48 +7,138 @@ on:
 jobs:
   codex:
     runs-on: ubuntu-latest
-    # PRのコメントかつ @codex メンションを含む場合のみ実行
+
     if: |
       github.event.issue.pull_request != null &&
       contains(github.event.comment.body, '@codex')
+
     permissions:
       contents: read
+      pull-requests: read
+
     outputs:
       final_message: ${{ steps.run_codex.outputs.final-message }}
+
     steps:
+      - name: Get PR info
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          PR_JSON=$(gh api repos/$REPO/pulls/$PR_NUMBER)
+
+          {
+            echo "base_sha=$(echo "$PR_JSON" | jq -r '.base.sha')"
+            echo "head_sha=$(echo "$PR_JSON" | jq -r '.head.sha')"
+            echo "base_ref=$(echo "$PR_JSON" | jq -r '.base.ref')"
+            echo "head_ref=$(echo "$PR_JSON" | jq -r '.head.ref')"
+
+            echo "title<<EOF"
+            echo "$PR_JSON" | jq -r '.title'
+            echo "EOF"
+
+            echo "body<<EOF"
+            echo "$PR_JSON" | jq -r '.body // ""'
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v5
         with:
-          # issue_comment では pull_request コンテキストがないので取得方法が変わる
           ref: refs/pull/${{ github.event.issue.number }}/merge
           persist-credentials: false
 
       - name: Pre-fetch base and head refs
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
-          GH_TOKEN: ${{ github.token }}
         run: |
-          # base refはAPIで取得する必要がある
-          BASE_REF=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.base.ref')
           git fetch --no-tags origin \
-            "$BASE_REF" \
-            "+refs/pull/$PR_NUMBER/head"
+            "${{ steps.pr.outputs.base_ref }}" \
+            "+refs/pull/$PR_NUMBER/head:refs/remotes/pull/$PR_NUMBER/head"
 
       - name: Run Codex
         id: run_codex
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .github/codex/prompts/review.md
           output-file: codex-output.md
           model: gpt-5.4-mini
+          prompt: |
+            This is PR #${{ github.event.issue.number }} for ${{ github.repository }}.
+
+            Review ONLY the changes introduced by the PR, so consider:
+
+              git log --oneline ${{ steps.pr.outputs.base_sha }}...${{ steps.pr.outputs.head_sha }}
+              git diff ${{ steps.pr.outputs.base_sha }}...${{ steps.pr.outputs.head_sha }}
+
+            Pull request title and body:
+            ----
+            ${{ steps.pr.outputs.title }}
+
+            ${{ steps.pr.outputs.body }}
+            ----
+            Your role is to catch clear, actionable defects only — not to suggest improvements or enforce style.
+            ---
+
+            ## Review Criteria
+
+            Before raising a finding, **all three conditions below must be met**:
+
+            1. The issue **clearly violates the PR description**, OR the diff **demonstrably breaks existing functionality**, OR it will **highly likely cause an exception, incorrect behavior, or data corruption** during normal execution.
+            2. The fix is **entirely within the scope of this PR** (no external changes required).
+            3. The implementer can fix it **without additional design decisions**.
+
+            **Do NOT report findings for:**
+            - Style preferences or naming conventions
+            - Speculative or unlikely edge cases
+            - Architectural suggestions or refactoring opportunities
+            - Anything requiring changes outside this PR
+
+            ---
+
+            ## Output Format
+
+            ### If no findings (all criteria pass):
+
+            Output nothing. An empty response signals that the PR is approved.
+
+            ### If findings exist:
+
+            Output exactly the following structure — no preamble, no explanation outside it.
+            ---
+            @jules
+            Verify each finding against current code. Fix only still-valid issues, skip the rest with a brief reason, keep changes minimal, and validate.
+
+            Do not apply speculative fixes.
+
+            Preserve existing architecture unless the finding requires a structural change.
+            Findings
+            Finding 1 — {severity}: {file}:{line}
+            Problem: {Clear description of what is wrong and why it is a defect.}
+
+            Fix: {Concrete instruction for how to correct it.}
+            Finding 2 — {severity}: {file}:{line}
+            ...
+            ---
+
+            ## Severity levels:
+            - `critical` — data corruption, security issue, or crash in normal use
+            - `major` — incorrect behavior that violates the PR description
+            - `minor` — definite bug but low impact or rare trigger condition
+
+            Do not include findings that do not meet all three review criteria above.
 
   post_feedback:
     runs-on: ubuntu-latest
     needs: codex
+
     if: needs.codex.outputs.final_message != ''
+
     permissions:
       issues: write
       pull-requests: write
+
     steps:
       - name: Post Codex feedback
         uses: actions/github-script@v7
