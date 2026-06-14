@@ -55,58 +55,65 @@ const ResponseDraftDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="admin-card" style={{ marginBottom: '2rem' }}>
-        <table className="admin-detail-table">
-          <tbody>
-            <tr>
-              <th>アンケート</th>
-              <td>{draft.survey_title}</td>
-            </tr>
-            <tr>
-              <th>回答者</th>
-              <td>
-                {draft.respondent_name}
-                {draft.respondent_email && ` (${draft.respondent_email})`}
-              </td>
-            </tr>
-            <tr>
-              <th>最終更新日時</th>
-              <td>{formatDisplayDate(draft.updated_at)}</td>
-            </tr>
-            <tr>
-              <th>作成日時</th>
-              <td>{formatDisplayDate(draft.created_at)}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="admin-card mb-8">
+        <div className="admin-card-header">
+          <h3>下書き情報</h3>
+        </div>
+        <div className="admin-card-body">
+          <table className="admin-detail-table">
+            <tbody>
+              <tr>
+                <th>アンケート</th>
+                <td>{draft.survey_title}</td>
+              </tr>
+              <tr>
+                <th>回答者</th>
+                <td>
+                  {draft.respondent_name}
+                  {draft.respondent_email && ` (${draft.respondent_email})`}
+                </td>
+              </tr>
+              <tr>
+                <th>最終更新日時</th>
+                <td>{formatDisplayDate(draft.updated_at)}</td>
+              </tr>
+              <tr>
+                <th>作成日時</th>
+                <td>{formatDisplayDate(draft.created_at)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="admin-card">
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>回答内容 (途中経過)</h2>
-        {draft.survey_questions_json ? (
-          <SurveyRenderer
-            questions={draft.survey_questions_json}
-            data={draft.answer_json}
-            readOnly={true}
-          />
-        ) : (
-          <div className="error-banner">
-            アンケートの設問データが見つからないため、プレビューを表示できません。
-          </div>
-        )}
+        <div className="admin-card-header">
+          <h3>回答内容 (途中経過)</h3>
+        </div>
+        <div className="admin-card-body">
+          {draft.survey_questions_json ? (
+            <SurveyRenderer
+              questions={draft.survey_questions_json}
+              data={draft.answer_json}
+              readOnly={true}
+            />
+          ) : (
+            <div className="error-banner">
+              アンケートの設問データが見つからないため、プレビューを表示できません。
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="admin-card" style={{ marginTop: '1rem' }}>
-          <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>生のJSONデータ</h3>
-          <pre style={{
-            background: '#f8f9fa',
-            padding: '1rem',
-            borderRadius: '4px',
-            overflowX: 'auto',
-            fontSize: '0.8rem'
-          }}>
+      <div className="admin-card mt-4">
+        <div className="admin-card-header">
+          <h3>生のJSONデータ</h3>
+        </div>
+        <div className="admin-card-body">
+          <pre className="admin-json-view">
             {JSON.stringify(draft.answer_json, null, 2)}
           </pre>
+        </div>
       </div>
     </div>
   );
