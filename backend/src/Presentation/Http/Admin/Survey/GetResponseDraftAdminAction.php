@@ -27,7 +27,7 @@ final class GetResponseDraftAdminAction
         $draft = $this->useCase->execute($id);
 
         if (!$draft) {
-            return JsonResponse::error($response, '下書きが見つかりませんでした。', 404);
+            return JsonResponse::error($response, 'NOT_FOUND', '下書きが見つかりませんでした。', null, 404);
         }
 
         return JsonResponse::success($response, ['draft' => $draft]);

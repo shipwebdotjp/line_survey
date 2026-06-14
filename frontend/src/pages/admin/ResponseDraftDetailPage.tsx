@@ -56,7 +56,7 @@ const ResponseDraftDetailPage: React.FC = () => {
       </div>
 
       <div className="admin-card" style={{ marginBottom: '2rem' }}>
-        <table className="detail-table">
+        <table className="admin-detail-table">
           <tbody>
             <tr>
               <th>アンケート</th>
