@@ -17,7 +17,8 @@ jobs:
       pull-requests: read
 
     outputs:
-      final_message: ${{ steps.run_codex.outputs.final-message }}
+      final_message: ${{ steps.filter.outputs.message }}
+      should_post: ${{ steps.filter.outputs.should_post }}
 
     steps:
       - name: Get PR info
@@ -52,9 +53,10 @@ jobs:
       - name: Pre-fetch base and head refs
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
         run: |
           git fetch --no-tags origin \
-            "${{ steps.pr.outputs.base_ref }}" \
+            "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF" \
             "+refs/pull/$PR_NUMBER/head:refs/remotes/pull/$PR_NUMBER/head"
 
       - name: Run Codex
@@ -67,7 +69,9 @@ jobs:
           prompt: |
             This is PR #${{ github.event.issue.number }} for ${{ github.repository }}.
 
-            Review ONLY the changes introduced by the PR, so consider:
+            Review ONLY the changes introduced by the PR.
+
+            Use these commands as the source of truth:
 
               git log --oneline ${{ steps.pr.outputs.base_sha }}...${{ steps.pr.outputs.head_sha }}
               git diff ${{ steps.pr.outputs.base_sha }}...${{ steps.pr.outputs.head_sha }}
@@ -78,18 +82,30 @@ jobs:
 
             ${{ steps.pr.outputs.body }}
             ----
-            Your role is to catch clear, actionable defects only — not to suggest improvements or enforce style.
+
+            Your role is to catch clear, actionable defects only.
+            Do not suggest improvements.
+            Do not enforce style.
+            Do not narrate your process.
+            Do not provide progress updates.
+            Do not explain what you checked.
+
+            Your final response must be exactly one of the following:
+
+            1. Exactly `CODEX_NO_FINDINGS`
+            2. A review block wrapped by `BEGIN_CODEX_REVIEW` and `END_CODEX_REVIEW`
+
             ---
 
             ## Review Criteria
 
-            Before raising a finding, **all three conditions below must be met**:
+            Before raising a finding, all three conditions below must be met:
 
-            1. The issue **clearly violates the PR description**, OR the diff **demonstrably breaks existing functionality**, OR it will **highly likely cause an exception, incorrect behavior, or data corruption** during normal execution.
-            2. The fix is **entirely within the scope of this PR** (no external changes required).
-            3. The implementer can fix it **without additional design decisions**.
+            1. The issue clearly violates the PR description, OR the diff demonstrably breaks existing functionality, OR it will highly likely cause an exception, incorrect behavior, or data corruption during normal execution.
+            2. The fix is entirely within the scope of this PR.
+            3. The implementer can fix it without additional design decisions.
 
-            **Do NOT report findings for:**
+            Do NOT report findings for:
             - Style preferences or naming conventions
             - Speculative or unlikely edge cases
             - Architectural suggestions or refactoring opportunities
@@ -99,41 +115,90 @@ jobs:
 
             ## Output Format
 
-            ### If no findings (all criteria pass):
+            If no findings meet all review criteria, output exactly:
 
-            Output nothing. An empty response signals that the PR is approved.
+            CODEX_NO_FINDINGS
 
-            ### If findings exist:
+            Do not output anything else.
 
-            Output exactly the following structure — no preamble, no explanation outside it.
-            ---
+            If findings exist, output exactly this structure:
+
+            BEGIN_CODEX_REVIEW
             @jules
             Verify each finding against current code. Fix only still-valid issues, skip the rest with a brief reason, keep changes minimal, and validate.
 
             Do not apply speculative fixes.
 
             Preserve existing architecture unless the finding requires a structural change.
+
             Findings
+
             Finding 1 — {severity}: {file}:{line}
             Problem: {Clear description of what is wrong and why it is a defect.}
 
             Fix: {Concrete instruction for how to correct it.}
+
             Finding 2 — {severity}: {file}:{line}
-            ...
+            Problem: {Clear description of what is wrong and why it is a defect.}
+
+            Fix: {Concrete instruction for how to correct it.}
+            END_CODEX_REVIEW
+
             ---
 
-            ## Severity levels:
-            - `critical` — data corruption, security issue, or crash in normal use
-            - `major` — incorrect behavior that violates the PR description
-            - `minor` — definite bug but low impact or rare trigger condition
+            ## Severity levels
+
+            - critical — data corruption, security issue, or crash in normal use
+            - major — incorrect behavior that violates the PR description
+            - minor — definite bug but low impact or rare trigger condition
 
             Do not include findings that do not meet all three review criteria above.
+            Do not output anything outside the required final response format.
+
+      - name: Filter Codex output
+        id: filter
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+
+          output_file = Path("codex-output.md")
+
+          if output_file.exists():
+              raw = output_file.read_text(encoding="utf-8").strip()
+          else:
+              raw = """${{ steps.run_codex.outputs.final-message }}""".strip()
+
+          should_post = "false"
+          message = ""
+
+          if raw == "" or raw == "CODEX_NO_FINDINGS":
+              should_post = "false"
+
+          elif "BEGIN_CODEX_REVIEW" in raw and "END_CODEX_REVIEW" in raw:
+              start = raw.index("BEGIN_CODEX_REVIEW") + len("BEGIN_CODEX_REVIEW")
+              end = raw.index("END_CODEX_REVIEW")
+              message = raw[start:end].strip()
+
+              if message:
+                  should_post = "true"
+
+          else:
+              # Ignore progress updates, narration, malformed responses, etc.
+              should_post = "false"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+              f.write(f"should_post={should_post}\n")
+              f.write("message<<EOF\n")
+              f.write(message)
+              f.write("\nEOF\n")
+          PY
 
   post_feedback:
     runs-on: ubuntu-latest
     needs: codex
 
-    if: needs.codex.outputs.final_message != ''
+    if: needs.codex.outputs.should_post == 'true'
 
     permissions:
       issues: write

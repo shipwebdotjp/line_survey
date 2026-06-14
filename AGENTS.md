@@ -40,6 +40,11 @@ This repository uses Docker and `make` targets.
 
 Use the containerized commands from `Makefile`; do not run host-side tooling unless the repository explicitly adds it.
 
+## API Response Shapes
+
+- `JsonResponse::success()` returns a `{ data: ... }` envelope, so frontend API helpers should usually unwrap `result.data` before returning to callers.
+- Do not mix helper contracts between raw envelopes and unwrapped payloads; page components should not need to know the transport wrapper shape.
+
 ## Coding Style & Naming Conventions
 
 - Use ASCII unless a file already requires otherwise
