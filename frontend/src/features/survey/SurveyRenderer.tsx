@@ -6,6 +6,7 @@ import 'survey-core/survey-core.min.css';
 interface SurveyRendererProps {
   questions: Record<string, any>;
   onComplete?: (sender: Model) => void;
+  onValueChanged?: (sender: Model, options: any) => void;
   isSubmitting?: boolean;
   data?: Record<string, any>;
   readOnly?: boolean;
@@ -15,6 +16,7 @@ interface SurveyRendererProps {
 const SurveyRenderer: React.FC<SurveyRendererProps> = ({
   questions,
   onComplete,
+  onValueChanged,
   isSubmitting = false,
   data,
   readOnly = false,
@@ -40,6 +42,15 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
   useEffect(() => {
     isSubmittingRef.current = isSubmitting;
   }, [isSubmitting]);
+
+  useEffect(() => {
+    if (onValueChanged) {
+      survey.onValueChanged.add(onValueChanged);
+      return () => {
+        survey.onValueChanged.remove(onValueChanged);
+      };
+    }
+  }, [survey, onValueChanged]);
 
   useEffect(() => {
     if (onComplete) {

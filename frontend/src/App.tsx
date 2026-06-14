@@ -14,6 +14,8 @@ import SurveyEditPage from './pages/admin/SurveyEditPage';
 import ResponseListPage from './pages/admin/ResponseListPage';
 import ResponseDetailPage from './pages/admin/ResponseDetailPage';
 import ResponseEditPage from './pages/admin/ResponseEditPage';
+import ResponseDraftListPage from './pages/admin/ResponseDraftListPage';
+import ResponseDraftDetailPage from './pages/admin/ResponseDraftDetailPage';
 import RespondentMasterListPage from './pages/admin/RespondentMasterListPage';
 import RespondentMasterCreatePage from './pages/admin/RespondentMasterCreatePage';
 import RespondentMasterEditPage from './pages/admin/RespondentMasterEditPage';
@@ -80,6 +82,8 @@ const AppContent = () => {
             <Route path="surveys/:id/responses" element={<ResponseListPage />} />
             <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
             <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
+            <Route path="response-drafts" element={<ResponseDraftListPage />} />
+            <Route path="response-drafts/:id" element={<ResponseDraftDetailPage />} />
             <Route path="respondent-masters" element={<RespondentMasterListPage />} />
             <Route path="respondent-masters/new" element={<RespondentMasterCreatePage />} />
             <Route path="respondent-masters/:id/edit" element={<RespondentMasterEditPage />} />
