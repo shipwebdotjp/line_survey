@@ -61,3 +61,21 @@ export interface ResponseHistoryItem {
   survey_public_id: string | null;
   survey_title: string | null;
 }
+
+export interface ResponseDraft {
+  id?: number;
+  survey_public_id: string;
+  respondent_id: number;
+  answer_json: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+  // Admin only fields
+  survey_title?: string;
+  respondent_name?: string;
+  respondent_email?: string;
+  survey_questions_json?: Record<string, any>;
+}
+
+export interface ResponseDraftResponse {
+  draft: ResponseDraft | null;
+}

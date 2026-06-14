@@ -850,6 +850,19 @@
   border-right: 3px solid var(--accent);
 }
 
+.admin-nav-sub {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.admin-nav-sub a {
+  padding-left: 2.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-nav-sub a.active {
+  border-right-width: 2px !important;
+}
+
 .admin-main-container {
   flex: 1;
   display: flex;
@@ -915,6 +928,11 @@
 
   .admin-content {
     padding: 1rem;
+  }
+
+  .admin-nav-sub a {
+    padding-left: 1rem;
+    text-align: center;
   }
 }
 

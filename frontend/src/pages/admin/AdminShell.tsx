@@ -26,6 +26,14 @@ const AdminShell: React.FC = () => {
       } else if (newMatch) {
         breadcrumbs.push({ label: '新規作成', path: pathname });
       }
+    } else if (matchPath('/admin/response-drafts/*', pathname) || pathname === '/admin/response-drafts') {
+      breadcrumbs.push({ label: '下書き一覧', path: '/admin/response-drafts' });
+
+      const detailMatch = matchPath('/admin/response-drafts/:id', pathname);
+
+      if (detailMatch) {
+        breadcrumbs.push({ label: '詳細', path: pathname });
+      }
     } else if (matchPath('/admin/respondent-masters/*', pathname) || pathname === '/admin/respondent-masters') {
       breadcrumbs.push({ label: 'マスター管理', path: '/admin/respondent-masters' });
 
@@ -57,6 +65,11 @@ const AdminShell: React.FC = () => {
 
   const breadcrumbs = getBreadcrumbs();
 
+  const showSurveySubNav = matchPath('/admin/surveys/*', pathname) ||
+    pathname === '/admin/surveys' ||
+    matchPath('/admin/response-drafts/*', pathname) ||
+    pathname === '/admin/response-drafts';
+
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
@@ -72,6 +85,27 @@ const AdminShell: React.FC = () => {
               >
                 アンケート管理
               </NavLink>
+              {showSurveySubNav && (
+                <ul className="admin-nav-sub">
+                  <li>
+                    <NavLink
+                      to="/admin/surveys"
+                      className={({ isActive }) => isActive ? 'active' : ''}
+                      end
+                    >
+                      アンケート一覧
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/admin/response-drafts"
+                      className={({ isActive }) => isActive ? 'active' : ''}
+                    >
+                      下書き一覧
+                    </NavLink>
+                  </li>
+                </ul>
+              )}
             </li>
             <li>
               <NavLink
