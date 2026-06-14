@@ -68,7 +68,7 @@ export const getResponseDraft = async (
   if (!response.ok) {
     throw new Error(result.error || 'Failed to fetch response draft');
   }
-  return result;
+  return result.data;
 };
 
 export const saveResponseDraft = async (
@@ -84,7 +84,7 @@ export const saveResponseDraft = async (
   if (!response.ok) {
     throw new Error(result.error || 'Failed to save response draft');
   }
-  return result;
+  return result.data;
 };
 
 export const deleteResponseDraft = async (
