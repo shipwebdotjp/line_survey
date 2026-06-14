@@ -24,13 +24,17 @@ final class SaveResponseDraftAction
         $publicId = $args['public_id'] ?? '';
         $body = $request->getParsedBody();
 
+        if (!is_array($body)) {
+            return JsonResponse::error($response, 'VALIDATION_ERROR', 'Request body must be an object', null, 422);
+        }
+
         $answerJson = $body['answer_json'] ?? null;
 
         if ($answerJson === null) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'answer_json is required', null, 422);
         }
 
-        if (!is_array($answerJson)) {
+        if (!is_array($answerJson) || (!empty($answerJson) && array_is_list($answerJson))) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'answer_json must be an object', null, 422);
         }
 

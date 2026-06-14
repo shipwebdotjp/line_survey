@@ -11,7 +11,6 @@ use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Mail\MailService;
 use App\Infrastructure\Support\DateTimeHelper;
 use App\Infrastructure\Support\IdGenerator;
-use RuntimeException;
 
 final class SaveResponseUseCase
 {
@@ -22,7 +21,8 @@ final class SaveResponseUseCase
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository,
         private ResponseDraftRepository $responseDraftRepository,
-        private MailService $mailService
+        private MailService $mailService,
+        private SurveyAvailabilityValidator $surveyAvailabilityValidator
     ) {
     }
 
@@ -38,7 +38,7 @@ final class SaveResponseUseCase
         $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
-        $this->validateSurveyAvailability($survey);
+        $this->surveyAvailabilityValidator->assertCanRespond($survey);
 
         if (!($survey['allow_multiple'] ?? false)) {
             $existingResponses = $this->responseRepository->findBy([
@@ -84,24 +84,5 @@ final class SaveResponseUseCase
         }
 
         return $this->responseRepository->findById($responseId);
-    }
-
-    private function validateSurveyAvailability(array $survey): void
-    {
-        if ($survey['status'] !== 'published') {
-            throw new RuntimeException('Survey is not published', 403);
-        }
-
-        $now = DateTimeHelper::nowTokyo();
-        $startsAt = $survey['starts_at'] ? DateTimeHelper::parseTokyo($survey['starts_at']) : null;
-        $endsAt = $survey['ends_at'] ? DateTimeHelper::parseTokyo($survey['ends_at']) : null;
-
-        if ($startsAt && $now < $startsAt) {
-            throw new RuntimeException('Survey has not started yet', 403);
-        }
-
-        if ($endsAt && $now > $endsAt) {
-            throw new RuntimeException('Survey has already ended', 403);
-        }
     }
 }
