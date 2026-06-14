@@ -162,6 +162,13 @@ const PublicSurveyPage: React.FC = () => {
 
   const handleSurveyComplete = async (sender: Model) => {
     if (!idToken || !public_id) return;
+
+    // Stop auto-save during submission
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    isAutoSaveDisabledRef.current = true;
+
     try {
       setIsSubmitting(true);
       setSubmitError(null);
@@ -175,6 +182,7 @@ const PublicSurveyPage: React.FC = () => {
 
       if (!response.ok) {
         setSubmitError(result.error || 'アンケートの送信に失敗しました。');
+        isAutoSaveDisabledRef.current = false;
         return;
       }
 
@@ -190,20 +198,23 @@ const PublicSurveyPage: React.FC = () => {
       }
     } catch (err) {
       setSubmitError('通信エラーが発生しました。');
+      isAutoSaveDisabledRef.current = false;
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAutoSaveDisabledRef = useRef(false);
   const handleValueChanged = (sender: Model) => {
-    if (!public_id) return;
+    if (!public_id || isAutoSaveDisabledRef.current) return;
 
     if (autoSaveTimerRef.current) {
       clearTimeout(autoSaveTimerRef.current);
     }
 
     autoSaveTimerRef.current = setTimeout(async () => {
+      if (isAutoSaveDisabledRef.current) return;
       try {
         setAutoSaveError(null);
         await saveResponseDraft(public_id, sender.data, identify);
