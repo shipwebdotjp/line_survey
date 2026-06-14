@@ -24,14 +24,13 @@ jobs:
       - name: Pre-fetch base and head refs
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # base refはAPIで取得する必要がある
           BASE_REF=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '.base.ref')
           git fetch --no-tags origin \
             "$BASE_REF" \
             "+refs/pull/$PR_NUMBER/head"
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Run Codex
         id: run_codex
