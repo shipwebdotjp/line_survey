@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Application\Survey;
 
 use App\Infrastructure\Database\RespondentRepository;
+use App\Infrastructure\Database\ResponseDraftRepository;
 use App\Infrastructure\Database\ResponseRepository;
 use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Mail\MailService;
 use App\Infrastructure\Support\DateTimeHelper;
 use App\Infrastructure\Support\IdGenerator;
-use RuntimeException;
 
 final class SaveResponseUseCase
 {
@@ -20,7 +20,9 @@ final class SaveResponseUseCase
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository,
-        private MailService $mailService
+        private ResponseDraftRepository $responseDraftRepository,
+        private MailService $mailService,
+        private SurveyAvailabilityValidator $surveyAvailabilityValidator
     ) {
     }
 
@@ -36,7 +38,7 @@ final class SaveResponseUseCase
         $respondent = $this->resolveRespondent($respondent);
         $survey = $this->resolveSurveyByPublicId($publicId);
 
-        $this->validateSurveyAvailability($survey);
+        $this->surveyAvailabilityValidator->assertCanRespond($survey);
 
         if (!($survey['allow_multiple'] ?? false)) {
             $existingResponses = $this->responseRepository->findBy([
@@ -44,6 +46,7 @@ final class SaveResponseUseCase
                 'respondent_id' => $respondent['id']
             ]);
             if (!empty($existingResponses)) {
+                $this->responseDraftRepository->deleteBySurveyAndRespondent($survey['id'], $respondent['id']);
                 return $existingResponses[0];
             }
         }
@@ -64,6 +67,8 @@ final class SaveResponseUseCase
         $responseId = $this->responseRepository->save($responseData);
         $savedResponse = $this->responseRepository->findById($responseId);
 
+        $this->responseDraftRepository->deleteBySurveyAndRespondent($survey['id'], $respondent['id']);
+
         $mailResult = $this->mailService->sendConfirmation($respondent, $survey, $savedResponse);
 
         if (($mailResult['status'] ?? null) === 'sent') {
@@ -79,24 +84,5 @@ final class SaveResponseUseCase
         }
 
         return $this->responseRepository->findById($responseId);
-    }
-
-    private function validateSurveyAvailability(array $survey): void
-    {
-        if ($survey['status'] !== 'published') {
-            throw new RuntimeException('Survey is not published', 403);
-        }
-
-        $now = DateTimeHelper::nowTokyo();
-        $startsAt = $survey['starts_at'] ? DateTimeHelper::parseTokyo($survey['starts_at']) : null;
-        $endsAt = $survey['ends_at'] ? DateTimeHelper::parseTokyo($survey['ends_at']) : null;
-
-        if ($startsAt && $now < $startsAt) {
-            throw new RuntimeException('Survey has not started yet', 403);
-        }
-
-        if ($endsAt && $now > $endsAt) {
-            throw new RuntimeException('Survey has already ended', 403);
-        }
     }
 }

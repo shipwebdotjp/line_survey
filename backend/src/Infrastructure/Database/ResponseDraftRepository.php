@@ -60,6 +60,28 @@ class ResponseDraftRepository
         return (int)$this->db->getPdo()->lastInsertId();
     }
 
+    public function upsertBySurveyAndRespondent(array $data): void
+    {
+        $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
+        $data['created_at'] = $data['created_at'] ?? $now;
+        $data['updated_at'] = $data['updated_at'] ?? $now;
+
+        $data = $this->encodeJsonColumns($data);
+
+        $filteredData = array_intersect_key($data, array_flip(self::ALLOWED_COLUMNS));
+        $columns = array_keys($filteredData);
+        $placeholders = array_fill(0, count($columns), '?');
+
+        $sql = sprintf(
+            'INSERT INTO %s (%s) VALUES (%s) ON DUPLICATE KEY UPDATE answer_json = VALUES(answer_json), updated_at = VALUES(updated_at)',
+            self::TABLE,
+            implode(', ', $columns),
+            implode(', ', $placeholders)
+        );
+
+        $this->db->insert($sql, array_values($filteredData));
+    }
+
     public function updateBySurveyAndRespondent(int $surveyId, int $respondentId, array $data): bool
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
