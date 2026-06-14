@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Survey;
 
 use App\Infrastructure\Database\RespondentRepository;
+use App\Infrastructure\Database\ResponseDraftRepository;
 use App\Infrastructure\Database\ResponseRepository;
 use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Mail\MailService;
@@ -20,6 +21,7 @@ final class SaveResponseUseCase
         private RespondentRepository $respondentRepository,
         private SurveyRepository $surveyRepository,
         private ResponseRepository $responseRepository,
+        private ResponseDraftRepository $responseDraftRepository,
         private MailService $mailService
     ) {
     }
@@ -44,6 +46,7 @@ final class SaveResponseUseCase
                 'respondent_id' => $respondent['id']
             ]);
             if (!empty($existingResponses)) {
+                $this->responseDraftRepository->deleteBySurveyAndRespondent($survey['id'], $respondent['id']);
                 return $existingResponses[0];
             }
         }
@@ -63,6 +66,8 @@ final class SaveResponseUseCase
 
         $responseId = $this->responseRepository->save($responseData);
         $savedResponse = $this->responseRepository->findById($responseId);
+
+        $this->responseDraftRepository->deleteBySurveyAndRespondent($survey['id'], $respondent['id']);
 
         $mailResult = $this->mailService->sendConfirmation($respondent, $survey, $savedResponse);
 

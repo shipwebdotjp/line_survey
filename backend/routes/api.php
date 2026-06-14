@@ -37,6 +37,9 @@ use App\Presentation\Http\Survey\GetCurrentResponseAction;
 use App\Presentation\Http\Survey\GetResponseHistoryAction;
 use App\Presentation\Http\Survey\GetEditResponseAction;
 use App\Presentation\Http\Survey\UpdateResponseAction;
+use App\Presentation\Http\Survey\GetResponseDraftAction;
+use App\Presentation\Http\Survey\SaveResponseDraftAction;
+use App\Presentation\Http\Survey\DeleteResponseDraftAction;
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -73,6 +76,13 @@ return function (App $app) {
             $sessionGroup->get('/surveys/public/{public_id}/responses/current', GetCurrentResponseAction::class);
             $sessionGroup->get('/surveys/public/{public_id}/responses/{edit_token}', GetEditResponseAction::class);
             $sessionGroup->put('/surveys/public/{public_id}/responses/{edit_token}', UpdateResponseAction::class)
+                ->add(RequestSafetyMiddleware::class);
+
+            // Response Drafts
+            $sessionGroup->get('/surveys/public/{public_id}/response-draft', GetResponseDraftAction::class);
+            $sessionGroup->put('/surveys/public/{public_id}/response-draft', SaveResponseDraftAction::class)
+                ->add(RequestSafetyMiddleware::class);
+            $sessionGroup->delete('/surveys/public/{public_id}/response-draft', DeleteResponseDraftAction::class)
                 ->add(RequestSafetyMiddleware::class);
         })->add(AuthSessionMiddleware::class);
 
