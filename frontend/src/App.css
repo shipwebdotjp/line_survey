@@ -1202,6 +1202,20 @@
   border-bottom: none;
 }
 
+.admin-json-view {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+/* Utility classes */
+.mt-4 { margin-top: 1rem !important; }
+.mb-4 { margin-bottom: 1rem !important; }
+.mb-8 { margin-bottom: 2rem !important; }
+
 
 .admin-error-message {
   background: #fee2e2;
