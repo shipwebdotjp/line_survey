@@ -12,7 +12,7 @@ const EditRespondentsPage: React.FC = () => {
   const returnTo = queryParams.get('return_to');
 
   const [formData, setFormData] = useState({ name: '', email: '' });
-  const [lineDisplayName, setLineDisplayName] = useState('');
+  // const [lineDisplayName, setLineDisplayName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const EditRespondentsPage: React.FC = () => {
           name: respondent.name,
           email: respondent.email,
         });
-        setLineDisplayName(respondent.line_display_name || '');
+        // setLineDisplayName(respondent.line_display_name || '');
       } catch (err) {
         setError('情報の取得に失敗しました。');
       } finally {
@@ -118,13 +118,6 @@ const EditRespondentsPage: React.FC = () => {
     <div className="public-container">
       <div className="public-card">
         <h1 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', textAlign: 'center' }}>本人情報の編集</h1>
-
-        <div style={{ marginBottom: '2rem', padding: '1rem', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>LINE表示名</p>
-          <p style={{ fontWeight: 'bold', color: '#111827' }}>{lineDisplayName || '未取得'}</p>
-          <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem' }}>※LINE表示名は変更できません</p>
-        </div>
-
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.5rem' }}>
             <label htmlFor="name" style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', color: '#374151' }}>お名前</label>
@@ -137,6 +130,7 @@ const EditRespondentsPage: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
+                fontSize: '1rem',
                 border: '1px solid #d1d5db',
                 borderRadius: '0.375rem',
                 boxSizing: 'border-box',
@@ -157,6 +151,7 @@ const EditRespondentsPage: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '0.75rem',
+                fontSize: '1rem',
                 border: '1px solid #d1d5db',
                 borderRadius: '0.375rem',
                 boxSizing: 'border-box',
