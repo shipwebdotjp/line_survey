@@ -75,6 +75,21 @@ CREATE TABLE `respondent_masters` (
 -- --------------------------------------------------------
 
 --
+-- テーブルの構造 `response_drafts`
+--
+
+CREATE TABLE `response_drafts` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `survey_id` int(11) UNSIGNED NOT NULL,
+  `respondent_id` int(11) UNSIGNED NOT NULL,
+  `answer_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`answer_json`)),
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- テーブルの構造 `responses`
 --
 
@@ -142,6 +157,15 @@ ALTER TABLE `respondent_masters`
   ADD UNIQUE KEY `line_display_name` (`line_display_name`);
 
 --
+-- テーブルのインデックス `response_drafts`
+--
+ALTER TABLE `response_drafts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `survey_id` (`survey_id`),
+  ADD KEY `respondent_id` (`respondent_id`),
+  ADD UNIQUE KEY `idx_survey_respondent` (`survey_id`,`respondent_id`);
+
+--
 -- テーブルのインデックス `responses`
 --
 ALTER TABLE `responses`
@@ -175,6 +199,12 @@ ALTER TABLE `respondent_masters`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- テーブルの AUTO_INCREMENT `response_drafts`
+--
+ALTER TABLE `response_drafts`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- テーブルの AUTO_INCREMENT `responses`
 --
 ALTER TABLE `responses`
@@ -189,6 +219,13 @@ ALTER TABLE `surveys`
 --
 -- ダンプしたテーブルの制約
 --
+
+--
+-- テーブルの制約 `response_drafts`
+--
+ALTER TABLE `response_drafts`
+  ADD CONSTRAINT `response_drafts_ibfk_1` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `response_drafts_ibfk_2` FOREIGN KEY (`respondent_id`) REFERENCES `respondents` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- テーブルの制約 `responses`
