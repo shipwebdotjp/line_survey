@@ -34,8 +34,8 @@ const SummaryTextCard: React.FC<{ question: QuestionSummary }> = ({ question }) 
       <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e5e7eb', borderRadius: '4px' }}>
         {question.answers && question.answers.length > 0 ? (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {question.answers.map((ans: string, idx: number) => (
-              <li key={idx} style={{ padding: '0.75rem', borderBottom: idx === question.answers.length - 1 ? 'none' : '1px solid #e5e7eb' }}>
+            {question.answers.map((ans: string, idx: number, arr: string[]) => (
+              <li key={idx} style={{ padding: '0.75rem', borderBottom: idx === arr.length - 1 ? 'none' : '1px solid #e5e7eb' }}>
                 {ans}
               </li>
             ))}
