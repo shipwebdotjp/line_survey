@@ -120,7 +120,7 @@ class MailService
         $displayName = $name . $honorific;
 
         $submittedAt = DateTimeHelper::parseTokyo($response['submitted_at']);
-        $submittedAtStr = DateTimeHelper::formatTokyo($submittedAt);
+        $submittedAtStr = DateTimeHelper::formatTokyo($submittedAt, 'Y/m/d H:i:s');
 
         $lines = [];
 
@@ -150,21 +150,50 @@ class MailService
             $answers = $response['answer_json'] ?? [];
             $questions = $this->getAllQuestions($survey['questions_json'] ?? []);
 
-            // Simple label mapping
             $labelMap = [];
-            foreach ($questions as $q) {
-                if (isset($q['name'])) {
-                    $labelMap[$q['name']] = $q['title'] ?? $q['name'];
+            $questionOrder = [];
+            foreach ($questions as $question) {
+                if (!isset($question['name']) || $question['name'] === '') {
+                    continue;
+                }
+
+                $name = (string) $question['name'];
+                if (!array_key_exists($name, $labelMap)) {
+                    $labelMap[$name] = $question['title'] ?? $name;
+                    $questionOrder[] = $name;
                 }
             }
 
-            foreach ($answers as $key => $value) {
+            $seenKeys = [];
+            foreach ($questionOrder as $key) {
+                if (!array_key_exists($key, $answers)) {
+                    continue;
+                }
+
+                $value = $answers[$key];
                 $label = $labelMap[$key] ?? $key;
                 if (is_array($value)) {
                     $valueStr = implode(', ', $value);
                 } else {
-                    $valueStr = (string)$value;
+                    $valueStr = (string) $value;
                 }
+
+                $lines[] = "{$label}: {$valueStr}";
+                $seenKeys[$key] = true;
+            }
+
+            foreach ($answers as $key => $value) {
+                if (isset($seenKeys[$key])) {
+                    continue;
+                }
+
+                $label = $labelMap[$key] ?? $key;
+                if (is_array($value)) {
+                    $valueStr = implode(', ', $value);
+                } else {
+                    $valueStr = (string) $value;
+                }
+
                 $lines[] = "{$label}: {$valueStr}";
             }
             $lines[] = "";
