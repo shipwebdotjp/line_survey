@@ -5,6 +5,7 @@ import { useToast } from '../../features/ui/ToastContext';
 import type { ResponseSummary, Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import AdminButton from '../../components/admin/AdminButton';
+import SurveyResultsNav from '../../features/admin/surveys/SurveyResultsNav';
 
 const ResponseListPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +88,8 @@ const ResponseListPage: React.FC = () => {
           <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
         </div>
       </div>
+
+      <SurveyResultsNav surveyId={surveyId} />
 
       <div className="admin-table-container">
         {responses.length === 0 ? (
