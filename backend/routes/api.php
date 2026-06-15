@@ -7,6 +7,7 @@ use App\Presentation\Http\Admin\Survey\DeleteResponseAction;
 use App\Presentation\Http\Admin\Survey\ExportResponsesCsvAction;
 use App\Presentation\Http\Admin\Survey\GetResponseAction;
 use App\Presentation\Http\Admin\Survey\GetSurveyAction;
+use App\Presentation\Http\Admin\Survey\GetSurveySummaryAction;
 use App\Presentation\Http\Admin\Survey\ListResponsesAction;
 use App\Presentation\Http\Admin\Survey\ListResponseDraftsAction;
 use App\Presentation\Http\Admin\Survey\GetResponseDraftAdminAction;
@@ -96,6 +97,7 @@ return function (App $app) {
         $group->get('/surveys', ListSurveysAction::class);
         $group->post('/surveys', CreateSurveyAction::class);
         $group->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
+        $group->get('/surveys/{id:[0-9]+}/summary', GetSurveySummaryAction::class);
         $group->post('/surveys/{id:[0-9]+}/duplicate', DuplicateSurveyAction::class);
         $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
         $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
