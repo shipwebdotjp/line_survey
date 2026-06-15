@@ -172,6 +172,12 @@ const SurveyListPage: React.FC = () => {
                       >
                         回答一覧
                       </AdminButton>
+                      <AdminButton
+                        to={`/admin/surveys/${survey.id}/summary`}
+                        size="sm"
+                      >
+                        要約
+                      </AdminButton>
                     </div>
                   </td>
                 </tr>

@@ -12,6 +12,7 @@ const AdminShell: React.FC = () => {
 
       const responseMatch = matchPath('/admin/surveys/:id/responses/:responseId/*', pathname) || matchPath('/admin/surveys/:id/responses/:responseId', pathname);
       const responsesMatch = matchPath('/admin/surveys/:id/responses', pathname);
+      const summaryMatch = matchPath('/admin/surveys/:id/summary', pathname);
       const editMatch = matchPath('/admin/surveys/:id/edit', pathname);
       const newMatch = matchPath('/admin/surveys/new', pathname);
 
@@ -21,6 +22,8 @@ const AdminShell: React.FC = () => {
         breadcrumbs.push({ label: `回答詳細`, path: `/admin/surveys/${id}/responses/${responseId}` });
       } else if (responsesMatch) {
         breadcrumbs.push({ label: '回答一覧', path: pathname });
+      } else if (summaryMatch) {
+        breadcrumbs.push({ label: '要約', path: pathname });
       } else if (editMatch) {
         breadcrumbs.push({ label: '編集', path: pathname });
       } else if (newMatch) {
