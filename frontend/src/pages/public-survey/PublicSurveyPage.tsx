@@ -5,6 +5,7 @@ import { fetchWithSession, getResponseDraft, saveResponseDraft, deleteResponseDr
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
 import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData, ResponseDraft } from '../../features/survey/types';
+import { getInitialAnswerJson } from '../../features/survey/surveyPrefill';
 import { Model } from 'survey-core';
 import { createLiffUrl } from '../../lib/liffUrl';
 
@@ -444,7 +445,7 @@ const PublicSurveyPage: React.FC = () => {
             )}
             <SurveyRenderer
               questions={surveyData.survey?.questions_json}
-              data={draft?.answer_json}
+              data={getInitialAnswerJson(surveyData.survey?.questions_json, respondent, draft)}
               onComplete={handleSurveyComplete}
               onValueChanged={handleValueChanged}
               isSubmitting={isSubmitting}
