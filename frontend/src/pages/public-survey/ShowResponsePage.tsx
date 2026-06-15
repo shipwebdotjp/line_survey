@@ -127,7 +127,7 @@ const ShowResponsePage: React.FC = () => {
           {surveyData?.survey && existingResponse && (
             <SurveyRenderer
               questions={existingResponse.survey_snapshot_json || surveyData.survey.questions_json}
-              data={existingResponse.answer_json}
+              initialValues={existingResponse.answer_json}
               readOnly={true}
             />
           )}

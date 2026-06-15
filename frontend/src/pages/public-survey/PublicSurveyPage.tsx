@@ -445,7 +445,7 @@ const PublicSurveyPage: React.FC = () => {
             )}
             <SurveyRenderer
               questions={surveyData.survey?.questions_json}
-              data={getInitialAnswerJson(surveyData.survey?.questions_json, respondent, draft)}
+              initialValues={getInitialAnswerJson(surveyData.survey?.questions_json, respondent, draft)}
               onComplete={handleSurveyComplete}
               onValueChanged={handleValueChanged}
               isSubmitting={isSubmitting}

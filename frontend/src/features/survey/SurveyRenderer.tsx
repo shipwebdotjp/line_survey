@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useLayoutEffect, useRef } from 'react';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import 'survey-core/survey-core.min.css';
@@ -8,7 +8,7 @@ interface SurveyRendererProps {
   onComplete?: (sender: Model) => void;
   onValueChanged?: (sender: Model, options: any) => void;
   isSubmitting?: boolean;
-  data?: Record<string, any>;
+  initialValues?: Record<string, any>;
   readOnly?: boolean;
   isPublic?: boolean;
 }
@@ -18,7 +18,7 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
   onComplete,
   onValueChanged,
   isSubmitting = false,
-  data,
+  initialValues,
   readOnly = false,
   isPublic = false,
 }) => {
@@ -29,14 +29,44 @@ const SurveyRenderer: React.FC<SurveyRendererProps> = ({
     model.completeText = '回答を送信する';
     model.pageNextText = '次へ';
     model.pagePrevText = '戻る';
-    if (data) {
-      model.data = data;
-    }
     if (readOnly) {
       model.mode = 'display';
     }
     return model;
-  }, [questions, data, readOnly]);
+  }, [questions, readOnly]);
+
+  const appliedInitialValuesRef = useRef<{ survey: Model | null; signature: string }>({
+    survey: null,
+    signature: '',
+  });
+
+  useLayoutEffect(() => {
+    const signature = JSON.stringify(initialValues ?? null);
+    const alreadyApplied =
+      appliedInitialValuesRef.current.survey === survey &&
+      appliedInitialValuesRef.current.signature === signature;
+
+    if (alreadyApplied) {
+      return;
+    }
+
+    if (initialValues) {
+      Object.entries(initialValues).forEach(([name, value]) => {
+        if (value === undefined) {
+          return;
+        }
+
+        if (survey.getQuestionByName(name)) {
+          survey.setValue(name, value, false, false);
+        }
+      });
+    }
+
+    appliedInitialValuesRef.current = {
+      survey,
+      signature,
+    };
+  }, [survey, initialValues]);
 
   const isSubmittingRef = useRef(isSubmitting);
   useEffect(() => {

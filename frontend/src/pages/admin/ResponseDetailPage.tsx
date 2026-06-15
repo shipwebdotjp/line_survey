@@ -122,7 +122,7 @@ const ResponseDetailPage: React.FC = () => {
         <div className="admin-card-body">
           <SurveyRenderer
             questions={response.survey_snapshot_json}
-            data={response.answer_json}
+            initialValues={response.answer_json}
             readOnly={true}
           />
         </div>

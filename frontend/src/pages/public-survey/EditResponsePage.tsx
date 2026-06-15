@@ -205,7 +205,7 @@ const EditResponsePage: React.FC = () => {
         {surveyData?.survey && existingResponse && (
           <SurveyRenderer
             questions={surveyData.survey.questions_json}
-            data={existingResponse.answer_json}
+            initialValues={existingResponse.answer_json}
             onComplete={handleUpdateComplete}
             isSubmitting={isSubmitting}
             isPublic={true}

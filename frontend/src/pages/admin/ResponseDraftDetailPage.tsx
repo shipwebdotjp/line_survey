@@ -94,7 +94,7 @@ const ResponseDraftDetailPage: React.FC = () => {
           {draft.survey_questions_json ? (
             <SurveyRenderer
               questions={draft.survey_questions_json}
-              data={draft.answer_json}
+              initialValues={draft.answer_json}
               readOnly={true}
             />
           ) : (
