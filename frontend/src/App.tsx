@@ -11,6 +11,7 @@ import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
 import SurveyCreatePage from './pages/admin/SurveyCreatePage';
 import SurveyEditPage from './pages/admin/SurveyEditPage';
+import SurveySummaryPage from './pages/admin/SurveySummaryPage';
 import ResponseListPage from './pages/admin/ResponseListPage';
 import ResponseDetailPage from './pages/admin/ResponseDetailPage';
 import ResponseEditPage from './pages/admin/ResponseEditPage';
@@ -80,6 +81,7 @@ const AppContent = () => {
             <Route path="surveys/new" element={<SurveyCreatePage />} />
             <Route path="surveys/:id/edit" element={<SurveyEditPage />} />
             <Route path="surveys/:id/responses" element={<ResponseListPage />} />
+            <Route path="surveys/:id/summary" element={<SurveySummaryPage />} />
             <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
             <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
             <Route path="response-drafts" element={<ResponseDraftListPage />} />

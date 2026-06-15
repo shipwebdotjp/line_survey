@@ -3,6 +3,7 @@ import type {
   ResponseSummary,
   Survey,
   SurveyCreateParams,
+  SurveySummary,
   SurveyUpdateParams,
 } from './types';
 
@@ -140,6 +141,14 @@ export const adminSurveyApi = {
         method: 'DELETE',
       },
       '回答の削除に失敗しました'
+    );
+  },
+
+  async getSummary(surveyId: number): Promise<SurveySummary> {
+    return fetchJson<SurveySummary>(
+      `${API_BASE}/${surveyId}/summary`,
+      {},
+      '集計結果の取得に失敗しました'
     );
   },
 

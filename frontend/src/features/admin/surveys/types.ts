@@ -80,3 +80,26 @@ export interface ResponseDetail {
     respondent_master_id: number | null;
   };
 }
+
+export interface SurveySummaryChoice {
+  value: any;
+  label: string;
+  count: number;
+  rate: number;
+}
+
+export interface QuestionSummary {
+  name: string;
+  title: string;
+  type: string;
+  targetCount: number;
+  answeredCount: number;
+  emptyCount: number;
+  answers?: string[];
+  choices?: SurveySummaryChoice[];
+}
+
+export interface SurveySummary {
+  totalResponses: number;
+  questions: QuestionSummary[];
+}

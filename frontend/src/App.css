@@ -1211,6 +1211,35 @@
   margin: 0;
 }
 
+/* Admin Tabs */
+.admin-tabs-container {
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: -1px;
+}
+
+.admin-tab {
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.admin-tab:hover {
+  color: var(--accent);
+}
+
+.admin-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
 /* Utility classes */
 .mt-4 { margin-top: 1rem !important; }
 .mb-4 { margin-bottom: 1rem !important; }
