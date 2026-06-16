@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { adminRespondentApi } from '../../features/admin/respondents/adminRespondentApi';
 import type { RespondentSummary } from '../../features/admin/respondents/types';
 import AdminButton from '../../components/admin/AdminButton';
+import { useConfirm } from '../../features/ui/ConfirmContext';
+import { useToast } from '../../features/ui/ToastContext';
 
 const RespondentListPage: React.FC = () => {
   const [respondents, setRespondents] = useState<RespondentSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadRespondents();
@@ -28,16 +32,20 @@ const RespondentListPage: React.FC = () => {
   const handleDelete = async (id: number, name: string, responseCount: number) => {
     if (deletingId !== null) return;
 
-    if (!window.confirm(`回答者「${name}」を削除しますか？\n紐づいている ${responseCount} 件の回答もすべて削除されます。\nこの操作は取り消せません。`)) {
+    if (!(await confirm({
+      message: `回答者「${name}」を削除しますか？\n紐づいている ${responseCount} 件の回答もすべて削除されます。\nこの操作は取り消せません。`,
+      danger: true
+    }))) {
       return;
     }
 
     try {
       setDeletingId(id);
       await adminRespondentApi.delete(id);
+      showToast('回答者を削除しました');
       setRespondents(respondents.filter(r => r.id !== id));
     } catch (err: any) {
-      alert(err.message);
+      showToast(err.message, 'error');
     } finally {
       setDeletingId(null);
     }

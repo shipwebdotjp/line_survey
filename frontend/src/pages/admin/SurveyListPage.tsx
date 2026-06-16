@@ -4,11 +4,15 @@ import type { Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import { createLiffUrl } from '../../lib/liffUrl';
 import AdminButton from '../../components/admin/AdminButton';
+import { useConfirm } from '../../features/ui/ConfirmContext';
+import { useToast } from '../../features/ui/ToastContext';
 
 const SurveyListPage: React.FC = () => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   const fetchSurveys = async () => {
     try {
@@ -33,7 +37,7 @@ const SurveyListPage: React.FC = () => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
-        alert('URLをコピーしました。');
+        showToast('URLをコピーしました。');
       } else {
         throw new Error('Clipboard API unavailable');
       }
@@ -46,34 +50,36 @@ const SurveyListPage: React.FC = () => {
       textArea.select();
       try {
         document.execCommand('copy');
-        alert('URLをコピーしました(Fallback)。');
+        showToast('URLをコピーしました。');
       } catch (fallbackErr) {
         console.error('Fallback copy failed:', fallbackErr);
-        alert(`URLのコピーに失敗しました。直接コピーしてください: ${url}`);
+        showToast(`URLのコピーに失敗しました。直接コピーしてください: ${url}`, 'error');
       }
       document.body.removeChild(textArea);
     }
   };
 
   const handleDelete = async (id: number, title: string) => {
-    if (!window.confirm(`アンケート「${title}」を削除しますか？`)) {
+    if (!(await confirm({ message: `アンケート「${title}」を削除しますか？`, danger: true }))) {
       return;
     }
 
     try {
       await adminSurveyApi.delete(id);
+      showToast('アンケートを削除しました');
       await fetchSurveys();
     } catch (err: any) {
-      alert(err.message || '削除に失敗しました。');
+      showToast(err.message || '削除に失敗しました。', 'error');
     }
   };
 
   const handleDuplicate = async (id: number) => {
     try {
       await adminSurveyApi.duplicate(id);
+      showToast('アンケートを複製しました');
       await fetchSurveys();
     } catch (err: any) {
-      alert(err.message || '複製に失敗しました。');
+      showToast(err.message || '複製に失敗しました。', 'error');
     }
   };
 
