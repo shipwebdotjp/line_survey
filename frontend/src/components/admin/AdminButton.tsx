@@ -8,6 +8,7 @@ type BaseProps = {
   children: React.ReactNode;
   className?: string;
   title?: string;
+  disabled?: boolean;
 };
 
 type ButtonProps = BaseProps &
@@ -43,6 +44,14 @@ const AdminButton: React.FC<AdminButtonProps> = (props) => {
   const variantClass = `admin-button-${variant}`;
   const sizeClass = size === 'sm' ? 'admin-button-sm' : '';
   const combinedClassName = `${baseClass} ${variantClass} ${sizeClass} ${className}`.trim();
+
+  if (props.disabled) {
+    return (
+      <button className={combinedClassName} disabled title={props.title} type="button">
+        {children}
+      </button>
+    );
+  }
 
   if ('to' in rest && rest.to !== undefined) {
     const { to, ...linkProps } = rest as LinkButtonProps;
