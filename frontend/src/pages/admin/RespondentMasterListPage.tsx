@@ -3,6 +3,7 @@ import { adminRespondentMasterApi } from '../../features/admin/respondent-master
 import type { RespondentMaster, ImportResult } from '../../features/admin/respondent-masters/types';
 import AdminButton from '../../components/admin/AdminButton';
 import { useToast } from '../../features/ui/ToastContext';
+import { useConfirm } from '../../features/ui/ConfirmContext';
 
 const RespondentMasterListPage: React.FC = () => {
   const [masters, setMasters] = useState<RespondentMaster[]>([]);
@@ -12,6 +13,7 @@ const RespondentMasterListPage: React.FC = () => {
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const fetchMasters = async () => {
     try {
@@ -54,7 +56,7 @@ const RespondentMasterListPage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('このマスターを削除してもよろしいですか？')) {
+    if (!(await confirm({ message: 'このマスターを削除してもよろしいですか？', danger: true }))) {
       return;
     }
 
@@ -63,7 +65,7 @@ const RespondentMasterListPage: React.FC = () => {
       showToast('マスターを削除しました', 'success');
       fetchMasters();
     } catch (err) {
-      alert(err instanceof Error ? err.message : '削除に失敗しました');
+      showToast(err instanceof Error ? err.message : '削除に失敗しました', 'error');
     }
   };
 

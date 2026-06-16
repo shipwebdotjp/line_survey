@@ -3,11 +3,15 @@ import { adminDraftApi } from '../../features/admin/surveys/adminDraftApi';
 import type { ResponseDraft } from '../../features/survey/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import AdminButton from '../../components/admin/AdminButton';
+import { useConfirm } from '../../features/ui/ConfirmContext';
+import { useToast } from '../../features/ui/ToastContext';
 
 const ResponseDraftListPage: React.FC = () => {
   const [drafts, setDrafts] = useState<ResponseDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   const fetchDrafts = async () => {
     try {
@@ -28,19 +32,22 @@ const ResponseDraftListPage: React.FC = () => {
   }, []);
 
   const handleCleanup = async () => {
-    if (!window.confirm('最終更新から30日以上経過した下書きをすべて削除します。よろしいですか？')) {
+    if (!(await confirm({
+      message: '最終更新から30日以上経過した下書きをすべて削除します。よろしいですか？',
+      danger: true
+    }))) {
       return;
     }
 
     try {
       const result = await adminDraftApi.cleanup();
-      alert(result.message);
+      showToast(result.message);
       await fetchDrafts();
     } catch (err: unknown) {
       if (err instanceof Error) {
-        alert(err.message);
+        showToast(err.message, 'error');
       } else {
-        alert('クリーンアップに失敗しました。');
+        showToast('クリーンアップに失敗しました。', 'error');
       }
     }
   };

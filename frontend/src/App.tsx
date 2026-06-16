@@ -26,6 +26,7 @@ import RespondentEditPage from './pages/admin/RespondentEditPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
 import { ToastProvider } from './features/ui/ToastContext';
+import { ConfirmProvider } from './features/ui/ConfirmContext';
 import LiffError from './features/liff/LiffError';
 import React from 'react';
 
@@ -63,8 +64,9 @@ const AppContent = () => {
   return (
     <LiffProvider enabled={isLiffRequired}>
       <LiffGate>
-        <ToastProvider>
-        <Routes>
+        <ConfirmProvider>
+          <ToastProvider>
+            <Routes>
           <Route element={<PublicLayout />}>
             <Route index element={<PublicHomePage />} />
             <Route path="s" element={<ResponseHistoryPage />} />
@@ -95,9 +97,10 @@ const AppContent = () => {
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </ToastProvider>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </ToastProvider>
+        </ConfirmProvider>
       </LiffGate>
     </LiffProvider>
   );
