@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { adminSurveyApi } from '../../features/admin/surveys/adminSurveyApi';
 import { useToast } from '../../features/ui/ToastContext';
+import { useConfirm } from '../../features/ui/ConfirmContext';
 import type { ResponseSummary, Survey } from '../../features/admin/surveys/types';
 import { formatDisplayDate } from '../../features/admin/surveys/dateUtils';
 import AdminButton from '../../components/admin/AdminButton';
@@ -16,6 +17,7 @@ const ResponseListPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const confirm = useConfirm();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +48,7 @@ const ResponseListPage: React.FC = () => {
   }, [surveyId]);
 
   const handleDelete = async (responseId: number) => {
-    if (!window.confirm('回答を削除してもよろしいですか？')) {
+    if (!(await confirm({ message: '回答を削除してもよろしいですか？', danger: true }))) {
       return;
     }
 

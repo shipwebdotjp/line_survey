@@ -3,10 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { adminRespondentApi } from '../../features/admin/respondents/adminRespondentApi';
 import type { RespondentDetail } from '../../features/admin/respondents/types';
 import AdminButton from '../../components/admin/AdminButton';
+import { useConfirm } from '../../features/ui/ConfirmContext';
+import { useToast } from '../../features/ui/ToastContext';
 
 const RespondentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const confirm = useConfirm();
+  const { showToast } = useToast();
   const [respondent, setRespondent] = useState<RespondentDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,15 +42,19 @@ const RespondentDetailPage: React.FC = () => {
     const name = respondent.name || respondent.line_display_name;
     const responseCount = respondent.responses.length;
 
-    if (!window.confirm(`回答者「${name}」を削除しますか？\n紐づいている ${responseCount} 件の回答もすべて削除されます。\nこの操作は取り消せません。`)) {
+    if (!(await confirm({
+      message: `回答者「${name}」を削除しますか？\n紐づいている ${responseCount} 件の回答もすべて削除されます。\nこの操作は取り消せません。`,
+      danger: true
+    }))) {
       return;
     }
 
     try {
       await adminRespondentApi.delete(respondent.id);
+      showToast('回答者を削除しました');
       navigate('/admin/respondents');
     } catch (err: any) {
-      alert(err.message);
+      showToast(err.message, 'error');
     }
   };
 
