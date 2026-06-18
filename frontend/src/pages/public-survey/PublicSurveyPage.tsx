@@ -115,6 +115,7 @@ const PublicSurveyPage: React.FC = () => {
             setHistory(historyData);
           } catch (err) {
             console.error('Failed to fetch response history locally:', err);
+            setHistory(null);
           }
           return;
         }

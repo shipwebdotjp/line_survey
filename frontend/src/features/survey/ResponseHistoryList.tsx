@@ -35,9 +35,9 @@ const ResponseHistoryList: React.FC<Props> = ({ history, emptyMessage = 'まだ�
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-      {history.map((item) => (
+      {history.map((item, index) => (
         <div
-          key={item.edit_token}
+          key={item.edit_token || `history-${index}-${item.submitted_at}`}
           style={{
             border: '1px solid #e5e7eb',
             borderRadius: '10px',

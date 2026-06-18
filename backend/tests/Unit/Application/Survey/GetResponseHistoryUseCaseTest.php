@@ -79,6 +79,23 @@ class GetResponseHistoryUseCaseTest extends TestCase
         $this->assertEquals($expectedHistory, $result);
     }
 
+    public function testExecuteThrowsExceptionWhenSurveyNotFound(): void
+    {
+        $respondent = ['id' => 123];
+        $surveyPublicId = 'non-existent';
+
+        $this->surveyRepository->expects($this->once())
+            ->method('findByPublicId')
+            ->with($surveyPublicId)
+            ->willReturn(null);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Survey not found');
+        $this->expectExceptionCode(404);
+
+        $this->useCase->execute($respondent, $surveyPublicId);
+    }
+
     public function testExecuteThrowsExceptionIfRespondentMissing(): void
     {
         $this->expectException(\RuntimeException::class);
