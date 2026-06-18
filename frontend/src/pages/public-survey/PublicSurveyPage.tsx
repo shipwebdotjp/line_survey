@@ -91,6 +91,10 @@ const PublicSurveyPage: React.FC = () => {
 
         setSurveyData(surveyResult.data);
 
+        if (!surveyResult.data.can_answer) {
+          return;
+        }
+
         // 2. Identification
         const identifyResponse = await fetchWithSession('/api/liff/identify', {
           method: 'POST',
@@ -270,7 +274,8 @@ const PublicSurveyPage: React.FC = () => {
     let message = '現在、このアンケートには回答できません。';
 
     if (surveyData.reason === 'not_published') {
-      message = 'このアンケートは現在公開されていません。';
+      title = '終了';
+      message = 'このアンケートは終了しました。';
     } else if (surveyData.reason === 'not_started') {
       title = '開始前';
       message = 'このアンケートはまだ開始されていません。';
