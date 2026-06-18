@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import { fetchWithSession } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
+import { formatHistoryDate } from '../../lib/dateUtils';
 import type { SurveyResponse, SurveyData } from '../../features/survey/types';
 
 const ShowResponsePage: React.FC = () => {
@@ -121,7 +122,22 @@ const ShowResponsePage: React.FC = () => {
     <div className="public-container">
       <div className="public-card">
         <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{surveyData?.survey?.title}</h1>
-        <p style={{ marginBottom: '1rem', color: '#6b7280' }}>回答内容</p>
+        <p style={{ marginBottom: '0.25rem', color: '#6b7280' }}>回答内容</p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem 1rem', fontSize: '0.8rem', color: '#6b7280', marginBottom: '1rem' }}>
+          {existingResponse && (
+            <>
+              <div>
+                回答日時: <time dateTime={existingResponse.submitted_at}>{formatHistoryDate(existingResponse.submitted_at)}</time>
+              </div>
+              {existingResponse.updated_at !== existingResponse.submitted_at && (
+                <div>
+                  更新日時: <time dateTime={existingResponse.updated_at}>{formatHistoryDate(existingResponse.updated_at)}</time>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
         <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem', backgroundColor: '#fff' }}>
           {surveyData?.survey && existingResponse && (
