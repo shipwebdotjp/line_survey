@@ -1,4 +1,4 @@
-import type { ResponseDraftResponse, Respondent } from '../features/survey/types';
+import type { ResponseDraftResponse, Respondent, ResponseHistoryItem } from '../features/survey/types';
 
 export interface ApiError extends Error {
   code?: string;
@@ -55,6 +55,22 @@ export const getRespondentProfile = async (onSessionRequired?: () => Promise<boo
   const result = await response.json();
   if (!response.ok) {
     throw new Error(result.error || 'Failed to fetch respondent profile');
+  }
+  return result.data;
+};
+
+export const getResponseHistory = async (
+  surveyPublicId?: string,
+  onSessionRequired?: () => Promise<boolean>
+): Promise<ResponseHistoryItem[]> => {
+  let url = '/api/surveys/responses/history';
+  if (surveyPublicId) {
+    url += `?survey_public_id=${encodeURIComponent(surveyPublicId)}`;
+  }
+  const response = await fetchWithSession(url, {}, { onSessionRequired });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || 'Failed to fetch response history');
   }
   return result.data;
 };
