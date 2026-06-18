@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
-import { fetchWithSession, getResponseDraft, saveResponseDraft, deleteResponseDraft } from '../../lib/publicApi';
+import { fetchWithSession, getResponseDraft, saveResponseDraft, deleteResponseDraft, getResponseHistory } from '../../lib/publicApi';
 import SurveyRenderer from '../../features/survey/SurveyRenderer';
 import RespondentIdentification from '../../features/survey/RespondentIdentification';
-import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData, ResponseDraft } from '../../features/survey/types';
+import type { IdentifyStatus, Respondent, IdentifyResponse, SurveyResponse, SaveResponseResult, SurveyData, ResponseDraft, ResponseHistoryItem } from '../../features/survey/types';
+import ResponseHistoryList from '../../features/survey/ResponseHistoryList';
 import { getInitialAnswerJson } from '../../features/survey/surveyPrefill';
 import { Model } from 'survey-core';
 import { createLiffUrl } from '../../lib/liffUrl';
@@ -24,6 +25,7 @@ const PublicSurveyPage: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submittedResponse, setSubmittedResponse] = useState<SurveyResponse | null>(null);
   const [existingResponse, setExistingResponse] = useState<SurveyResponse | null>(null);
+  const [history, setHistory] = useState<ResponseHistoryItem[] | null>(null);
   const [draft, setDraft] = useState<ResponseDraft | null>(null);
   const [autoSaveError, setAutoSaveError] = useState<string | null>(null);
   const isDebugMode = import.meta.env.DEV || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'));
@@ -91,10 +93,6 @@ const PublicSurveyPage: React.FC = () => {
 
         setSurveyData(surveyResult.data);
 
-        if (!surveyResult.data.can_answer) {
-          return;
-        }
-
         // 2. Identification
         const identifyResponse = await fetchWithSession('/api/liff/identify', {
           method: 'POST',
@@ -109,6 +107,17 @@ const PublicSurveyPage: React.FC = () => {
 
         setIdentifyStatus(identifyResult.status);
         setRespondent(identifyResult.respondent);
+
+        if (!surveyResult.data.can_answer) {
+          // If cannot answer, fetch history for this survey if identified
+          try {
+            const historyData = await getResponseHistory(public_id, identify);
+            setHistory(historyData);
+          } catch (err) {
+            console.error('Failed to fetch response history locally:', err);
+          }
+          return;
+        }
 
         // 3. Check for existing response
         const responseRes = await fetchWithSession(`/api/surveys/public/${public_id}/responses/current`, {}, fetchOptions);
@@ -291,7 +300,16 @@ const PublicSurveyPage: React.FC = () => {
       <div className="public-container">
         <div className="public-card" style={{ textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h1>
-          <p style={{ whiteSpace: 'pre-wrap' }}>{message}</p>
+          <p style={{ whiteSpace: 'pre-wrap', marginBottom: history && history.length > 0 ? '2rem' : '0' }}>{message}</p>
+
+          {history && history.length > 0 && (
+            <div style={{ textAlign: 'left', marginTop: '2rem' }}>
+              <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
+                あなたの回答履歴
+              </h2>
+              <ResponseHistoryList history={history} />
+            </div>
+          )}
         </div>
       </div>
     );

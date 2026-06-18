@@ -111,8 +111,16 @@ class ResponseRepository
     /**
      * @return array[]
      */
-    public function findHistoryByRespondentId(int $respondentId): array
+    public function findHistoryByRespondentId(int $respondentId, ?int $surveyId = null): array
     {
+        $where = ['r.respondent_id = ?'];
+        $bindings = [$respondentId];
+
+        if ($surveyId !== null) {
+            $where[] = 'r.survey_id = ?';
+            $bindings[] = $surveyId;
+        }
+
         $sql = sprintf(
             'SELECT
                 r.submitted_at,
@@ -122,12 +130,13 @@ class ResponseRepository
                 s.title as survey_title
              FROM %s r
              LEFT JOIN surveys s ON r.survey_id = s.id
-             WHERE r.respondent_id = ?
+             WHERE %s
              ORDER BY r.submitted_at DESC, r.id DESC',
-            self::TABLE
+            self::TABLE,
+            implode(' AND ', $where)
         );
 
-        $results = $this->db->select($sql, [$respondentId]);
+        $results = $this->db->select($sql, $bindings);
 
         return array_map(fn($item) => (array)$item, $results);
     }
