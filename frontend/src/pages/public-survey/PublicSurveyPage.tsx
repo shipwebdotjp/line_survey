@@ -306,7 +306,7 @@ const PublicSurveyPage: React.FC = () => {
           {history && history.length > 0 && (
             <div style={{ textAlign: 'left', marginTop: '2rem' }}>
               <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
-                あなたの回答履歴
+                回答履歴
               </h2>
               <ResponseHistoryList history={history} />
             </div>
