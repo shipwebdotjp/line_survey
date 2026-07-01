@@ -19,7 +19,12 @@ class DeleteRespondentMasterAction
     public function __invoke(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id'];
-        $success = $this->useCase->execute($id);
+        $ownerUser = $request->getAttribute('owner_user');
+        if (!is_array($ownerUser) || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+        }
+
+        $success = $this->useCase->execute($id, (int)$ownerUser['id']);
 
         if (!$success) {
             return JsonResponse::error($response, 'NOT_FOUND', 'Respondent master not found', null, 404);

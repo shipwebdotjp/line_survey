@@ -25,13 +25,18 @@ class CreateRespondentMasterAction
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid request body', null, 400);
         }
 
+        $ownerUser = $request->getAttribute('owner_user');
+        if (!is_array($ownerUser) || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+        }
+
         $errors = $this->validate($data);
         if (!empty($errors)) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Validation Error', $errors, 400);
         }
 
         try {
-            $id = $this->useCase->execute($data);
+            $id = $this->useCase->execute($data, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['id' => $id], 201);
         } catch (ValidationException $e) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', $e->getMessage(), $e->getDetails(), 400);

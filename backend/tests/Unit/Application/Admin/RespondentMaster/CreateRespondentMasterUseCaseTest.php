@@ -22,6 +22,7 @@ class CreateRespondentMasterUseCaseTest extends TestCase
 
     public function testExecuteSuccess(): void
     {
+        $ownerUserId = 1;
         $data = [
             'master_code' => 'M001',
             'line_display_name' => 'User One',
@@ -34,21 +35,22 @@ class CreateRespondentMasterUseCaseTest extends TestCase
         $this->repository->expects($this->exactly(2))
             ->method('findBy')
             ->willReturnMap([
-                [['master_code' => 'M001'], []],
-                [['line_display_name' => 'User One'], []],
+                [['master_code' => 'M001'], $ownerUserId, []],
+                [['line_display_name' => 'User One'], $ownerUserId, []],
             ]);
 
         $this->repository->expects($this->once())
             ->method('save')
-            ->with($data)
+            ->with($data, $ownerUserId)
             ->willReturn(1);
 
-        $id = $this->useCase->execute($data);
+        $id = $this->useCase->execute($data, $ownerUserId);
         $this->assertEquals(1, $id);
     }
 
     public function testExecuteWithZeroValues(): void
     {
+        $ownerUserId = 1;
         $data = [
             'master_code' => 'M001',
             'line_display_name' => 'User One',
@@ -63,15 +65,16 @@ class CreateRespondentMasterUseCaseTest extends TestCase
             ->method('save')
             ->with($this->callback(function ($d) {
                 return $d['honorific'] === '0' && $d['note'] === '0';
-            }))
+            }), $ownerUserId)
             ->willReturn(1);
 
-        $id = $this->useCase->execute($data);
+        $id = $this->useCase->execute($data, $ownerUserId);
         $this->assertEquals(1, $id);
     }
 
     public function testExecuteDuplicateMasterCode(): void
     {
+        $ownerUserId = 1;
         $data = [
             'master_code' => 'M001',
             'line_display_name' => 'User One',
@@ -81,11 +84,11 @@ class CreateRespondentMasterUseCaseTest extends TestCase
 
         $this->repository->method('findBy')
             ->willReturnMap([
-                [['master_code' => 'M001'], [['id' => 1]]],
-                [['line_display_name' => 'User One'], []],
+                [['master_code' => 'M001'], $ownerUserId, [['id' => 1]]],
+                [['line_display_name' => 'User One'], $ownerUserId, []],
             ]);
 
         $this->expectException(ValidationException::class);
-        $this->useCase->execute($data);
+        $this->useCase->execute($data, $ownerUserId);
     }
 }

@@ -26,13 +26,18 @@ class UpdateRespondentMasterAction
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid request body', null, 400);
         }
 
+        $ownerUser = $request->getAttribute('owner_user');
+        if (!is_array($ownerUser) || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+        }
+
         $errors = $this->validate($data);
         if (!empty($errors)) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Validation Error', $errors, 400);
         }
 
         try {
-            $success = $this->useCase->execute($id, $data);
+            $success = $this->useCase->execute($id, $data, (int)$ownerUser['id']);
             if (!$success) {
                 return JsonResponse::error($response, 'NOT_FOUND', 'Respondent master not found', null, 404);
             }

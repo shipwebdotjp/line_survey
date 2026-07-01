@@ -22,21 +22,23 @@ class DeleteRespondentMasterUseCaseTest extends TestCase
     public function testExecuteSuccess(): void
     {
         $id = 1;
+        $ownerUserId = 1;
         $this->repository->expects($this->once())
             ->method('delete')
-            ->with($id)
+            ->with($id, $ownerUserId)
             ->willReturn(true);
 
-        $success = $this->useCase->execute($id);
+        $success = $this->useCase->execute($id, $ownerUserId);
         $this->assertTrue($success);
     }
 
     public function testExecuteNotFound(): void
     {
         $id = 999;
-        $this->repository->method('delete')->with($id)->willReturn(false);
+        $ownerUserId = 1;
+        $this->repository->method('delete')->with($id, $ownerUserId)->willReturn(false);
 
-        $success = $this->useCase->execute($id);
+        $success = $this->useCase->execute($id, $ownerUserId);
         $this->assertFalse($success);
     }
 }

@@ -13,8 +13,8 @@ final class DeleteRespondentMasterUseCase
     ) {
     }
 
-    public function execute(int $id): bool
+    public function execute(int $id, int $ownerUserId): bool
     {
-        return $this->respondentMasterRepository->delete($id);
+        return $this->respondentMasterRepository->delete($id, $ownerUserId);
     }
 }

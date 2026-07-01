@@ -10,10 +10,16 @@ class DevelopmentSeeder extends AbstractSeed
     {
         $now = date('Y-m-d H:i:s');
 
+        // Insert owner user for development data
+        $this->execute("INSERT INTO users (line_user_id, line_display_name, role, created_at, updated_at) VALUES ('dev-admin', '開発管理者', 'admin', '$now', '$now')");
+        $rows = $this->fetchAll("SELECT id FROM users WHERE line_user_id = 'dev-admin' LIMIT 1");
+        $ownerUserId = (int)$rows[0]['id'];
+
         // Insert survey
         $surveys = $this->table('surveys');
         $surveyData = [
             [
+                'owner_user_id' => $ownerUserId,
                 'public_id' => 'sv_p7Kf92LpQaXz3MnT8bQYv2A',
                 'title' => '開発用サンプルアンケート',
                 'description' => 'これは開発用のサンプルアンケートです。',
@@ -50,6 +56,7 @@ class DevelopmentSeeder extends AbstractSeed
         $masters = $this->table('respondent_masters');
         $masterData = [
             [
+                'owner_user_id' => $ownerUserId,
                 'master_code' => 'M001',
                 'line_display_name' => 'テスト太郎',
                 'name' => 'テスト 太郎',
@@ -60,6 +67,7 @@ class DevelopmentSeeder extends AbstractSeed
                 'updated_at' => $now,
             ],
             [
+                'owner_user_id' => $ownerUserId,
                 'master_code' => 'M002',
                 'line_display_name' => 'サンプル花子',
                 'name' => 'サンプル 花子',
@@ -70,6 +78,7 @@ class DevelopmentSeeder extends AbstractSeed
                 'updated_at' => $now,
             ],
             [
+                'owner_user_id' => $ownerUserId,
                 'master_code' => 'M003',
                 'line_display_name' => 'デモ次郎',
                 'name' => 'デモ 次郎',

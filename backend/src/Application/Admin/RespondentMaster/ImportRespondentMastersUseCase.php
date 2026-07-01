@@ -17,7 +17,7 @@ final class ImportRespondentMastersUseCase
      * @param string $csvContent
      * @return array{imported: int, errors: array}
      */
-    public function execute(string $csvContent): array
+    public function execute(string $csvContent, int $ownerUserId): array
     {
         // Strip BOM if present
         if (str_starts_with($csvContent, "\xEF\xBB\xBF")) {
@@ -33,7 +33,7 @@ final class ImportRespondentMastersUseCase
         $errors = [];
 
         // Pre-fetch all existing data to check for line_display_name uniqueness across the batch
-        $allMasters = $this->respondentMasterRepository->findBy([]);
+        $allMasters = $this->respondentMasterRepository->findBy([], $ownerUserId);
         $masterCodeMap = [];
         $lineDisplayNameMap = [];
 
@@ -109,7 +109,7 @@ final class ImportRespondentMastersUseCase
             try {
                 $existing = $masterCodeMap[$record['master_code']] ?? null;
                 if ($existing) {
-                    $this->respondentMasterRepository->update((int)$existing['id'], $record);
+                    $this->respondentMasterRepository->update((int)$existing['id'], $record, $ownerUserId);
                     $record['id'] = $existing['id'];
 
                     // Unset old display name if changed
@@ -117,7 +117,7 @@ final class ImportRespondentMastersUseCase
                         unset($lineDisplayNameMap[$existing['line_display_name']]);
                     }
                 } else {
-                    $id = $this->respondentMasterRepository->save($record);
+                    $id = $this->respondentMasterRepository->save($record, $ownerUserId);
                     $record['id'] = $id;
                 }
 

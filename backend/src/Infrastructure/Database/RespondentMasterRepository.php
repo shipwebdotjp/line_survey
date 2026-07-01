@@ -17,10 +17,10 @@ class RespondentMasterRepository
     ) {
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id, int $ownerUserId): ?array
     {
-        $sql = sprintf('SELECT * FROM %s WHERE id = ? LIMIT 1', self::TABLE);
-        $result = $this->db->selectOne($sql, [$id]);
+        $sql = sprintf('SELECT * FROM %s WHERE id = ? AND owner_user_id = ? LIMIT 1', self::TABLE);
+        $result = $this->db->selectOne($sql, [$id, $ownerUserId]);
 
         if (!$result) {
             return null;
@@ -29,8 +29,10 @@ class RespondentMasterRepository
         return (array)$result;
     }
 
-    public function findBy(array $criteria): array
+    public function findBy(array $criteria, int $ownerUserId): array
     {
+        $criteria['owner_user_id'] = $ownerUserId;
+
         $where = [];
         $bindings = [];
         foreach ($criteria as $column => $value) {
@@ -48,8 +50,10 @@ class RespondentMasterRepository
         return array_map(fn($item) => (array)$item, $results);
     }
 
-    public function save(array $data): int
+    public function save(array $data, int $ownerUserId): int
     {
+        $data['owner_user_id'] = $ownerUserId;
+
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
         $data['created_at'] = $data['created_at'] ?? $now;
         $data['updated_at'] = $data['updated_at'] ?? $now;
@@ -69,8 +73,10 @@ class RespondentMasterRepository
         return (int)$this->db->getPdo()->lastInsertId();
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data, int $ownerUserId): bool
     {
+        unset($data['owner_user_id']);
+
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
         $data['updated_at'] = $data['updated_at'] ?? $now;
 
@@ -81,9 +87,10 @@ class RespondentMasterRepository
             $bindings[] = $value;
         }
         $bindings[] = $id;
+        $bindings[] = $ownerUserId;
 
         $sql = sprintf(
-            'UPDATE %s SET %s WHERE id = ?',
+            'UPDATE %s SET %s WHERE id = ? AND owner_user_id = ?',
             self::TABLE,
             implode(', ', $sets)
         );
@@ -93,10 +100,10 @@ class RespondentMasterRepository
         return $affected > 0;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, int $ownerUserId): bool
     {
-        $sql = sprintf('DELETE FROM %s WHERE id = ?', self::TABLE);
-        $affected = $this->db->delete($sql, [$id]);
+        $sql = sprintf('DELETE FROM %s WHERE id = ? AND owner_user_id = ?', self::TABLE);
+        $affected = $this->db->delete($sql, [$id, $ownerUserId]);
         return $affected > 0;
     }
 }

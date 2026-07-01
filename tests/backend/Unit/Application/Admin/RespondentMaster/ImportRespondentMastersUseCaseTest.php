@@ -21,6 +21,7 @@ class ImportRespondentMastersUseCaseTest extends TestCase
 
     public function testExecuteSuccess()
     {
+        $ownerUserId = 1;
         $csv = "master_code,line_display_name,name,honorific,email,note\n"
              . "M001,John Doe,John Doe,Mr.,john@example.com,Note 1\n"
              . "M002,Jane Smith,Jane Smith,Ms.,jane@example.com,Note 2";
@@ -32,7 +33,7 @@ class ImportRespondentMastersUseCaseTest extends TestCase
         $this->repository->expects($this->exactly(2))
             ->method('save');
 
-        $result = $this->useCase->execute($csv);
+        $result = $this->useCase->execute($csv, $ownerUserId);
 
         $this->assertEquals(2, $result['imported']);
         $this->assertEmpty($result['errors']);
@@ -40,6 +41,7 @@ class ImportRespondentMastersUseCaseTest extends TestCase
 
     public function testExecuteUpsert()
     {
+        $ownerUserId = 1;
         $csv = "master_code,line_display_name,name,honorific,email,note\n"
              . "M001,John Updated,John Doe,Mr.,john@example.com,Note 1";
 
@@ -53,9 +55,9 @@ class ImportRespondentMastersUseCaseTest extends TestCase
             ->method('update')
             ->with(1, $this->callback(function ($data) {
                 return $data['line_display_name'] === 'John Updated';
-            }));
+            }), $ownerUserId);
 
-        $result = $this->useCase->execute($csv);
+        $result = $this->useCase->execute($csv, $ownerUserId);
 
         $this->assertEquals(1, $result['imported']);
         $this->assertEmpty($result['errors']);
@@ -63,6 +65,7 @@ class ImportRespondentMastersUseCaseTest extends TestCase
 
     public function testExecuteValidationErrors()
     {
+        $ownerUserId = 1;
         $csv = "master_code,line_display_name,name,honorific,email,note\n"
              . ",John Doe,John Doe,Mr.,john@example.com,Note 1\n" // empty master_code
              . "M002,Jane Smith,Jane Smith,Ms.,invalid-email,Note 2\n" // invalid email
@@ -74,7 +77,7 @@ class ImportRespondentMastersUseCaseTest extends TestCase
                 ['id' => 1, 'master_code' => 'M001', 'line_display_name' => 'Duplicate Name']
             ]);
 
-        $result = $this->useCase->execute($csv);
+        $result = $this->useCase->execute($csv, $ownerUserId);
 
         $this->assertEquals(0, $result['imported']);
         $this->assertCount(3, $result['errors']);

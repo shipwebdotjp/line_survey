@@ -18,7 +18,12 @@ final class ListRespondentMastersAction
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $masters = $this->useCase->execute();
+        $ownerUser = $request->getAttribute('owner_user');
+        if (!is_array($ownerUser) || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+        }
+
+        $masters = $this->useCase->execute((int)$ownerUser['id']);
         return JsonResponse::success($response, $masters);
     }
 }

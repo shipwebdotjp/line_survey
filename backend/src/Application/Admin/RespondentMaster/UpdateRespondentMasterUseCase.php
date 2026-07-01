@@ -20,9 +20,9 @@ final class UpdateRespondentMasterUseCase
      * @return bool
      * @throws Exception
      */
-    public function execute(int $id, array $data): bool
+    public function execute(int $id, array $data, int $ownerUserId): bool
     {
-        $current = $this->respondentMasterRepository->findById($id);
+        $current = $this->respondentMasterRepository->findById($id, $ownerUserId);
         if (!$current) {
             return false;
         }
@@ -30,7 +30,7 @@ final class UpdateRespondentMasterUseCase
         $errors = [];
 
         // Uniqueness check for master_code
-        $existingByCode = $this->respondentMasterRepository->findBy(['master_code' => $data['master_code']]);
+        $existingByCode = $this->respondentMasterRepository->findBy(['master_code' => $data['master_code']], $ownerUserId);
         foreach ($existingByCode as $m) {
             if ($m['id'] !== $id) {
                 $errors['master_code'] = 'このマスターコードは既に使用されています。';
@@ -39,7 +39,7 @@ final class UpdateRespondentMasterUseCase
         }
 
         // Uniqueness check for line_display_name
-        $existingByName = $this->respondentMasterRepository->findBy(['line_display_name' => $data['line_display_name']]);
+        $existingByName = $this->respondentMasterRepository->findBy(['line_display_name' => $data['line_display_name']], $ownerUserId);
         foreach ($existingByName as $m) {
             if ($m['id'] !== $id) {
                 $errors['line_display_name'] = 'このLINE表示名は既に使用されています。';
@@ -55,6 +55,6 @@ final class UpdateRespondentMasterUseCase
         $data['honorific'] = ($data['honorific'] ?? '') !== '' ? $data['honorific'] : null;
         $data['note'] = ($data['note'] ?? '') !== '' ? $data['note'] : null;
 
-        return $this->respondentMasterRepository->update($id, $data);
+        return $this->respondentMasterRepository->update($id, $data, $ownerUserId);
     }
 }

@@ -18,6 +18,11 @@ final class ImportRespondentMastersAction
 
     public function __invoke(Request $request, Response $response): Response
     {
+        $ownerUser = $request->getAttribute('owner_user');
+        if (!is_array($ownerUser) || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+        }
+
         $uploadedFiles = $request->getUploadedFiles();
         $file = $uploadedFiles['file'] ?? null;
 
@@ -26,7 +31,7 @@ final class ImportRespondentMastersAction
         }
 
         $csvContent = (string)$file->getStream();
-        $result = $this->useCase->execute($csvContent);
+        $result = $this->useCase->execute($csvContent, (int)$ownerUser['id']);
 
         return JsonResponse::success($response, $result);
     }

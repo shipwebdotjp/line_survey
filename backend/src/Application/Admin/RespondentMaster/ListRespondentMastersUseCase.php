@@ -13,8 +13,8 @@ final class ListRespondentMastersUseCase
     ) {
     }
 
-    public function execute(): array
+    public function execute(int $ownerUserId): array
     {
-        return $this->respondentMasterRepository->findBy([]);
+        return $this->respondentMasterRepository->findBy([], $ownerUserId);
     }
 }
