@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { AdminUser } from './adminAuthApi';
 import { adminAuthApi } from './adminAuthApi';
 
@@ -14,14 +14,21 @@ const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const versionRef = useRef(0);
 
   const checkAuth = useCallback(async () => {
+    const currentVersion = ++versionRef.current;
     try {
       const user = await adminAuthApi.getCurrentUser();
-      setUser(user);
-      setIsLoading(false);
+      if (currentVersion === versionRef.current) {
+        setUser(user);
+      }
     } catch (error) {
-      setIsLoading(false);
+      // Ignore
+    } finally {
+      if (currentVersion === versionRef.current) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -30,14 +37,23 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [checkAuth]);
 
   const login = async (idToken: string) => {
+    const currentVersion = ++versionRef.current;
     const data = await adminAuthApi.login(idToken);
-    setUser(data.user);
+    if (currentVersion === versionRef.current) {
+      setUser(data.user);
+    }
   };
 
   const logout = async () => {
-    await adminAuthApi.logout();
-    setUser(null);
-    window.location.href = '/admin/login';
+    try {
+      await adminAuthApi.logout();
+    } catch (err) {
+      console.error('Logout API failed', err);
+    } finally {
+      versionRef.current++;
+      setUser(null);
+      window.location.href = '/admin/login';
+    }
   };
 
   return (

@@ -1,3 +1,5 @@
+import { fetchAdmin } from '../lib/adminFetch';
+
 export interface AdminUser {
   id: number;
   line_user_id: string;
@@ -35,8 +37,6 @@ async function fetchJson<T>(
   return result.data;
 }
 
-import { fetchAdmin } from '../lib/adminFetch';
-
 export const adminAuthApi = {
   async login(idToken: string): Promise<{ user: AdminUser }> {
     return fetchJson<{ user: AdminUser }>(
@@ -62,10 +62,10 @@ export const adminAuthApi = {
 
   async getCurrentUser(): Promise<AdminUser | null> {
     try {
-        const data = await fetchAdmin<{ user: AdminUser }>(`${API_BASE}/me`);
-        return data.user;
+      const data = await fetchAdmin<{ user: AdminUser }>(`${API_BASE}/me`);
+      return data.user;
     } catch {
-        return null;
+      return null;
     }
   },
 };

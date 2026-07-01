@@ -161,7 +161,7 @@ const AdminShell: React.FC = () => {
           <div className="admin-header-user">
             {user && (
               <>
-                <span className="admin-user-name">{user.line_display_name}</span>
+                <span className="admin-user-name">{user.line_display_name || `User (ID:${user.id})`}</span>
                 <button onClick={logout} className="admin-logout-btn">
                   ログアウト
                 </button>

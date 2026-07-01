@@ -40,6 +40,14 @@ export const fetchWithSession = async (
             headers,
             credentials: 'include',
           });
+        } else if (result.error) {
+          return new Response(JSON.stringify({
+            error: result.error,
+            code: 'IDENTIFICATION_FAILED'
+          }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
+          });
         }
       }
     } catch (e) {

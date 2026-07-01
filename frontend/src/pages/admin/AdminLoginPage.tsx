@@ -19,7 +19,14 @@ const AdminLoginPage: React.FC = () => {
   useEffect(() => {
     if (user) {
       const params = new URLSearchParams(location.search);
-      const from = params.get('from') || (location.state as any)?.from?.pathname || '/admin/surveys';
+      let from = params.get('from') || (location.state as any)?.from?.pathname || '/admin/surveys';
+
+      // Validate redirect target: Must start with /admin and NOT be /admin/login
+      const isValidAdminPath = from.startsWith('/admin') && !from.startsWith('/admin/login');
+      if (!isValidAdminPath) {
+        from = '/admin/surveys';
+      }
+
       navigate(from, { replace: true });
     }
   }, [user, navigate, location]);

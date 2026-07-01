@@ -15,10 +15,19 @@ export async function fetchAdmin<T>(
   options?: RequestInit,
   errorMessage = 'Failed to fetch'
 ): Promise<T> {
-  const response = await fetch(url, {
-    ...options,
-    credentials: 'include',
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      credentials: 'include',
+    });
+  } catch (err) {
+    throw new AdminApiError(
+      `${errorMessage}: 通信エラーが発生しました。`,
+      0,
+      { error: String(err) }
+    );
+  }
 
   if (response.status === 401) {
     // If we're on the admin side, 401 means session expired or not logged in

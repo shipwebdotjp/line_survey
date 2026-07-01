@@ -153,7 +153,7 @@ const PublicSurveyPage: React.FC = () => {
   }, [isLoggedIn, public_id, idToken]);
 
   const handleManualSubmit = async (data: { name: string; email: string; honorific: string }) => {
-    if (!idToken) return;
+    if (!idToken || !public_id) return;
     try {
       setIsIdentifying(true);
       setIdentifyError(null);
