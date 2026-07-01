@@ -25,12 +25,16 @@ final class IdentifyService
      *
      * @param string $lineUserId
      * @param string $lineDisplayName
+     * @param int $ownerUserId
      * @return array{status: string, respondent: array|null}
      */
-    public function identify(string $lineUserId, string $lineDisplayName): array
+    public function identify(string $lineUserId, string $lineDisplayName, int $ownerUserId): array
     {
-        // 1. Check existing respondent by line_user_id
-        $existing = $this->respondentRepository->findBy(['line_user_id' => $lineUserId]);
+        // 1. Check existing respondent by line_user_id and owner_user_id
+        $existing = $this->respondentRepository->findBy([
+            'line_user_id' => $lineUserId,
+            'owner_user_id' => $ownerUserId,
+        ]);
         if (!empty($existing)) {
             $respondent = $existing[0];
             // Update line_display_name to the latest value
@@ -44,8 +48,11 @@ final class IdentifyService
             ];
         }
 
-        // 2. Check respondent_masters by line_display_name (exact match)
-        $masters = $this->masterRepository->findBy(['line_display_name' => $lineDisplayName]);
+        // 2. Check respondent_masters by line_display_name (exact match) and owner_user_id
+        $masters = $this->masterRepository->findBy([
+            'line_display_name' => $lineDisplayName,
+            'owner_user_id' => $ownerUserId,
+        ]);
         if (!empty($masters)) {
             $master = $masters[0];
 
@@ -54,6 +61,7 @@ final class IdentifyService
             }
 
             $newRespondentId = $this->respondentRepository->save([
+                'owner_user_id' => $ownerUserId,
                 'line_user_id' => $lineUserId,
                 'line_display_name' => $lineDisplayName,
                 'respondent_master_id' => $master['id'],
@@ -82,12 +90,16 @@ final class IdentifyService
      * @param string $lineUserId
      * @param string $lineDisplayName
      * @param array $data {name: string, email: string, honorific: string}
+     * @param int $ownerUserId
      * @return array
      */
-    public function saveManual(string $lineUserId, string $lineDisplayName, array $data): array
+    public function saveManual(string $lineUserId, string $lineDisplayName, array $data, int $ownerUserId): array
     {
         // Check if already exists (to be safe/idempotent)
-        $existing = $this->respondentRepository->findBy(['line_user_id' => $lineUserId]);
+        $existing = $this->respondentRepository->findBy([
+            'line_user_id' => $lineUserId,
+            'owner_user_id' => $ownerUserId,
+        ]);
         if (!empty($existing)) {
             $respondent = $existing[0];
             $updateData = [
@@ -102,6 +114,7 @@ final class IdentifyService
         }
 
         $newId = $this->respondentRepository->save([
+            'owner_user_id' => $ownerUserId,
             'line_user_id' => $lineUserId,
             'line_display_name' => $lineDisplayName,
             'respondent_master_id' => null,

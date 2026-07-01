@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Http\Liff;
 
 use App\Application\Respondent\IdentifyService;
+use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Line\IdTokenVerifier;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -13,7 +14,8 @@ final class IdentifyAction
 {
     public function __construct(
         private IdTokenVerifier $verifier,
-        private IdentifyService $identifyService
+        private IdentifyService $identifyService,
+        private SurveyRepository $surveyRepository
     ) {
     }
 
@@ -21,9 +23,15 @@ final class IdentifyAction
     {
         $params = $request->getParsedBody();
         $idToken = $params['id_token'] ?? '';
+        $publicId = $params['public_id'] ?? '';
 
         if (empty($idToken)) {
             $response->getBody()->write(json_encode(['error' => 'ID Token is required'], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        if (empty($publicId)) {
+            $response->getBody()->write(json_encode(['error' => 'public_id is required'], JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
@@ -39,7 +47,13 @@ final class IdentifyAction
         }
 
         try {
-            $result = $this->identifyService->identify($claims['sub'], $claims['name']);
+            $survey = $this->surveyRepository->findByPublicId($publicId);
+            if (!$survey) {
+                $response->getBody()->write(json_encode(['error' => 'Survey not found'], JSON_UNESCAPED_UNICODE));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            $result = $this->identifyService->identify($claims['sub'], $claims['name'], (int)$survey['owner_user_id']);
 
             // Establish session on success
             if (isset($result['respondent']['id'])) {
