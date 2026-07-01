@@ -97,13 +97,11 @@ return function (App $app) {
     // Admin API
     $app->group('/api/admin', function (RouteCollectorProxy $group) {
         // Public Admin APIs (No session required)
-        $group->post('/login', AdminLoginAction::class)
-            ->add(RequestSafetyMiddleware::class);
+        $group->post('/login', AdminLoginAction::class);
 
         // Session-required Admin APIs
         $group->group('', function (RouteCollectorProxy $adminGroup) {
-            $adminGroup->post('/logout', AdminLogoutAction::class)
-                ->add(RequestSafetyMiddleware::class);
+            $adminGroup->post('/logout', AdminLogoutAction::class);
 
             $adminGroup->get('/surveys', ListSurveysAction::class);
             $adminGroup->post('/surveys', CreateSurveyAction::class);
@@ -137,5 +135,6 @@ return function (App $app) {
             $adminGroup->put('/respondents/{id:[0-9]+}', AdminUpdateRespondentAction::class);
             $adminGroup->delete('/respondents/{id:[0-9]+}', DeleteRespondentAction::class);
         })->add(AdminAuthMiddleware::class);
-    })->add(SessionMiddleware::class);
+    })->add(RequestSafetyMiddleware::class)
+      ->add(SessionMiddleware::class);
 };

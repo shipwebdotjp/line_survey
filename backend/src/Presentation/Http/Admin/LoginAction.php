@@ -30,7 +30,8 @@ final class LoginAction
         try {
             $claims = $this->verifier->verify($idToken);
         } catch (\RuntimeException $e) {
-            return JsonResponse::error($response, 'AUTH_FAILED', $e->getMessage(), null, 401);
+            error_log('Admin login verifier error: ' . $e->getMessage());
+            return JsonResponse::error($response, 'AUTH_FAILED', 'Authentication failed', null, 401);
         }
 
         try {
@@ -69,7 +70,8 @@ final class LoginAction
                 'user' => $user
             ]);
         } catch (\Throwable $e) {
-            return JsonResponse::error($response, 'INTERNAL_ERROR', $e->getMessage(), null, 500);
+            error_log('Admin login error: ' . $e->getMessage());
+            return JsonResponse::error($response, 'AUTH_FAILED', 'Authentication failed', null, 401);
         }
     }
 }

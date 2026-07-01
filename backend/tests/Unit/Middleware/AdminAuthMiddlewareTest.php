@@ -54,10 +54,26 @@ class AdminAuthMiddlewareTest extends TestCase
         $this->assertArrayNotHasKey('owner_user_id', $_SESSION);
     }
 
-    public function testCallsHandlerIfUserFound(): void
+    public function testReturns403IfUserIsNotAdmin(): void
     {
         $_SESSION['owner_user_id'] = 1;
-        $user = ['id' => 1, 'line_display_name' => 'Admin'];
+        $user = ['id' => 1, 'line_display_name' => 'Regular User', 'role' => 'user'];
+        $this->userRepository->method('findById')->with(1)->willReturn($user);
+
+        $this->request->expects($this->never())->method('withAttribute');
+        $this->handler->expects($this->never())->method('handle');
+
+        $response = $this->middleware->process($this->request, $this->handler);
+
+        $this->assertEquals(403, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('FORBIDDEN', $body);
+    }
+
+    public function testCallsHandlerIfUserIsAdmin(): void
+    {
+        $_SESSION['owner_user_id'] = 1;
+        $user = ['id' => 1, 'line_display_name' => 'Admin', 'role' => 'admin'];
         $this->userRepository->method('findById')->with(1)->willReturn($user);
 
         $this->request->expects($this->once())

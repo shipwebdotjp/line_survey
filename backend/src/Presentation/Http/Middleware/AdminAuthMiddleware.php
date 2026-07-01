@@ -37,6 +37,11 @@ final class AdminAuthMiddleware implements MiddlewareInterface
             return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Invalid owner session', null, 401);
         }
 
+        if (($user['role'] ?? '') !== 'admin') {
+            $response = $this->responseFactory->createResponse(403);
+            return JsonResponse::error($response, 'FORBIDDEN', 'Access denied', null, 403);
+        }
+
         // Attach owner user to request
         $request = $request->withAttribute('owner_user', $user);
 
