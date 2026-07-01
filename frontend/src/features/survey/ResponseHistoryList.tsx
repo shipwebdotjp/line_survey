@@ -6,9 +6,10 @@ import type { ResponseHistoryItem } from './types';
 interface Props {
   history: ResponseHistoryItem[] | null;
   emptyMessage?: string;
+  surveyPublicId?: string;
 }
 
-const ResponseHistoryList: React.FC<Props> = ({ history, emptyMessage = 'まだ回答履歴がありません。' }) => {
+const ResponseHistoryList: React.FC<Props> = ({ history, emptyMessage = 'まだ回答履歴がありません。', surveyPublicId: _surveyPublicId }) => {
   if (!history || history.length === 0) {
     return (
       <div style={{ padding: '1.5rem', textAlign: 'center', color: '#6b7280', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '10px' }}>
