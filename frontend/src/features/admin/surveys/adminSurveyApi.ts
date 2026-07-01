@@ -1,3 +1,4 @@
+import { fetchAdmin } from '../lib/adminFetch';
 import type {
   ResponseDetail,
   ResponseSummary,
@@ -9,57 +10,17 @@ import type {
 
 const API_BASE = '/api/admin/surveys';
 
-async function fetchJson<T>(
-  url: string,
-  options?: RequestInit,
-  errorMessage = 'Failed to fetch'
-): Promise<T> {
-  const response = await fetch(url, options);
-
-  if (!response.ok) {
-    let errorDetail = '';
-    const contentType = response.headers.get('content-type');
-
-    if (contentType && contentType.includes('application/json')) {
-      try {
-        const errorData = await response.json();
-        errorDetail = errorData.error || errorData.message || '';
-      } catch {
-        // Fallback if parsing fails despite header
-      }
-    }
-
-    if (!errorDetail) {
-      try {
-        errorDetail = await response.text();
-      } catch {
-        // Fallback if text read fails
-      }
-    }
-
-    throw new Error(errorDetail ? `${errorMessage}: ${errorDetail}` : errorMessage);
-  }
-
-  // For 204 No Content or similar, just return as cast T
-  if (response.status === 204) {
-    return {} as T;
-  }
-
-  const result = await response.json();
-  return result.data;
-}
-
 export const adminSurveyApi = {
   async list(): Promise<Survey[]> {
-    return fetchJson<Survey[]>(API_BASE, {}, 'アンケート一覧の取得に失敗しました');
+    return fetchAdmin<Survey[]>(API_BASE, {}, 'アンケート一覧の取得に失敗しました');
   },
 
   async get(id: number): Promise<Survey> {
-    return fetchJson<Survey>(`${API_BASE}/${id}`, {}, `アンケート(ID:${id})の取得に失敗しました`);
+    return fetchAdmin<Survey>(`${API_BASE}/${id}`, {}, `アンケート(ID:${id})の取得に失敗しました`);
   },
 
   async create(params: SurveyCreateParams): Promise<{ id: number }> {
-    return fetchJson<{ id: number }>(
+    return fetchAdmin<{ id: number }>(
       API_BASE,
       {
         method: 'POST',
@@ -71,7 +32,7 @@ export const adminSurveyApi = {
   },
 
   async update(id: number, params: SurveyUpdateParams): Promise<void> {
-    await fetchJson<void>(
+    await fetchAdmin<void>(
       `${API_BASE}/${id}`,
       {
         method: 'PUT',
@@ -83,7 +44,7 @@ export const adminSurveyApi = {
   },
 
   async delete(id: number): Promise<void> {
-    await fetchJson<void>(
+    await fetchAdmin<void>(
       `${API_BASE}/${id}`,
       {
         method: 'DELETE',
@@ -93,7 +54,7 @@ export const adminSurveyApi = {
   },
 
   async duplicate(id: number): Promise<{ id: number }> {
-    return fetchJson<{ id: number }>(
+    return fetchAdmin<{ id: number }>(
       `${API_BASE}/${id}/duplicate`,
       {
         method: 'POST',
@@ -103,7 +64,7 @@ export const adminSurveyApi = {
   },
 
   async listResponses(surveyId: number): Promise<ResponseSummary[]> {
-    return fetchJson<ResponseSummary[]>(
+    return fetchAdmin<ResponseSummary[]>(
       `${API_BASE}/${surveyId}/responses`,
       {},
       '回答一覧の取得に失敗しました'
@@ -111,7 +72,7 @@ export const adminSurveyApi = {
   },
 
   async getResponse(surveyId: number, responseId: number): Promise<ResponseDetail> {
-    return fetchJson<ResponseDetail>(
+    return fetchAdmin<ResponseDetail>(
       `${API_BASE}/${surveyId}/responses/${responseId}`,
       {},
       '回答詳細の取得に失敗しました'
@@ -123,7 +84,7 @@ export const adminSurveyApi = {
     responseId: number,
     answerJson: Record<string, any>
   ): Promise<void> {
-    await fetchJson<void>(
+    await fetchAdmin<void>(
       `${API_BASE}/${surveyId}/responses/${responseId}`,
       {
         method: 'PUT',
@@ -135,7 +96,7 @@ export const adminSurveyApi = {
   },
 
   async deleteResponse(surveyId: number, responseId: number): Promise<void> {
-    await fetchJson<void>(
+    await fetchAdmin<void>(
       `${API_BASE}/${surveyId}/responses/${responseId}`,
       {
         method: 'DELETE',
@@ -145,7 +106,7 @@ export const adminSurveyApi = {
   },
 
   async getSummary(surveyId: number): Promise<SurveySummary> {
-    return fetchJson<SurveySummary>(
+    return fetchAdmin<SurveySummary>(
       `${API_BASE}/${surveyId}/summary`,
       {},
       '集計結果の取得に失敗しました'

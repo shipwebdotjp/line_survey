@@ -8,7 +8,7 @@ export const fetchWithSession = async (
   input: RequestInfo | URL,
   init: RequestInit = {},
   options: {
-    onSessionRequired?: () => Promise<boolean>;
+    onSessionRequired?: () => Promise<{ success: boolean; error?: string }>;
   } = {}
 ): Promise<Response> => {
   const { onSessionRequired } = options;
@@ -32,13 +32,21 @@ export const fetchWithSession = async (
     try {
       const data = await clonedResponse.json();
       if (data.code === 'SESSION_REQUIRED' && onSessionRequired) {
-        const retried = await onSessionRequired();
-        if (retried) {
+        const result = await onSessionRequired();
+        if (result.success) {
           // Retry the original request
           return fetch(input, {
             ...init,
             headers,
             credentials: 'include',
+          });
+        } else if (result.error) {
+          return new Response(JSON.stringify({
+            error: result.error,
+            code: 'IDENTIFICATION_FAILED'
+          }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
           });
         }
       }
@@ -50,7 +58,7 @@ export const fetchWithSession = async (
   return response;
 };
 
-export const getRespondentProfile = async (onSessionRequired?: () => Promise<boolean>): Promise<Respondent> => {
+export const getRespondentProfile = async (onSessionRequired?: () => Promise<{ success: boolean; error?: string }>): Promise<Respondent> => {
   const response = await fetchWithSession('/api/respondent', {}, { onSessionRequired });
   const result = await response.json();
   if (!response.ok) {
@@ -61,7 +69,7 @@ export const getRespondentProfile = async (onSessionRequired?: () => Promise<boo
 
 export const getResponseHistory = async (
   surveyPublicId?: string,
-  onSessionRequired?: () => Promise<boolean>
+  onSessionRequired?: () => Promise<{ success: boolean; error?: string }>
 ): Promise<ResponseHistoryItem[]> => {
   let url = '/api/surveys/responses/history';
   if (surveyPublicId) {
@@ -77,7 +85,7 @@ export const getResponseHistory = async (
 
 export const getResponseDraft = async (
   publicId: string,
-  onSessionRequired?: () => Promise<boolean>
+  onSessionRequired?: () => Promise<{ success: boolean; error?: string }>
 ): Promise<ResponseDraftResponse> => {
   const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {}, { onSessionRequired });
   const result = await response.json();
@@ -90,7 +98,7 @@ export const getResponseDraft = async (
 export const saveResponseDraft = async (
   publicId: string,
   answerJson: Record<string, any>,
-  onSessionRequired?: () => Promise<boolean>
+  onSessionRequired?: () => Promise<{ success: boolean; error?: string }>
 ): Promise<ResponseDraftResponse> => {
   const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {
     method: 'PUT',
@@ -105,7 +113,7 @@ export const saveResponseDraft = async (
 
 export const deleteResponseDraft = async (
   publicId: string,
-  onSessionRequired?: () => Promise<boolean>
+  onSessionRequired?: () => Promise<{ success: boolean; error?: string }>
 ): Promise<void> => {
   const response = await fetchWithSession(`/api/surveys/public/${publicId}/response-draft`, {
     method: 'DELETE',
@@ -118,7 +126,7 @@ export const deleteResponseDraft = async (
 
 export const updateRespondentProfile = async (
   data: { name: string; email: string },
-  onSessionRequired?: () => Promise<boolean>
+  onSessionRequired?: () => Promise<{ success: boolean; error?: string }>
 ): Promise<Respondent> => {
   const response = await fetchWithSession('/api/respondent', {
     method: 'PUT',

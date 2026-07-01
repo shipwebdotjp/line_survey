@@ -1,8 +1,23 @@
 import React from 'react';
-import { Outlet, NavLink, useLocation, matchPath, Link } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, matchPath, Link, Navigate } from 'react-router-dom';
+import { useAdminAuth } from '../../features/admin/auth/AdminAuthContext';
 
 const AdminShell: React.FC = () => {
-  const { pathname } = useLocation();
+  const { user, isLoading, logout } = useAdminAuth();
+  const { pathname, search } = useLocation();
+
+  if (isLoading) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <p>読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    const from = pathname + search;
+    return <Navigate to={`/admin/login?from=${encodeURIComponent(from)}`} replace />;
+  }
 
   const getBreadcrumbs = () => {
     const breadcrumbs = [{ label: 'Admin', path: '/admin' }];
@@ -142,6 +157,16 @@ const AdminShell: React.FC = () => {
                 )}
               </React.Fragment>
             ))}
+          </div>
+          <div className="admin-header-user">
+            {user && (
+              <>
+                <span className="admin-user-name">{user.line_display_name || `User (ID:${user.id})`}</span>
+                <button onClick={logout} className="admin-logout-btn">
+                  ログアウト
+                </button>
+              </>
+            )}
           </div>
         </header>
         <main className="admin-content">

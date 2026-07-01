@@ -7,7 +7,7 @@ export interface UseLiffReturn {
   isLoggedIn: boolean;
   idToken: string | null;
   error: Error | null;
-  identify: (publicId: string) => Promise<boolean>;
+  identify: (publicId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 export interface UseLiffOptions {
@@ -117,16 +117,16 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
    * Establishes a server-side session using the current LIFF ID token.
    * This should be called after LIFF initialization and login, or when a session expires.
    */
-  const identify = async (publicId: string): Promise<boolean> => {
+  const identify = async (publicId: string): Promise<{ success: boolean; error?: string }> => {
     if (!publicId) {
       console.warn('Cannot identify: publicId is required.');
-      return false;
+      return { success: false, error: 'アンケートIDが指定されていません。' };
     }
 
     const token = liff.getIDToken();
     if (!token) {
       console.warn('Cannot identify: No ID token available.');
-      return false;
+      return { success: false, error: 'LINEの認証トークンが取得できませんでした。再読み込みをお試しください。' };
     }
 
     try {
@@ -139,10 +139,16 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
         }),
         credentials: 'include',
       });
-      return response.ok;
+
+      if (!response.ok) {
+        const result = await response.json();
+        return { success: false, error: result.error || '本人確認に失敗しました。' };
+      }
+
+      return { success: true };
     } catch (err) {
       console.error('Identification failed', err);
-      return false;
+      return { success: false, error: '通信エラーが発生しました。' };
     }
   };
 
