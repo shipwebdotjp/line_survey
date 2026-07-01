@@ -17,9 +17,9 @@ class UpdateResponseUseCase
     ) {
     }
 
-    public function execute(int $surveyId, int $responseId, array $answerJson, Request $request): array
+    public function execute(int $surveyId, int $responseId, array $answerJson, int $ownerUserId, Request $request): array
     {
-        $survey = $this->surveyRepository->findById($surveyId);
+        $survey = $this->surveyRepository->findById($surveyId, $ownerUserId);
         if (!$survey) {
             throw new HttpNotFoundException($request, 'Survey not found');
         }

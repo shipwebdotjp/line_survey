@@ -19,9 +19,9 @@ class GetSurveySummaryUseCase
     ) {
     }
 
-    public function execute(int $surveyId, Request $request): array
+    public function execute(int $surveyId, int $ownerUserId, Request $request): array
     {
-        $survey = $this->surveyRepository->findById($surveyId);
+        $survey = $this->surveyRepository->findById($surveyId, $ownerUserId);
         if (!$survey) {
             throw new HttpNotFoundException($request, 'Survey not found');
         }

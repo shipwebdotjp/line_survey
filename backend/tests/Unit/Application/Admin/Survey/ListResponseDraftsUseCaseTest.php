@@ -15,10 +15,11 @@ class ListResponseDraftsUseCaseTest extends TestCase
         $repository = $this->createMock(ResponseDraftRepository::class);
         $repository->expects($this->once())
             ->method('findAll')
+            ->with(123)
             ->willReturn([['id' => 1, 'survey_title' => 'Test Survey']]);
 
         $useCase = new ListResponseDraftsUseCase($repository);
-        $result = $useCase->execute();
+        $result = $useCase->execute(123);
 
         $this->assertCount(1, $result);
         $this->assertEquals('Test Survey', $result[0]['survey_title']);

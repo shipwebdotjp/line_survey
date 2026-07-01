@@ -19,9 +19,9 @@ class ExportResponsesCsvUseCase
     ) {
     }
 
-    public function execute(int $surveyId, Request $request): string
+    public function execute(int $surveyId, int $ownerUserId, Request $request): string
     {
-        $survey = $this->surveyRepository->findById($surveyId);
+        $survey = $this->surveyRepository->findById($surveyId, $ownerUserId);
         if (!$survey) {
             throw new HttpNotFoundException($request, 'Survey not found');
         }

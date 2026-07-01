@@ -13,8 +13,8 @@ final class ListSurveysUseCase
     ) {
     }
 
-    public function execute(): array
+    public function execute(int $ownerUserId): array
     {
-        return $this->surveyRepository->findAllWithResponseCount();
+        return $this->surveyRepository->findAllWithResponseCount($ownerUserId);
     }
 }

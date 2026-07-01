@@ -17,9 +17,9 @@ class DeleteResponseUseCase
     ) {
     }
 
-    public function execute(int $surveyId, int $responseId, Request $request): void
+    public function execute(int $surveyId, int $responseId, int $ownerUserId, Request $request): void
     {
-        $survey = $this->surveyRepository->findById($surveyId);
+        $survey = $this->surveyRepository->findById($surveyId, $ownerUserId);
         if (!$survey) {
             throw new HttpNotFoundException($request, 'Survey not found');
         }

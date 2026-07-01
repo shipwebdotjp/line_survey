@@ -30,9 +30,10 @@ class UpdateResponseUseCaseTest extends TestCase
     {
         $surveyId = 1;
         $responseId = 10;
+        $ownerUserId = 123;
         $answerJson = ['q1' => 'ans1'];
 
-        $this->surveyRepository->method('findById')->with($surveyId)->willReturn(['id' => $surveyId]);
+        $this->surveyRepository->method('findById')->with($surveyId, $ownerUserId)->willReturn(['id' => $surveyId]);
         $this->responseRepository->method('findById')->with($responseId)->willReturn([
             'id' => $responseId,
             'survey_id' => $surveyId
@@ -49,7 +50,7 @@ class UpdateResponseUseCaseTest extends TestCase
         ];
         $this->responseRepository->method('findByIdWithRespondent')->with($responseId)->willReturn($updatedResponse);
 
-        $result = $this->useCase->execute($surveyId, $responseId, $answerJson, $this->request);
+        $result = $this->useCase->execute($surveyId, $responseId, $answerJson, $ownerUserId, $this->request);
 
         $this->assertEquals($updatedResponse, $result);
     }
@@ -59,7 +60,7 @@ class UpdateResponseUseCaseTest extends TestCase
         $this->surveyRepository->method('findById')->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, [], $this->request);
+        $this->useCase->execute(1, 10, [], 123, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseMissing(): void
@@ -68,7 +69,7 @@ class UpdateResponseUseCaseTest extends TestCase
         $this->responseRepository->method('findById')->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, [], $this->request);
+        $this->useCase->execute(1, 10, [], 123, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseBelongsToDifferentSurvey(): void
@@ -80,6 +81,6 @@ class UpdateResponseUseCaseTest extends TestCase
         ]);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, [], $this->request);
+        $this->useCase->execute(1, 10, [], 123, $this->request);
     }
 }

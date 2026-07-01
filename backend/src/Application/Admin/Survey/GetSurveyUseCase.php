@@ -13,8 +13,8 @@ final class GetSurveyUseCase
     ) {
     }
 
-    public function execute(int $id): ?array
+    public function execute(int $id, int $ownerUserId): ?array
     {
-        return $this->surveyRepository->findByIdWithResponseCount($id);
+        return $this->surveyRepository->findByIdWithResponseCount($id, $ownerUserId);
     }
 }

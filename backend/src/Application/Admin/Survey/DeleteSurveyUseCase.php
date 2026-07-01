@@ -20,9 +20,9 @@ final class DeleteSurveyUseCase
      * @return bool
      * @throws \RuntimeException if survey has responses
      */
-    public function execute(int $id): bool
+    public function execute(int $id, int $ownerUserId): bool
     {
-        $survey = $this->surveyRepository->findById($id);
+        $survey = $this->surveyRepository->findById($id, $ownerUserId);
         if (!$survey) {
             throw new \RuntimeException('Survey not found', 404);
         }
@@ -32,6 +32,6 @@ final class DeleteSurveyUseCase
             throw new \RuntimeException('Cannot delete survey with responses', 409);
         }
 
-        return $this->surveyRepository->delete($id);
+        return $this->surveyRepository->delete($id, $ownerUserId);
     }
 }

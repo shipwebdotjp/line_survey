@@ -22,7 +22,8 @@ final class GetSurveySummaryAction
         $id = (int)$args['id'];
 
         try {
-            $summary = $this->useCase->execute($id, $request);
+            $ownerUser = $request->getAttribute('owner_user');
+            $summary = $this->useCase->execute($id, (int)$ownerUser['id'], $request);
             return JsonResponse::success($response, $summary);
         } catch (HttpNotFoundException $e) {
             return JsonResponse::error($response, 'NOT_FOUND', $e->getMessage(), null, 404);

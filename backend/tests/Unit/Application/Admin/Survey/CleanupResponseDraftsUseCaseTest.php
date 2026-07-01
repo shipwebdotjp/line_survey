@@ -15,10 +15,11 @@ class CleanupResponseDraftsUseCaseTest extends TestCase
         $repository = $this->createMock(ResponseDraftRepository::class);
         $repository->expects($this->once())
             ->method('deleteExpiredBefore')
+            ->with($this->anything(), 123)
             ->willReturn(5);
 
         $useCase = new CleanupResponseDraftsUseCase($repository);
-        $result = $useCase->execute();
+        $result = $useCase->execute(123);
 
         $this->assertEquals(5, $result);
     }
