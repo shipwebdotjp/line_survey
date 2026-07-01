@@ -12,6 +12,8 @@ use App\Presentation\Http\Admin\Survey\ListResponsesAction;
 use App\Presentation\Http\Admin\Survey\ListResponseDraftsAction;
 use App\Presentation\Http\Admin\Survey\GetResponseDraftAdminAction;
 use App\Presentation\Http\Admin\Survey\CleanupResponseDraftsAction;
+use App\Presentation\Http\Admin\LoginAction as AdminLoginAction;
+use App\Presentation\Http\Admin\LogoutAction as AdminLogoutAction;
 use App\Presentation\Http\Admin\RespondentMaster\CreateRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\DeleteRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\GetRespondentMasterAction;
@@ -26,13 +28,13 @@ use App\Presentation\Http\Admin\Respondent\GetRespondentAction as AdminGetRespon
 use App\Presentation\Http\Admin\Respondent\UpdateRespondentAction as AdminUpdateRespondentAction;
 use App\Presentation\Http\Admin\Respondent\DeleteRespondentAction;
 use App\Presentation\Http\JsonResponse;
+use App\Presentation\Http\Middleware\AdminAuthMiddleware;
 use App\Presentation\Http\Liff\IdentifyAction;
 use App\Presentation\Http\Liff\IdentifyManualAction;
 use App\Presentation\Http\Liff\LogoutAction;
 use App\Presentation\Http\Respondent\GetRespondentAction;
 use App\Presentation\Http\Respondent\UpdateRespondentAction;
 use App\Presentation\Http\Middleware\AuthSessionMiddleware;
-use App\Presentation\Http\Middleware\BasicAuthMiddleware;
 use App\Presentation\Http\Middleware\RequestSafetyMiddleware;
 use App\Presentation\Http\Middleware\SessionMiddleware;
 use App\Presentation\Http\Survey\GetPublicSurveyAction;
@@ -92,38 +94,47 @@ return function (App $app) {
 
     })->add(SessionMiddleware::class);
 
-    // Admin API (Basic Auth protected)
+    // Admin API
     $app->group('/api/admin', function (RouteCollectorProxy $group) {
-        $group->get('/surveys', ListSurveysAction::class);
-        $group->post('/surveys', CreateSurveyAction::class);
-        $group->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
-        $group->get('/surveys/{id:[0-9]+}/summary', GetSurveySummaryAction::class);
-        $group->post('/surveys/{id:[0-9]+}/duplicate', DuplicateSurveyAction::class);
-        $group->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
-        $group->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
-        $group->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
-        $group->get('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', GetResponseAction::class);
-        $group->put('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', AdminUpdateResponseAction::class);
-        $group->delete('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', DeleteResponseAction::class);
-        $group->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
+        // Public Admin APIs (No session required)
+        $group->post('/login', AdminLoginAction::class);
 
-        // Response Drafts
-        $group->get('/response-drafts', ListResponseDraftsAction::class);
-        $group->get('/response-drafts/{id:[0-9]+}', GetResponseDraftAdminAction::class);
-        $group->post('/response-drafts/cleanup', CleanupResponseDraftsAction::class);
+        // Session-required Admin APIs
+        $group->group('', function (RouteCollectorProxy $adminGroup) {
+            $adminGroup->post('/logout', AdminLogoutAction::class);
 
-        // Respondent Masters
-        $group->get('/respondent-masters', ListRespondentMastersAction::class);
-        $group->post('/respondent-masters', CreateRespondentMasterAction::class);
-        $group->get('/respondent-masters/{id:[0-9]+}', GetRespondentMasterAction::class);
-        $group->put('/respondent-masters/{id:[0-9]+}', UpdateRespondentMasterAction::class);
-        $group->delete('/respondent-masters/{id:[0-9]+}', DeleteRespondentMasterAction::class);
-        $group->post('/respondent-masters/import', ImportRespondentMastersAction::class);
+            $adminGroup->get('/surveys', ListSurveysAction::class);
+            $adminGroup->post('/surveys', CreateSurveyAction::class);
+            $adminGroup->get('/surveys/{id:[0-9]+}', GetSurveyAction::class);
+            $adminGroup->get('/surveys/{id:[0-9]+}/summary', GetSurveySummaryAction::class);
+            $adminGroup->post('/surveys/{id:[0-9]+}/duplicate', DuplicateSurveyAction::class);
+            $adminGroup->put('/surveys/{id:[0-9]+}', UpdateSurveyAction::class);
+            $adminGroup->delete('/surveys/{id:[0-9]+}', DeleteSurveyAction::class);
+            $adminGroup->get('/surveys/{id:[0-9]+}/responses', ListResponsesAction::class);
+            $adminGroup->get('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', GetResponseAction::class);
+            $adminGroup->put('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', AdminUpdateResponseAction::class);
+            $adminGroup->delete('/surveys/{id:[0-9]+}/responses/{responseId:[0-9]+}', DeleteResponseAction::class);
+            $adminGroup->get('/surveys/{id:[0-9]+}/responses.csv', ExportResponsesCsvAction::class);
 
-        // Respondents
-        $group->get('/respondents', ListRespondentsAction::class);
-        $group->get('/respondents/{id:[0-9]+}', AdminGetRespondentAction::class);
-        $group->put('/respondents/{id:[0-9]+}', AdminUpdateRespondentAction::class);
-        $group->delete('/respondents/{id:[0-9]+}', DeleteRespondentAction::class);
-    })->add(BasicAuthMiddleware::class);
+            // Response Drafts
+            $adminGroup->get('/response-drafts', ListResponseDraftsAction::class);
+            $adminGroup->get('/response-drafts/{id:[0-9]+}', GetResponseDraftAdminAction::class);
+            $adminGroup->post('/response-drafts/cleanup', CleanupResponseDraftsAction::class);
+
+            // Respondent Masters
+            $adminGroup->get('/respondent-masters', ListRespondentMastersAction::class);
+            $adminGroup->post('/respondent-masters', CreateRespondentMasterAction::class);
+            $adminGroup->get('/respondent-masters/{id:[0-9]+}', GetRespondentMasterAction::class);
+            $adminGroup->put('/respondent-masters/{id:[0-9]+}', UpdateRespondentMasterAction::class);
+            $adminGroup->delete('/respondent-masters/{id:[0-9]+}', DeleteRespondentMasterAction::class);
+            $adminGroup->post('/respondent-masters/import', ImportRespondentMastersAction::class);
+
+            // Respondents
+            $adminGroup->get('/respondents', ListRespondentsAction::class);
+            $adminGroup->get('/respondents/{id:[0-9]+}', AdminGetRespondentAction::class);
+            $adminGroup->put('/respondents/{id:[0-9]+}', AdminUpdateRespondentAction::class);
+            $adminGroup->delete('/respondents/{id:[0-9]+}', DeleteRespondentAction::class);
+        })->add(AdminAuthMiddleware::class);
+    })->add(RequestSafetyMiddleware::class)
+      ->add(SessionMiddleware::class);
 };
