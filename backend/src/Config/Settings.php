@@ -32,10 +32,6 @@ class Settings
                 'log_errors' => true,
                 'log_error_details' => true,
             ],
-            'auth' => [
-                'admin_user' => $_ENV['ADMIN_USER'] ?? 'admin',
-                'admin_pass' => $_ENV['ADMIN_PASS'] ?? 'password',
-            ],
             'line' => [
                 'channel_id' => $_ENV['LINE_CHANNEL_ID'] ?? '',
             ],
