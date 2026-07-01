@@ -55,6 +55,7 @@ export const adminAuthApi = {
       `${API_BASE}/logout`,
       {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
       },
       'ログアウトに失敗しました'
     );
