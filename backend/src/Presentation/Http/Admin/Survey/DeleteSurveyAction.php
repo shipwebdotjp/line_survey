@@ -21,7 +21,8 @@ final class DeleteSurveyAction
         $id = (int)($args['id'] ?? 0);
 
         try {
-            $this->useCase->execute($id);
+            $ownerUser = $request->getAttribute('owner_user');
+            $this->useCase->execute($id, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['success' => true]);
         } catch (\RuntimeException $e) {
             if ($e->getCode() === 409) {

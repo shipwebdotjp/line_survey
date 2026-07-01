@@ -15,11 +15,11 @@ class GetResponseDraftAdminUseCaseTest extends TestCase
         $repository = $this->createMock(ResponseDraftRepository::class);
         $repository->expects($this->once())
             ->method('findById')
-            ->with(1)
+            ->with(1, 123)
             ->willReturn(['id' => 1, 'survey_title' => 'Test Survey']);
 
         $useCase = new GetResponseDraftAdminUseCase($repository);
-        $result = $useCase->execute(1);
+        $result = $useCase->execute(1, 123);
 
         $this->assertEquals('Test Survey', $result['survey_title']);
     }
@@ -29,11 +29,11 @@ class GetResponseDraftAdminUseCaseTest extends TestCase
         $repository = $this->createMock(ResponseDraftRepository::class);
         $repository->expects($this->once())
             ->method('findById')
-            ->with(1)
+            ->with(1, 123)
             ->willReturn(null);
 
         $useCase = new GetResponseDraftAdminUseCase($repository);
-        $result = $useCase->execute(1);
+        $result = $useCase->execute(1, 123);
 
         $this->assertNull($result);
     }

@@ -17,10 +17,18 @@ class SurveyRepository
     ) {
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id, ?int $ownerUserId = null): ?array
     {
-        $sql = sprintf('SELECT * FROM %s WHERE id = ? LIMIT 1', self::TABLE);
-        $result = $this->db->selectOne($sql, [$id]);
+        $where = ['id = ?'];
+        $bindings = [$id];
+
+        if ($ownerUserId !== null) {
+            $where[] = 'owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
+        $sql = sprintf('SELECT * FROM %s WHERE %s LIMIT 1', self::TABLE, implode(' AND ', $where));
+        $result = $this->db->selectOne($sql, $bindings);
 
         if (!$result) {
             return null;
@@ -60,8 +68,16 @@ class SurveyRepository
         return array_map([$this, 'mapToArray'], $results);
     }
 
-    public function findAllWithResponseCount(): array
+    public function findAllWithResponseCount(?int $ownerUserId = null): array
     {
+        $where = [];
+        $bindings = [];
+
+        if ($ownerUserId !== null) {
+            $where[] = 's.owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
         $sql = sprintf(
             'SELECT
                 s.id,
@@ -83,17 +99,27 @@ class SurveyRepository
                 FROM responses
                 GROUP BY survey_id
              ) rc ON s.id = rc.survey_id
+             %s
              ORDER BY s.created_at DESC',
-            self::TABLE
+            self::TABLE,
+            !empty($where) ? 'WHERE ' . implode(' AND ', $where) : ''
         );
 
-        $results = $this->db->select($sql);
+        $results = $this->db->select($sql, $bindings);
 
         return array_map([$this, 'mapToArray'], $results);
     }
 
-    public function findByIdWithResponseCount(int $id): ?array
+    public function findByIdWithResponseCount(int $id, ?int $ownerUserId = null): ?array
     {
+        $where = ['s.id = ?'];
+        $bindings = [$id];
+
+        if ($ownerUserId !== null) {
+            $where[] = 's.owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
         $sql = sprintf(
             'SELECT
                 s.id,
@@ -115,12 +141,13 @@ class SurveyRepository
                 FROM responses
                 GROUP BY survey_id
              ) rc ON s.id = rc.survey_id
-             WHERE s.id = ?
+             WHERE %s
              LIMIT 1',
-            self::TABLE
+            self::TABLE,
+            implode(' AND ', $where)
         );
 
-        $result = $this->db->selectOne($sql, [$id]);
+        $result = $this->db->selectOne($sql, $bindings);
 
         if (!$result) {
             return null;
@@ -154,7 +181,7 @@ class SurveyRepository
         return (int)$this->db->getPdo()->lastInsertId();
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data, ?int $ownerUserId = null): bool
     {
         $now = DateTimeHelper::nowTokyo()->format('Y-m-d H:i:s');
         $data['updated_at'] = $data['updated_at'] ?? $now;
@@ -171,10 +198,17 @@ class SurveyRepository
         }
         $bindings[] = $id;
 
+        $where = ['id = ?'];
+        if ($ownerUserId !== null) {
+            $where[] = 'owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
         $sql = sprintf(
-            'UPDATE %s SET %s WHERE id = ?',
+            'UPDATE %s SET %s WHERE %s',
             self::TABLE,
-            implode(', ', $sets)
+            implode(', ', $sets),
+            implode(' AND ', $where)
         );
 
         $affected = $this->db->update($sql, $bindings);
@@ -182,10 +216,18 @@ class SurveyRepository
         return $affected > 0;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, ?int $ownerUserId = null): bool
     {
-        $sql = sprintf('DELETE FROM %s WHERE id = ?', self::TABLE);
-        $affected = $this->db->delete($sql, [$id]);
+        $where = ['id = ?'];
+        $bindings = [$id];
+
+        if ($ownerUserId !== null) {
+            $where[] = 'owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
+        $sql = sprintf('DELETE FROM %s WHERE %s', self::TABLE, implode(' AND ', $where));
+        $affected = $this->db->delete($sql, $bindings);
 
         return $affected > 0;
     }

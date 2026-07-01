@@ -31,10 +31,13 @@ class DuplicateSurveyActionTest extends TestCase
     {
         $sourceId = 1;
         $newId = 2;
+        $ownerUserId = 123;
+
+        $this->request->method('getAttribute')->with('owner_user')->willReturn(['id' => $ownerUserId]);
 
         $this->useCase->expects($this->once())
             ->method('execute')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willReturn($newId);
 
         $result = ($this->action)($this->request, $this->response, ['id' => (string)$sourceId]);
@@ -47,10 +50,13 @@ class DuplicateSurveyActionTest extends TestCase
     public function testInvokeReturns404WhenSurveyNotFound(): void
     {
         $sourceId = 999;
+        $ownerUserId = 123;
+
+        $this->request->method('getAttribute')->with('owner_user')->willReturn(['id' => $ownerUserId]);
 
         $this->useCase->expects($this->once())
             ->method('execute')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willThrowException(new RuntimeException('Survey not found', 404));
 
         $result = ($this->action)($this->request, $this->response, ['id' => (string)$sourceId]);
@@ -63,10 +69,13 @@ class DuplicateSurveyActionTest extends TestCase
     public function testInvokeReturns500OnInternalError(): void
     {
         $sourceId = 1;
+        $ownerUserId = 123;
+
+        $this->request->method('getAttribute')->with('owner_user')->willReturn(['id' => $ownerUserId]);
 
         $this->useCase->expects($this->once())
             ->method('execute')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willThrowException(new \Exception('Internal error'));
 
         $result = ($this->action)($this->request, $this->response, ['id' => (string)$sourceId]);
@@ -79,10 +88,13 @@ class DuplicateSurveyActionTest extends TestCase
     public function testInvokeReturns500OnRuntimeExceptionWithNon404Code(): void
     {
         $sourceId = 1;
+        $ownerUserId = 123;
+
+        $this->request->method('getAttribute')->with('owner_user')->willReturn(['id' => $ownerUserId]);
 
         $this->useCase->expects($this->once())
             ->method('execute')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willThrowException(new RuntimeException('Unexpected error', 500));
 
         $result = ($this->action)($this->request, $this->response, ['id' => (string)$sourceId]);

@@ -18,7 +18,8 @@ final class CleanupResponseDraftsAction
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $count = $this->useCase->execute();
+        $ownerUser = $request->getAttribute('owner_user');
+        $count = $this->useCase->execute((int)$ownerUser['id']);
         return JsonResponse::success($response, [
             'deleted_count' => $count,
             'message' => sprintf('%d 件の下書きをクリーンアップしました。', $count)

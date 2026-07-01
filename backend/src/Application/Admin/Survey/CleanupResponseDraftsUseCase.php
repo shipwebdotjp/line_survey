@@ -14,9 +14,9 @@ final class CleanupResponseDraftsUseCase
     ) {
     }
 
-    public function execute(): int
+    public function execute(int $ownerUserId): int
     {
         $before = DateTimeHelper::nowTokyo()->modify('-30 days');
-        return $this->responseDraftRepository->deleteExpiredBefore($before);
+        return $this->responseDraftRepository->deleteExpiredBefore($before, $ownerUserId);
     }
 }

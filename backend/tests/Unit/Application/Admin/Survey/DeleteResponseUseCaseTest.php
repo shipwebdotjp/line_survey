@@ -30,8 +30,9 @@ class DeleteResponseUseCaseTest extends TestCase
     {
         $surveyId = 1;
         $responseId = 10;
+        $ownerUserId = 123;
 
-        $this->surveyRepository->method('findById')->with($surveyId)->willReturn(['id' => $surveyId]);
+        $this->surveyRepository->method('findById')->with($surveyId, $ownerUserId)->willReturn(['id' => $surveyId]);
         $this->responseRepository->method('findById')->with($responseId)->willReturn([
             'id' => $responseId,
             'survey_id' => $surveyId
@@ -42,35 +43,50 @@ class DeleteResponseUseCaseTest extends TestCase
             ->with($responseId)
             ->willReturn(true);
 
-        $this->useCase->execute($surveyId, $responseId, $this->request);
+        $this->useCase->execute($surveyId, $responseId, $ownerUserId, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenSurveyMissing(): void
     {
-        $this->surveyRepository->method('findById')->willReturn(null);
+        $surveyId = 1;
+        $ownerUserId = 123;
+        $this->surveyRepository->expects($this->once())
+            ->method('findById')
+            ->with($surveyId, $ownerUserId)
+            ->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute($surveyId, 10, $ownerUserId, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseMissing(): void
     {
-        $this->surveyRepository->method('findById')->willReturn(['id' => 1]);
+        $surveyId = 1;
+        $ownerUserId = 123;
+        $this->surveyRepository->expects($this->once())
+            ->method('findById')
+            ->with($surveyId, $ownerUserId)
+            ->willReturn(['id' => $surveyId]);
         $this->responseRepository->method('findById')->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute($surveyId, 10, $ownerUserId, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseBelongsToDifferentSurvey(): void
     {
-        $this->surveyRepository->method('findById')->willReturn(['id' => 1]);
+        $surveyId = 1;
+        $ownerUserId = 123;
+        $this->surveyRepository->expects($this->once())
+            ->method('findById')
+            ->with($surveyId, $ownerUserId)
+            ->willReturn(['id' => $surveyId]);
         $this->responseRepository->method('findById')->willReturn([
             'id' => 10,
             'survey_id' => 2
         ]);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute(1, 10, 123, $this->request);
     }
 }

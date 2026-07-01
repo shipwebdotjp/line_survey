@@ -19,7 +19,8 @@ final class GetSurveyAction
     public function __invoke(Request $request, Response $response, array $args): Response
     {
         $id = (int)($args['id'] ?? 0);
-        $survey = $this->useCase->execute($id);
+        $ownerUser = $request->getAttribute('owner_user');
+        $survey = $this->useCase->execute($id, (int)$ownerUser['id']);
 
         if (!$survey) {
             return JsonResponse::error($response, 'NOT_FOUND', 'Survey not found', null, 404);

@@ -36,8 +36,16 @@ class ResponseDraftRepository
         return $this->mapToArray($result);
     }
 
-    public function findById(int $id): ?array
+    public function findById(int $id, ?int $ownerUserId = null): ?array
     {
+        $where = ['rd.id = ?'];
+        $bindings = [$id];
+
+        if ($ownerUserId !== null) {
+            $where[] = 's.owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
         $sql = sprintf(
             'SELECT
                 rd.*,
@@ -49,11 +57,12 @@ class ResponseDraftRepository
              FROM %s rd
              JOIN surveys s ON rd.survey_id = s.id
              JOIN respondents res ON rd.respondent_id = res.id
-             WHERE rd.id = ? LIMIT 1',
-            self::TABLE
+             WHERE %s LIMIT 1',
+            self::TABLE,
+            implode(' AND ', $where)
         );
 
-        $result = $this->db->selectOne($sql, [$id]);
+        $result = $this->db->selectOne($sql, $bindings);
 
         if (!$result) {
             return null;
@@ -62,8 +71,16 @@ class ResponseDraftRepository
         return $this->mapWithSurveyQuestions($result);
     }
 
-    public function findAll(): array
+    public function findAll(?int $ownerUserId = null): array
     {
+        $where = [];
+        $bindings = [];
+
+        if ($ownerUserId !== null) {
+            $where[] = 's.owner_user_id = ?';
+            $bindings[] = $ownerUserId;
+        }
+
         $sql = sprintf(
             'SELECT
                 rd.*,
@@ -74,11 +91,13 @@ class ResponseDraftRepository
              FROM %s rd
              JOIN surveys s ON rd.survey_id = s.id
              JOIN respondents res ON rd.respondent_id = res.id
+             %s
              ORDER BY rd.updated_at DESC, rd.id DESC',
-            self::TABLE
+            self::TABLE,
+            !empty($where) ? 'WHERE ' . implode(' AND ', $where) : ''
         );
 
-        $results = $this->db->select($sql);
+        $results = $this->db->select($sql, $bindings);
 
         return array_map([$this, 'mapToArray'], $results);
     }
@@ -166,8 +185,17 @@ class ResponseDraftRepository
         return $affected > 0;
     }
 
-    public function deleteExpiredBefore(\DateTimeInterface $before): int
+    public function deleteExpiredBefore(\DateTimeInterface $before, ?int $ownerUserId = null): int
     {
+        if ($ownerUserId !== null) {
+            // Using a subquery or join for DELETE with owner_user_id filter
+            $sql = sprintf(
+                'DELETE FROM %s WHERE updated_at < ? AND survey_id IN (SELECT id FROM surveys WHERE owner_user_id = ?)',
+                self::TABLE
+            );
+            return $this->db->delete($sql, [DateTimeHelper::formatTokyo($before), $ownerUserId]);
+        }
+
         $sql = sprintf('DELETE FROM %s WHERE updated_at < ?', self::TABLE);
         return $this->db->delete($sql, [DateTimeHelper::formatTokyo($before)]);
     }

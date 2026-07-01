@@ -28,7 +28,11 @@ final class CreateSurveyAction
         }
 
         try {
-            $id = $this->useCase->execute($data);
+            $ownerUser = $request->getAttribute('owner_user');
+            if (!$ownerUser || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+                return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+            }
+            $id = $this->useCase->execute($data, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['id' => $id], 201);
         } catch (\RuntimeException $e) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', $e->getMessage(), null, 400);

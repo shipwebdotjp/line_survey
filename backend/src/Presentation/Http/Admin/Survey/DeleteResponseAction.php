@@ -32,7 +32,8 @@ class DeleteResponseAction
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Invalid ID');
         }
 
-        $this->useCase->execute($id, $responseId, $request);
+        $ownerUser = $request->getAttribute('owner_user');
+        $this->useCase->execute($id, $responseId, (int)$ownerUser['id'], $request);
 
         return $response->withStatus(204);
     }

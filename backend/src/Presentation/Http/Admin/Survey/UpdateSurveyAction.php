@@ -29,7 +29,11 @@ final class UpdateSurveyAction
         }
 
         try {
-            $this->useCase->execute($id, $data);
+            $ownerUser = $request->getAttribute('owner_user');
+            if (!$ownerUser || !isset($ownerUser['id']) || (int)$ownerUser['id'] <= 0) {
+                return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+            }
+            $this->useCase->execute($id, $data, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['success' => true]);
         } catch (\RuntimeException $e) {
             if ($e->getCode() === 404) {

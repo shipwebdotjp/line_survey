@@ -24,7 +24,8 @@ final class GetResponseDraftAdminAction
         }
 
         $id = (int)$idStr;
-        $draft = $this->useCase->execute($id);
+        $ownerUser = $request->getAttribute('owner_user');
+        $draft = $this->useCase->execute($id, (int)$ownerUser['id']);
 
         if (!$draft) {
             return JsonResponse::error($response, 'NOT_FOUND', '下書きが見つかりませんでした。', null, 404);
