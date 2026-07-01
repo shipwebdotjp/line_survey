@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
 import PublicHomePage from './pages/public-home/PublicHomePage';
 import PublicSurveyPage from './pages/public-survey/PublicSurveyPage';
 import EditResponsePage from './pages/public-survey/EditResponsePage';
@@ -58,7 +58,7 @@ const AppContent = () => {
     location.pathname === '/s' ||
     location.pathname.startsWith('/s/') ||
     location.pathname === '/respondent/edit' ||
-    location.pathname === '/admin/login' ||
+    location.pathname.startsWith('/admin/login') ||
     params.has('liff.state') ||
     params.has('code') ||
     params.has('liffClientId') ||
@@ -80,25 +80,27 @@ const AppContent = () => {
             <Route path="about-us" element={<AboutUsPage />} />
           </Route>
 
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin" element={<AdminAuthProvider><AdminShell /></AdminAuthProvider>}>
-            <Route index element={<Navigate to="surveys" replace />} />
-            <Route path="surveys" element={<SurveyListPage />} />
-            <Route path="surveys/new" element={<SurveyCreatePage />} />
-            <Route path="surveys/:id/edit" element={<SurveyEditPage />} />
-            <Route path="surveys/:id/responses" element={<ResponseListPage />} />
-            <Route path="surveys/:id/summary" element={<SurveySummaryPage />} />
-            <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
-            <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
-            <Route path="response-drafts" element={<ResponseDraftListPage />} />
-            <Route path="response-drafts/:id" element={<ResponseDraftDetailPage />} />
-            <Route path="respondent-masters" element={<RespondentMasterListPage />} />
-            <Route path="respondent-masters/new" element={<RespondentMasterCreatePage />} />
-            <Route path="respondent-masters/:id/edit" element={<RespondentMasterEditPage />} />
-            <Route path="respondents" element={<RespondentListPage />} />
-            <Route path="respondents/:id" element={<RespondentDetailPage />} />
-            <Route path="respondents/:id/edit" element={<RespondentEditPage />} />
-            <Route path="*" element={<div>404 Not Found</div>} />
+          <Route path="/admin" element={<AdminAuthProvider><Outlet /></AdminAuthProvider>}>
+            <Route path="login" element={<AdminLoginPage />} />
+            <Route element={<AdminShell />}>
+              <Route index element={<Navigate to="surveys" replace />} />
+              <Route path="surveys" element={<SurveyListPage />} />
+              <Route path="surveys/new" element={<SurveyCreatePage />} />
+              <Route path="surveys/:id/edit" element={<SurveyEditPage />} />
+              <Route path="surveys/:id/responses" element={<ResponseListPage />} />
+              <Route path="surveys/:id/summary" element={<SurveySummaryPage />} />
+              <Route path="surveys/:id/responses/:responseId" element={<ResponseDetailPage />} />
+              <Route path="surveys/:id/responses/:responseId/edit" element={<ResponseEditPage />} />
+              <Route path="response-drafts" element={<ResponseDraftListPage />} />
+              <Route path="response-drafts/:id" element={<ResponseDraftDetailPage />} />
+              <Route path="respondent-masters" element={<RespondentMasterListPage />} />
+              <Route path="respondent-masters/new" element={<RespondentMasterCreatePage />} />
+              <Route path="respondent-masters/:id/edit" element={<RespondentMasterEditPage />} />
+              <Route path="respondents" element={<RespondentListPage />} />
+              <Route path="respondents/:id" element={<RespondentDetailPage />} />
+              <Route path="respondents/:id/edit" element={<RespondentEditPage />} />
+              <Route path="*" element={<div>404 Not Found</div>} />
+            </Route>
           </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
