@@ -14,6 +14,7 @@ use App\Presentation\Http\Admin\Survey\GetResponseDraftAdminAction;
 use App\Presentation\Http\Admin\Survey\CleanupResponseDraftsAction;
 use App\Presentation\Http\Admin\LoginAction as AdminLoginAction;
 use App\Presentation\Http\Admin\LogoutAction as AdminLogoutAction;
+use App\Presentation\Http\Admin\MeAction as AdminMeAction;
 use App\Presentation\Http\Admin\RespondentMaster\CreateRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\DeleteRespondentMasterAction;
 use App\Presentation\Http\Admin\RespondentMaster\GetRespondentMasterAction;
@@ -102,6 +103,7 @@ return function (App $app) {
         // Session-required Admin APIs
         $group->group('', function (RouteCollectorProxy $adminGroup) {
             $adminGroup->post('/logout', AdminLogoutAction::class);
+            $adminGroup->get('/me', AdminMeAction::class);
 
             $adminGroup->get('/surveys', ListSurveysAction::class);
             $adminGroup->post('/surveys', CreateSurveyAction::class);

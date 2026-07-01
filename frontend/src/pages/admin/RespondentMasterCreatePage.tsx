@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminRespondentMasterApi, FetchError } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
+import { adminRespondentMasterApi } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
 import type { CreateRespondentMasterRequest } from '../../features/admin/respondent-masters/types';
 import RespondentMasterForm from '../../features/admin/respondent-masters/components/RespondentMasterForm';
 import { useToast } from '../../features/ui/ToastContext';
+import { AdminApiError } from '../../features/admin/lib/adminFetch';
 
 const RespondentMasterCreatePage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const RespondentMasterCreatePage: React.FC = () => {
       showToast('マスターを登録しました', 'success');
       navigate('/admin/respondent-masters');
     } catch (err: any) {
-      if (err instanceof FetchError && err.data && err.data.code === 'VALIDATION_ERROR') {
+      if (err instanceof AdminApiError && err.data && err.data.code === 'VALIDATION_ERROR') {
         setValidationErrors(err.data.details || {});
         setError('入力内容を確認してください。');
       } else {

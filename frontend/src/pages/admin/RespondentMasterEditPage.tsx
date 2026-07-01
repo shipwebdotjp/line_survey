@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { adminRespondentMasterApi, FetchError } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
+import { adminRespondentMasterApi } from '../../features/admin/respondent-masters/adminRespondentMasterApi';
 import type { RespondentMaster, UpdateRespondentMasterRequest } from '../../features/admin/respondent-masters/types';
 import RespondentMasterForm from '../../features/admin/respondent-masters/components/RespondentMasterForm';
 import { useToast } from '../../features/ui/ToastContext';
+import { AdminApiError } from '../../features/admin/lib/adminFetch';
 
 const RespondentMasterEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +32,12 @@ const RespondentMasterEditPage: React.FC = () => {
       const data = await adminRespondentMasterApi.get(masterId);
       setMaster(data);
     } catch (err: any) {
-      setError(err.message);
+      if (err instanceof AdminApiError && err.data && err.data.code === 'VALIDATION_ERROR') {
+        setValidationErrors(err.data.details || {});
+        setError('入力内容を確認してください。');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +55,7 @@ const RespondentMasterEditPage: React.FC = () => {
       showToast('マスターを更新しました', 'success');
       navigate('/admin/respondent-masters');
     } catch (err: any) {
-      if (err instanceof FetchError && err.data && err.data.code === 'VALIDATION_ERROR') {
+      if (err instanceof AdminApiError && err.data && err.data.code === 'VALIDATION_ERROR') {
         setValidationErrors(err.data.details || {});
         setError('入力内容を確認してください。');
       } else {

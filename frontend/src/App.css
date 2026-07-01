@@ -873,6 +873,7 @@
   height: 60px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 2rem;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
@@ -881,6 +882,35 @@
 .admin-breadcrumb {
   font-size: 0.875rem;
   color: var(--text);
+}
+
+.admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-user-name {
+  font-size: 0.875rem;
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.admin-logout-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-logout-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
 }
 
 .admin-content {

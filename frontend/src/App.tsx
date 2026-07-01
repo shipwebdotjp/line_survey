@@ -23,10 +23,12 @@ import RespondentMasterEditPage from './pages/admin/RespondentMasterEditPage';
 import RespondentListPage from './pages/admin/RespondentListPage';
 import RespondentDetailPage from './pages/admin/RespondentDetailPage';
 import RespondentEditPage from './pages/admin/RespondentEditPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
 import { ToastProvider } from './features/ui/ToastContext';
 import { ConfirmProvider } from './features/ui/ConfirmContext';
+import { AdminAuthProvider } from './features/admin/auth/AdminAuthContext';
 import LiffError from './features/liff/LiffError';
 import React from 'react';
 
@@ -56,6 +58,7 @@ const AppContent = () => {
     location.pathname === '/s' ||
     location.pathname.startsWith('/s/') ||
     location.pathname === '/respondent/edit' ||
+    location.pathname === '/admin/login' ||
     params.has('liff.state') ||
     params.has('code') ||
     params.has('liffClientId') ||
@@ -77,7 +80,8 @@ const AppContent = () => {
             <Route path="about-us" element={<AboutUsPage />} />
           </Route>
 
-          <Route path="/admin" element={<AdminShell />}>
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin" element={<AdminAuthProvider><AdminShell /></AdminAuthProvider>}>
             <Route index element={<Navigate to="surveys" replace />} />
             <Route path="surveys" element={<SurveyListPage />} />
             <Route path="surveys/new" element={<SurveyCreatePage />} />
