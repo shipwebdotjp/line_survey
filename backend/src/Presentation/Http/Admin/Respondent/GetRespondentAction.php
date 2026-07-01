@@ -18,8 +18,9 @@ class GetRespondentAction
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
+        $ownerUser = $request->getAttribute('owner_user');
         $id = (int)$args['id'];
-        $respondent = $this->useCase->execute($id);
+        $respondent = $this->useCase->execute($id, (int)$ownerUser['id']);
 
         if (!$respondent) {
             return JsonResponse::error($response, 'NOT_FOUND', 'Respondent not found', null, 404);
