@@ -15,9 +15,9 @@ class GetRespondentUseCase
     ) {
     }
 
-    public function execute(int $id): ?array
+    public function execute(int $id, int $ownerUserId): ?array
     {
-        $respondent = $this->respondentRepository->findById($id);
+        $respondent = $this->respondentRepository->findById($id, $ownerUserId);
         if (!$respondent) {
             return null;
         }

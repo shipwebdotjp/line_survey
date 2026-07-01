@@ -13,8 +13,8 @@ class ListRespondentsUseCase
     ) {
     }
 
-    public function execute(): array
+    public function execute(int $ownerUserId): array
     {
-        return $this->respondentRepository->findAllWithSummary();
+        return $this->respondentRepository->findAllWithSummary($ownerUserId);
     }
 }

@@ -18,6 +18,7 @@ class UpdateRespondentAction
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
+        $ownerUser = $request->getAttribute('owner_user');
         $id = (int)$args['id'];
         $data = $request->getParsedBody();
 
@@ -39,7 +40,7 @@ class UpdateRespondentAction
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'Validation Error', $errors, 400);
         }
 
-        $success = $this->useCase->execute($id, $data);
+        $success = $this->useCase->execute($id, $data, (int)$ownerUser['id']);
 
         if (!$success) {
             return JsonResponse::error($response, 'NOT_FOUND', 'Respondent not found', null, 404);

@@ -18,8 +18,9 @@ class DeleteRespondentAction
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
+        $ownerUser = $request->getAttribute('owner_user');
         $id = (int)$args['id'];
-        $success = $this->useCase->execute($id);
+        $success = $this->useCase->execute($id, (int)$ownerUser['id']);
 
         if (!$success) {
             return JsonResponse::error($response, 'NOT_FOUND', 'Respondent not found', null, 404);

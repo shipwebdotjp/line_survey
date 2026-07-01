@@ -18,7 +18,8 @@ class ListRespondentsAction
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $respondents = $this->useCase->execute();
+        $ownerUser = $request->getAttribute('owner_user');
+        $respondents = $this->useCase->execute((int)$ownerUser['id']);
         return JsonResponse::success($response, $respondents);
     }
 }

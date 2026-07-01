@@ -13,9 +13,9 @@ class UpdateRespondentUseCase
     ) {
     }
 
-    public function execute(int $id, array $data): bool
+    public function execute(int $id, array $data, int $ownerUserId): bool
     {
-        $respondent = $this->respondentRepository->findById($id);
+        $respondent = $this->respondentRepository->findById($id, $ownerUserId);
         if (!$respondent) {
             return false;
         }
@@ -26,6 +26,6 @@ class UpdateRespondentUseCase
             'honorific' => (isset($data['honorific']) && $data['honorific'] !== '') ? $data['honorific'] : null,
         ];
 
-        return $this->respondentRepository->update($id, $updateData);
+        return $this->respondentRepository->update($id, $updateData, $ownerUserId);
     }
 }

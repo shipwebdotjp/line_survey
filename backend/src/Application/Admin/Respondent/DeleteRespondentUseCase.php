@@ -18,9 +18,9 @@ class DeleteRespondentUseCase
     ) {
     }
 
-    public function execute(int $id): bool
+    public function execute(int $id, int $ownerUserId): bool
     {
-        $respondent = $this->respondentRepository->findById($id);
+        $respondent = $this->respondentRepository->findById($id, $ownerUserId);
         if (!$respondent) {
             return false;
         }
@@ -31,7 +31,7 @@ class DeleteRespondentUseCase
             $this->responseRepository->deleteByRespondentId($id);
 
             // Delete respondent
-            $success = $this->respondentRepository->delete($id);
+            $success = $this->respondentRepository->delete($id, $ownerUserId);
 
             if (!$success) {
                 $this->db->rollBack();
