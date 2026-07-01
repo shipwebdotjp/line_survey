@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Http\Liff;
 
 use App\Application\Respondent\IdentifyService;
+use App\Infrastructure\Database\SurveyRepository;
 use App\Infrastructure\Line\IdTokenVerifier;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -13,7 +14,8 @@ final class IdentifyManualAction
 {
     public function __construct(
         private IdTokenVerifier $verifier,
-        private IdentifyService $identifyService
+        private IdentifyService $identifyService,
+        private SurveyRepository $surveyRepository
     ) {
     }
 
@@ -21,12 +23,18 @@ final class IdentifyManualAction
     {
         $params = $request->getParsedBody();
         $idToken = $params['id_token'] ?? '';
+        $publicId = $params['public_id'] ?? '';
         $name = $params['name'] ?? '';
         $email = $params['email'] ?? '';
         $honorific = $params['honorific'] ?? '';
 
         if (empty($idToken) || empty($name) || empty($email)) {
             $response->getBody()->write(json_encode(['error' => 'ID Token, name and email are required'], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        if (empty($publicId)) {
+            $response->getBody()->write(json_encode(['error' => 'public_id is required'], JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
@@ -46,11 +54,17 @@ final class IdentifyManualAction
         }
 
         try {
+            $survey = $this->surveyRepository->findByPublicId($publicId);
+            if (!$survey) {
+                $response->getBody()->write(json_encode(['error' => 'Survey not found'], JSON_UNESCAPED_UNICODE));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
             $respondent = $this->identifyService->saveManual($claims['sub'], $claims['name'], [
                 'name' => $name,
                 'email' => $email,
                 'honorific' => $honorific
-            ]);
+            ], (int)$survey['owner_user_id']);
 
             // Establish session on success
             if (isset($respondent['id'])) {

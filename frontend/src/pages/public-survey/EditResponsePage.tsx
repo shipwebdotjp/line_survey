@@ -50,7 +50,7 @@ const EditResponsePage: React.FC = () => {
         setIsLoading(true);
 
         const fetchOptions = {
-          onSessionRequired: identify,
+          onSessionRequired: () => identify(public_id),
         };
 
         // 1. Fetch survey data
@@ -104,7 +104,7 @@ const EditResponsePage: React.FC = () => {
         body: JSON.stringify({
           answer_json: sender.data,
         }),
-      }, { onSessionRequired: identify });
+      }, { onSessionRequired: () => identify(public_id) });
       const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {

@@ -45,7 +45,7 @@ const ShowResponsePage: React.FC = () => {
         setIsLoading(true);
 
         const fetchOptions = {
-          onSessionRequired: identify,
+          onSessionRequired: () => identify(public_id),
         };
 
         // 1. Fetch survey data
@@ -102,7 +102,7 @@ const ShowResponsePage: React.FC = () => {
           <p>{error}</p>
           <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             <button
-              onClick={() => navigate('/s')}
+              onClick={() => navigate(public_id ? `/s?public_id=${public_id}` : '/s')}
               className="public-btn public-btn-secondary"
             >
               回答履歴へ
@@ -161,7 +161,7 @@ const ShowResponsePage: React.FC = () => {
           )}
 
           <button
-            onClick={() => navigate('/s')}
+            onClick={() => navigate(public_id ? `/s?public_id=${public_id}` : '/s')}
             className="public-btn public-btn-secondary public-btn-full"
           >
             回答履歴に戻る
