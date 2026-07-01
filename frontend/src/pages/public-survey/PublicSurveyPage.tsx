@@ -115,7 +115,7 @@ const PublicSurveyPage: React.FC = () => {
         if (!surveyResult.data.can_answer) {
           // If cannot answer, fetch history for this survey if identified
           try {
-            const historyData = await getResponseHistory(public_id, identify);
+            const historyData = await getResponseHistory(public_id, () => identify(public_id!));
             setHistory(historyData);
           } catch (err) {
             console.error('Failed to fetch response history locally:', err);
@@ -137,7 +137,7 @@ const PublicSurveyPage: React.FC = () => {
 
         // 4. Fetch draft if no existing response (that blocks new answers)
         if (!hasExistingResponse) {
-          const draftResult = await getResponseDraft(public_id, identify);
+          const draftResult = await getResponseDraft(public_id, () => identify(public_id!));
           setDraft(draftResult.draft);
         }
 
@@ -163,7 +163,7 @@ const PublicSurveyPage: React.FC = () => {
           public_id: public_id,
           ...data,
         }),
-      }, { onSessionRequired: () => identify(public_id) });
+      }, { onSessionRequired: () => identify(public_id!) });
       const result: IdentifyResponse = await response.json();
 
       if (!response.ok) {
@@ -210,7 +210,7 @@ const PublicSurveyPage: React.FC = () => {
         setSubmittedResponse(result.data);
         // Delete draft after successful submission (already handled by backend but good to sync)
         try {
-          await deleteResponseDraft(public_id, identify);
+          await deleteResponseDraft(public_id, () => identify(public_id!));
         } catch (e) {
           // Ignore draft deletion error on frontend as it's not critical
           console.error('Failed to delete draft on frontend', e);
@@ -237,7 +237,7 @@ const PublicSurveyPage: React.FC = () => {
       if (isAutoSaveDisabledRef.current) return;
       try {
         setAutoSaveError(null);
-        await saveResponseDraft(public_id, sender.data, identify);
+        await saveResponseDraft(public_id, sender.data, () => identify(public_id!));
       } catch (err) {
         setAutoSaveError('一時保存に失敗しました。入力は続けられます。');
       }

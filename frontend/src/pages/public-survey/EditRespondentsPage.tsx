@@ -10,7 +10,7 @@ const EditRespondentsPage: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const returnTo = queryParams.get('return_to');
-  const public_id = queryParams.get('public_id') || undefined;
+  const publicId = queryParams.get('public_id');
 
   const [formData, setFormData] = useState({ name: '', email: '' });
   // const [lineDisplayName, setLineDisplayName] = useState('');
@@ -76,7 +76,7 @@ const EditRespondentsPage: React.FC = () => {
     const fetchProfile = async () => {
       try {
         setIsLoading(true);
-        const respondent = await getRespondentProfile(() => identify(public_id));
+        const respondent = await getRespondentProfile(() => identify(publicId!));
         setFormData({
           name: respondent.name,
           email: respondent.email,
@@ -90,7 +90,7 @@ const EditRespondentsPage: React.FC = () => {
     };
 
     fetchProfile();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, publicId, identify]);
 
   const validateReturnTo = (path: string | null): string => {
     if (!path) return '/s';
@@ -135,7 +135,7 @@ const EditRespondentsPage: React.FC = () => {
         return;
       }
 
-      await updateRespondentProfile(normalizedFormData, () => identify(public_id));
+      await updateRespondentProfile(normalizedFormData, () => identify(publicId!));
 
       const target = validateReturnTo(returnTo);
       navigate(target);

@@ -67,6 +67,12 @@ final class IdentifyAction
 
             $response->getBody()->write(json_encode($result, JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (\InvalidArgumentException $e) {
+            $response->getBody()->write(json_encode([
+                'error' => 'Validation failed',
+                'message' => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         } catch (\Throwable $e) {
             $response->getBody()->write(json_encode([
                 'error' => 'Internal server error during identification',

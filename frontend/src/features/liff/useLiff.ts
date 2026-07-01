@@ -7,7 +7,7 @@ export interface UseLiffReturn {
   isLoggedIn: boolean;
   idToken: string | null;
   error: Error | null;
-  identify: (publicId?: string) => Promise<boolean>;
+  identify: (publicId: string) => Promise<boolean>;
 }
 
 export interface UseLiffOptions {
@@ -117,7 +117,12 @@ export const useLiff = (options: UseLiffOptions = {}): UseLiffReturn => {
    * Establishes a server-side session using the current LIFF ID token.
    * This should be called after LIFF initialization and login, or when a session expires.
    */
-  const identify = async (publicId?: string): Promise<boolean> => {
+  const identify = async (publicId: string): Promise<boolean> => {
+    if (!publicId) {
+      console.warn('Cannot identify: publicId is required.');
+      return false;
+    }
+
     const token = liff.getIDToken();
     if (!token) {
       console.warn('Cannot identify: No ID token available.');
