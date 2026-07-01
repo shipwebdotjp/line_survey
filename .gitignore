@@ -9,6 +9,8 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+.codex/
+.opencode/
 
 # Environment files
 .env

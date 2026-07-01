@@ -29,6 +29,7 @@ const PublicSurveyPage: React.FC = () => {
   const [draft, setDraft] = useState<ResponseDraft | null>(null);
   const [autoSaveError, setAutoSaveError] = useState<string | null>(null);
   const isDebugMode = import.meta.env.DEV || (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug'));
+  const canEditResponse = !!surveyData?.survey?.allow_edit && !!surveyData?.can_answer;
 
   useEffect(() => {
     if (isLoading && !error) {
@@ -337,7 +338,7 @@ const PublicSurveyPage: React.FC = () => {
             </p>
           ) : null}
 
-          {surveyData.survey?.allow_edit && (
+          {canEditResponse && (
             <div style={{ marginTop: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
               <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>回答の修正用URL:</p>
               <p style={{ fontSize: '0.8rem', wordBreak: 'break-all', color: '#4f46e5' }}>
@@ -368,7 +369,7 @@ const PublicSurveyPage: React.FC = () => {
               回答内容を確認する
             </button>
 
-            {surveyData.survey?.allow_edit && (
+            {canEditResponse && (
               <button
                 onClick={() => navigate(`/s/${public_id}/r/${existingResponse.edit_token}/edit`)}
                 className="public-btn public-btn-secondary public-btn-full"

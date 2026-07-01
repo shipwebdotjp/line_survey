@@ -15,6 +15,7 @@ const ShowResponsePage: React.FC = () => {
   const [existingResponse, setExistingResponse] = useState<SurveyResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const canEditResponse = !!surveyData?.survey?.allow_edit && !!surveyData?.can_answer;
 
   useEffect(() => {
     if (isLoading && !error) {
@@ -150,7 +151,7 @@ const ShowResponsePage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-          {surveyData?.survey?.allow_edit && (
+          {canEditResponse && (
             <button
               onClick={() => navigate(`/s/${public_id}/r/${edit_token}/edit`)}
               className="public-btn public-btn-primary public-btn-full"
