@@ -10,9 +10,14 @@ const PublicFooter: React.FC = () => {
   const [respondent, setRespondent] = useState<Respondent | null>(null);
   const currentPath = encodeURIComponent(location.pathname + location.search);
 
+  // Extract public_id from survey routes or search params
+  const match = location.pathname.match(/^\/s\/([^/]+)/);
+  const searchParams = new URLSearchParams(location.search);
+  const public_id = (match ? match[1] : searchParams.get('public_id')) || undefined;
+
   useEffect(() => {
     if (isLoggedIn) {
-      getRespondentProfile(identify)
+      getRespondentProfile(() => identify(public_id))
         .then(setRespondent)
         .catch(() => {
           // Ignore error, respondent might not be identified yet
@@ -35,10 +40,10 @@ const PublicFooter: React.FC = () => {
         <nav className="public-footer-nav">
           <ul className="public-footer-links">
             <li>
-              <Link to="/s">回答一覧</Link>
+              <Link to={public_id ? `/s?public_id=${public_id}` : '/s'}>回答一覧</Link>
             </li>
             <li>
-              <Link to={`/respondent/edit?return_to=${currentPath}`}>
+              <Link to={`/respondent/edit?return_to=${currentPath}${public_id ? `&public_id=${public_id}` : ''}`}>
                 本人情報編集
               </Link>
             </li>

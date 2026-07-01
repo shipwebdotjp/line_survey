@@ -76,7 +76,7 @@ const PublicSurveyPage: React.FC = () => {
         setIsLoading(true);
 
         const fetchOptions = {
-          onSessionRequired: identify,
+          onSessionRequired: () => identify(public_id),
         };
 
         // 1. Fetch survey data
@@ -97,7 +97,10 @@ const PublicSurveyPage: React.FC = () => {
         // 2. Identification
         const identifyResponse = await fetchWithSession('/api/liff/identify', {
           method: 'POST',
-          body: JSON.stringify({ id_token: idToken }),
+          body: JSON.stringify({
+            id_token: idToken,
+            public_id: public_id,
+          }),
         }, fetchOptions);
         const identifyResult: IdentifyResponse = await identifyResponse.json();
 
@@ -157,9 +160,10 @@ const PublicSurveyPage: React.FC = () => {
         method: 'POST',
         body: JSON.stringify({
           id_token: idToken,
+          public_id: public_id,
           ...data,
         }),
-      }, { onSessionRequired: identify });
+      }, { onSessionRequired: () => identify(public_id) });
       const result: IdentifyResponse = await response.json();
 
       if (!response.ok) {
@@ -193,7 +197,7 @@ const PublicSurveyPage: React.FC = () => {
         body: JSON.stringify({
           answer_json: sender.data,
         }),
-      }, { onSessionRequired: identify });
+      }, { onSessionRequired: () => identify(public_id) });
       const result: SaveResponseResult = await response.json();
 
       if (!response.ok) {
@@ -309,7 +313,7 @@ const PublicSurveyPage: React.FC = () => {
               <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', fontWeight: 'bold', borderBottom: '1px solid #e5e7eb', paddingBottom: '0.5rem' }}>
                 回答履歴
               </h2>
-              <ResponseHistoryList history={history} />
+              <ResponseHistoryList history={history} surveyPublicId={public_id} />
             </div>
           )}
         </div>
@@ -379,7 +383,7 @@ const PublicSurveyPage: React.FC = () => {
             )}
 
             <button
-              onClick={() => navigate('/s')}
+              onClick={() => navigate(`/s?public_id=${public_id}`)}
               className="public-btn public-btn-secondary public-btn-full"
               style={{ marginTop: '1rem' }}
             >

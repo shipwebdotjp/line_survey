@@ -6,6 +6,8 @@ import ResponseHistoryList from '../../features/survey/ResponseHistoryList';
 
 const ResponseHistoryPage: React.FC = () => {
   const { isLoggedIn, idToken, identify } = useLiffContext();
+  const searchParams = new URLSearchParams(window.location.search);
+  const public_id = searchParams.get('public_id') || undefined;
   const [history, setHistory] = useState<ResponseHistoryItem[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,10 +26,14 @@ const ResponseHistoryPage: React.FC = () => {
         setIsLoading(true);
 
         const fetchOptions = {
-          onSessionRequired: identify,
+          onSessionRequired: () => identify(public_id),
         };
 
-        const response = await fetchWithSession('/api/surveys/responses/history', {}, fetchOptions);
+        let url = '/api/surveys/responses/history';
+        if (public_id) {
+          url += `?survey_public_id=${encodeURIComponent(public_id)}`;
+        }
+        const response = await fetchWithSession(url, {}, fetchOptions);
         const result = await response.json();
 
         if (!response.ok) {
