@@ -14,9 +14,10 @@ final class CreateSurveyUseCase
     ) {
     }
 
-    public function execute(array $data): int
+    public function execute(array $data, int $ownerUserId): int
     {
         $data['public_id'] = IdGenerator::generatePublicId();
+        $data['owner_user_id'] = $ownerUserId;
 
         return $this->surveyRepository->save($data);
     }

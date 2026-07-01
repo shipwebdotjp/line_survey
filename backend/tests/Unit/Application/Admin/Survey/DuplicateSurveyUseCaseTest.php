@@ -23,6 +23,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
     public function testExecuteDuplicatesSurveySuccessfully(): void
     {
         $sourceId = 1;
+        $ownerUserId = 123;
         $sourceSurvey = [
             'id' => $sourceId,
             'public_id' => 'sv_source',
@@ -42,12 +43,12 @@ class DuplicateSurveyUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willReturn($sourceSurvey);
 
         $this->surveyRepository->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (array $data) use ($sourceSurvey) {
+            ->with($this->callback(function (array $data) use ($sourceSurvey, $ownerUserId) {
                 return $data['title'] === $sourceSurvey['title'] &&
                        $data['description'] === $sourceSurvey['description'] &&
                        $data['questions_json'] === $sourceSurvey['questions_json'] &&
@@ -56,6 +57,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
                        $data['allow_edit'] === true &&
                        $data['send_confirmation_email'] === true &&
                        $data['include_answers_in_email'] === true &&
+                       $data['owner_user_id'] === $ownerUserId &&
                        str_starts_with($data['public_id'], 'sv_') &&
                        $data['public_id'] !== $sourceSurvey['public_id'] &&
                        !isset($data['id']) &&
@@ -66,7 +68,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
             }))
             ->willReturn(2);
 
-        $newId = $this->useCase->execute($sourceId);
+        $newId = $this->useCase->execute($sourceId, $ownerUserId);
 
         $this->assertEquals(2, $newId);
     }
@@ -74,6 +76,7 @@ class DuplicateSurveyUseCaseTest extends TestCase
     public function testExecuteHandlesEmptyTitle(): void
     {
         $sourceId = 1;
+        $ownerUserId = 123;
         $sourceSurvey = [
             'id' => $sourceId,
             'public_id' => 'sv_source',
@@ -89,33 +92,34 @@ class DuplicateSurveyUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willReturn($sourceSurvey);
 
         $this->surveyRepository->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (array $data) {
-                return $data['title'] === 'Untitled Survey';
+            ->with($this->callback(function (array $data) use ($ownerUserId) {
+                return $data['title'] === 'Untitled Survey' && $data['owner_user_id'] === $ownerUserId;
             }))
             ->willReturn(3);
 
-        $newId = $this->useCase->execute($sourceId);
+        $newId = $this->useCase->execute($sourceId, $ownerUserId);
         $this->assertEquals(3, $newId);
     }
 
     public function testExecuteThrowsExceptionIfSurveyNotFound(): void
     {
         $sourceId = 999;
+        $ownerUserId = 123;
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($sourceId)
+            ->with($sourceId, $ownerUserId)
             ->willReturn(null);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Survey not found');
         $this->expectExceptionCode(404);
 
-        $this->useCase->execute($sourceId);
+        $this->useCase->execute($sourceId, $ownerUserId);
     }
 }

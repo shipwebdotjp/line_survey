@@ -21,7 +21,8 @@ final class DuplicateSurveyAction
         $id = (int)$args['id'];
 
         try {
-            $newId = $this->useCase->execute($id);
+            $ownerUser = $request->getAttribute('owner_user');
+            $newId = $this->useCase->execute($id, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['id' => $newId], 201);
         } catch (\RuntimeException $e) {
             if ($e->getCode() === 404) {

@@ -19,10 +19,11 @@ class ExportResponsesCsvAction
     {
         $id = (int)($args['id'] ?? 0);
         if ($id <= 0) {
-            return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
+            return \App\Presentation\Http\JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
         }
 
-        $csv = $this->useCase->execute($id, $request);
+        $ownerUser = $request->getAttribute('owner_user');
+        $csv = $this->useCase->execute($id, (int)$ownerUser['id'], $request);
 
         $timestamp = \App\Infrastructure\Support\DateTimeHelper::nowTokyo()->format('YmdHis');
         $filename = sprintf('survey_%d_responses_%s.csv', $id, $timestamp);

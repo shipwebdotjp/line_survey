@@ -39,7 +39,8 @@ class UpdateResponseAction
             return JsonResponse::error($response, 'VALIDATION_ERROR', 'answer_json is required');
         }
 
-        $data = $this->useCase->execute($id, $responseId, $answerJson, $request);
+        $ownerUser = $request->getAttribute('owner_user');
+        $data = $this->useCase->execute($id, $responseId, $answerJson, (int)$ownerUser['id'], $request);
 
         return JsonResponse::success($response, $data);
     }

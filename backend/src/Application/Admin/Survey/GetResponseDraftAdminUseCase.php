@@ -13,8 +13,8 @@ final class GetResponseDraftAdminUseCase
     ) {
     }
 
-    public function execute(int $id): ?array
+    public function execute(int $id, int $ownerUserId): ?array
     {
-        return $this->responseDraftRepository->findById($id);
+        return $this->responseDraftRepository->findById($id, $ownerUserId);
     }
 }

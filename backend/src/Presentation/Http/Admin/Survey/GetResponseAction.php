@@ -32,7 +32,8 @@ class GetResponseAction
             return JsonResponse::error($response, 'Invalid ID', 'VALIDATION_ERROR', 400);
         }
 
-        $data = $this->useCase->execute($id, $responseId, $request);
+        $ownerUser = $request->getAttribute('owner_user');
+        $data = $this->useCase->execute($id, $responseId, (int)$ownerUser['id'], $request);
 
         return JsonResponse::success($response, $data);
     }

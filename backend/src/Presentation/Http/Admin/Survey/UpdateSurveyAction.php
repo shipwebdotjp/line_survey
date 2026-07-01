@@ -29,7 +29,8 @@ final class UpdateSurveyAction
         }
 
         try {
-            $this->useCase->execute($id, $data);
+            $ownerUser = $request->getAttribute('owner_user');
+            $this->useCase->execute($id, $data, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['success' => true]);
         } catch (\RuntimeException $e) {
             if ($e->getCode() === 404) {

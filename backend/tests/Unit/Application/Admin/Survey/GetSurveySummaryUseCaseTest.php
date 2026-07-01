@@ -28,6 +28,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
     public function testExecuteAggregatesCorrectly(): void
     {
         $surveyId = 1;
+        $ownerUserId = 123;
         $survey = [
             'id' => $surveyId,
             'questions_json' => [
@@ -77,7 +78,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($surveyId)
+            ->with($surveyId, $ownerUserId)
             ->willReturn($survey);
 
         $this->responseRepository->expects($this->once())
@@ -85,7 +86,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
             ->with($surveyId)
             ->willReturn($responses);
 
-        $result = $this->useCase->execute($surveyId, $this->request);
+        $result = $this->useCase->execute($surveyId, $ownerUserId, $this->request);
 
         $this->assertEquals(3, $result['totalResponses']);
         $this->assertCount(4, $result['questions']);
@@ -134,6 +135,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
     public function testExecuteHandlesDeletedQuestions(): void
     {
         $surveyId = 1;
+        $ownerUserId = 123;
         $survey = [
             'id' => $surveyId,
             'questions_json' => [
@@ -164,7 +166,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($surveyId)
+            ->with($surveyId, $ownerUserId)
             ->willReturn($survey);
 
         $this->responseRepository->expects($this->once())
@@ -172,7 +174,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
             ->with($surveyId)
             ->willReturn($responses);
 
-        $result = $this->useCase->execute($surveyId, $this->request);
+        $result = $this->useCase->execute($surveyId, $ownerUserId, $this->request);
 
         $this->assertCount(2, $result['questions']);
         $this->assertEquals('q_new', $result['questions'][0]['name']);
@@ -188,6 +190,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
     public function testExecuteHandlesNullSnapshotByTreatingAsEmpty(): void
     {
         $surveyId = 1;
+        $ownerUserId = 123;
         $survey = [
             'id' => $surveyId,
             'questions_json' => [
@@ -210,7 +213,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($surveyId)
+            ->with($surveyId, $ownerUserId)
             ->willReturn($survey);
 
         $this->responseRepository->expects($this->once())
@@ -218,7 +221,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
             ->with($surveyId)
             ->willReturn($responses);
 
-        $result = $this->useCase->execute($surveyId, $this->request);
+        $result = $this->useCase->execute($surveyId, $ownerUserId, $this->request);
 
         $this->assertCount(1, $result['questions']);
         $this->assertEquals('q1', $result['questions'][0]['name']);
@@ -230,6 +233,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
     public function testExecuteHandlesDefaultBooleanValues(): void
     {
         $surveyId = 1;
+        $ownerUserId = 123;
         $survey = [
             'id' => $surveyId,
             'questions_json' => [
@@ -260,7 +264,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
 
         $this->surveyRepository->expects($this->once())
             ->method('findById')
-            ->with($surveyId)
+            ->with($surveyId, $ownerUserId)
             ->willReturn($survey);
 
         $this->responseRepository->expects($this->once())
@@ -268,7 +272,7 @@ class GetSurveySummaryUseCaseTest extends TestCase
             ->with($surveyId)
             ->willReturn($responses);
 
-        $result = $this->useCase->execute($surveyId, $this->request);
+        $result = $this->useCase->execute($surveyId, $ownerUserId, $this->request);
 
         $q = $result['questions'][0];
         $this->assertEquals('q_bool', $q['name']);

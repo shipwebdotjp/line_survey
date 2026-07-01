@@ -13,8 +13,8 @@ final class ListResponseDraftsUseCase
     ) {
     }
 
-    public function execute(): array
+    public function execute(int $ownerUserId): array
     {
-        return $this->responseDraftRepository->findAll();
+        return $this->responseDraftRepository->findAll($ownerUserId);
     }
 }

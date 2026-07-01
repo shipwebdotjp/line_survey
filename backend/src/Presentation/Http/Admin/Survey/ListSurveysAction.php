@@ -18,7 +18,8 @@ final class ListSurveysAction
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $surveys = $this->useCase->execute();
+        $ownerUser = $request->getAttribute('owner_user');
+        $surveys = $this->useCase->execute((int)$ownerUser['id']);
         return JsonResponse::success($response, $surveys);
     }
 }

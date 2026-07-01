@@ -18,7 +18,8 @@ final class ListResponseDraftsAction
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $drafts = $this->useCase->execute();
+        $ownerUser = $request->getAttribute('owner_user');
+        $drafts = $this->useCase->execute((int)$ownerUser['id']);
         return JsonResponse::success($response, ['drafts' => $drafts]);
     }
 }

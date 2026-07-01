@@ -30,8 +30,9 @@ class DeleteResponseUseCaseTest extends TestCase
     {
         $surveyId = 1;
         $responseId = 10;
+        $ownerUserId = 123;
 
-        $this->surveyRepository->method('findById')->with($surveyId)->willReturn(['id' => $surveyId]);
+        $this->surveyRepository->method('findById')->with($surveyId, $ownerUserId)->willReturn(['id' => $surveyId]);
         $this->responseRepository->method('findById')->with($responseId)->willReturn([
             'id' => $responseId,
             'survey_id' => $surveyId
@@ -42,7 +43,7 @@ class DeleteResponseUseCaseTest extends TestCase
             ->with($responseId)
             ->willReturn(true);
 
-        $this->useCase->execute($surveyId, $responseId, $this->request);
+        $this->useCase->execute($surveyId, $responseId, $ownerUserId, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenSurveyMissing(): void
@@ -50,7 +51,7 @@ class DeleteResponseUseCaseTest extends TestCase
         $this->surveyRepository->method('findById')->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute(1, 10, 123, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseMissing(): void
@@ -59,7 +60,7 @@ class DeleteResponseUseCaseTest extends TestCase
         $this->responseRepository->method('findById')->willReturn(null);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute(1, 10, 123, $this->request);
     }
 
     public function testExecuteThrowsNotFoundWhenResponseBelongsToDifferentSurvey(): void
@@ -71,6 +72,6 @@ class DeleteResponseUseCaseTest extends TestCase
         ]);
 
         $this->expectException(HttpNotFoundException::class);
-        $this->useCase->execute(1, 10, $this->request);
+        $this->useCase->execute(1, 10, 123, $this->request);
     }
 }

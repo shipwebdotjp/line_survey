@@ -28,7 +28,8 @@ final class CreateSurveyAction
         }
 
         try {
-            $id = $this->useCase->execute($data);
+            $ownerUser = $request->getAttribute('owner_user');
+            $id = $this->useCase->execute($data, (int)$ownerUser['id']);
             return JsonResponse::success($response, ['id' => $id], 201);
         } catch (\RuntimeException $e) {
             return JsonResponse::error($response, 'VALIDATION_ERROR', $e->getMessage(), null, 400);

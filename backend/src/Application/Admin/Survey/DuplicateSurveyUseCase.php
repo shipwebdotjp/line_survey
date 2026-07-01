@@ -14,9 +14,9 @@ class DuplicateSurveyUseCase
     ) {
     }
 
-    public function execute(int $id): int
+    public function execute(int $id, int $ownerUserId): int
     {
-        $sourceSurvey = $this->surveyRepository->findById($id);
+        $sourceSurvey = $this->surveyRepository->findById($id, $ownerUserId);
 
         if (!$sourceSurvey) {
             throw new \RuntimeException('Survey not found', 404);
@@ -37,6 +37,7 @@ class DuplicateSurveyUseCase
             'send_confirmation_email' => (bool)$sourceSurvey['send_confirmation_email'],
             'include_answers_in_email' => (bool)$sourceSurvey['include_answers_in_email'],
             'public_id' => IdGenerator::generatePublicId(),
+            'owner_user_id' => $ownerUserId,
         ];
 
         return $this->surveyRepository->save($newData);
