@@ -5,6 +5,7 @@ export interface AdminUser {
   line_user_id: string;
   line_display_name: string | null;
   line_picture_url: string | null;
+  email: string | null;
   role: string;
   created_at: string;
   updated_at: string;
@@ -68,5 +69,14 @@ export const adminAuthApi = {
     } catch {
       return null;
     }
+  },
+
+  async updateMe(email: string): Promise<AdminUser> {
+    const data = await fetchAdmin<{ user: AdminUser }>(`${API_BASE}/me`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    return data.user;
   },
 };

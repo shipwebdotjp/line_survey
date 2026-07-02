@@ -23,6 +23,7 @@ import RespondentMasterEditPage from './pages/admin/RespondentMasterEditPage';
 import RespondentListPage from './pages/admin/RespondentListPage';
 import RespondentDetailPage from './pages/admin/RespondentDetailPage';
 import RespondentEditPage from './pages/admin/RespondentEditPage';
+import AdminProfileEditPage from './pages/admin/AdminProfileEditPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import './App.css';
 import { LiffProvider, useLiffContext } from './features/liff/LiffContext';
@@ -100,6 +101,7 @@ const AppContent = () => {
               <Route path="respondents" element={<RespondentListPage />} />
               <Route path="respondents/:id" element={<RespondentDetailPage />} />
               <Route path="respondents/:id/edit" element={<RespondentEditPage />} />
+              <Route path="profile/edit" element={<AdminProfileEditPage />} />
               <Route path="*" element={<div>404 Not Found</div>} />
             </Route>
           </Route>

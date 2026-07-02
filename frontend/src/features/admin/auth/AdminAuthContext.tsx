@@ -7,6 +7,7 @@ interface AdminAuthContextType {
   isLoading: boolean;
   login: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (updatedUser: AdminUser) => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
@@ -56,8 +57,12 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
+  const updateUser = useCallback((updatedUser: AdminUser) => {
+    setUser(updatedUser);
+  }, []);
+
   return (
-    <AdminAuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AdminAuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>
       {children}
     </AdminAuthContext.Provider>
   );

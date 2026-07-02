@@ -1,10 +1,37 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, matchPath, Link, Navigate } from 'react-router-dom';
 import { useAdminAuth } from '../../features/admin/auth/AdminAuthContext';
 
 const AdminShell: React.FC = () => {
   const { user, isLoading, logout } = useAdminAuth();
   const { pathname, search } = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   if (isLoading) {
     return (
@@ -76,6 +103,8 @@ const AdminShell: React.FC = () => {
       } else if (detailMatch) {
         breadcrumbs.push({ label: '詳細', path: pathname });
       }
+    } else if (pathname === '/admin/profile/edit') {
+      breadcrumbs.push({ label: 'プロフィール編集', path: pathname });
     }
 
     return breadcrumbs;
@@ -158,13 +187,41 @@ const AdminShell: React.FC = () => {
               </React.Fragment>
             ))}
           </div>
-          <div className="admin-header-user">
+          <div className="admin-header-user" ref={menuRef}>
             {user && (
               <>
-                <span className="admin-user-name">{user.line_display_name || `User (ID:${user.id})`}</span>
-                <button onClick={logout} className="admin-logout-btn">
-                  ログアウト
+                <button
+                  className={`admin-user-menu-trigger ${isMenuOpen ? 'active' : ''}`}
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-expanded={isMenuOpen}
+                  aria-haspopup="true"
+                >
+                  <span>{user.line_display_name || `User (ID:${user.id})`}</span>
+                  <svg className="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
                 </button>
+
+                {isMenuOpen && (
+                  <div className="admin-dropdown-menu">
+                    <Link to="/admin/profile/edit" className="admin-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      プロフィール編集
+                    </Link>
+                    <div className="admin-dropdown-divider"></div>
+                    <button onClick={logout} className="admin-dropdown-item danger">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                      ログアウト
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
