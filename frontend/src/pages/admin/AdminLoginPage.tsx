@@ -55,14 +55,8 @@ const AdminLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="admin-login-container" style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#f3f4f6'
-    }}>
-      <div className="admin-card" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
+    <div className="admin-login-page">
+      <div className="admin-login-card">
         <h1 style={{ fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center' }}>Admin Login</h1>
 
         <div style={{ textAlign: 'center' }}>
@@ -73,8 +67,7 @@ const AdminLoginPage: React.FC = () => {
           <button
             onClick={handleLogin}
             disabled={isAuthenticating}
-            className="admin-btn admin-btn-primary"
-            style={{ width: '100%', padding: '0.75rem', fontSize: '1rem' }}
+            className="admin-button admin-login-button"
           >
             {isAuthenticating ? '認証中...' : 'LINEでログイン'}
           </button>

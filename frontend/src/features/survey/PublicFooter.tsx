@@ -40,15 +40,18 @@ const PublicFooter: React.FC = () => {
         <nav className="public-footer-nav">
           <ul className="public-footer-links">
             <li>
+              <Link to="/admin/surveys/new">アンケート作成</Link>
+            </li>
+            <li>
               <Link to={publicId ? `/s?public_id=${publicId}` : '/s'}>回答一覧</Link>
             </li>
             <li>
               <Link to={`/respondent/edit?return_to=${currentPath}${publicId ? `&public_id=${publicId}` : ''}`}>
-                本人情報編集
+                プロフィール情報編集
               </Link>
             </li>
             <li>
-              <Link to="/about-us">About Us</Link>
+              <Link to="/privacy-policy">プライバシーポリシー</Link>
             </li>
           </ul>
         </nav>

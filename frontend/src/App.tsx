@@ -5,7 +5,7 @@ import EditResponsePage from './pages/public-survey/EditResponsePage';
 import ShowResponsePage from './pages/public-survey/ShowResponsePage';
 import ResponseHistoryPage from './pages/public-survey/ResponseHistoryPage';
 import EditRespondentsPage from './pages/public-survey/EditRespondentsPage';
-import AboutUsPage from './pages/public-survey/AboutUsPage';
+import PrivacyPolicyPage from './pages/public-survey/PrivacyPolicyPage';
 import PublicLayout from './features/survey/PublicLayout';
 import AdminShell from './pages/admin/AdminShell';
 import SurveyListPage from './pages/admin/SurveyListPage';
@@ -77,7 +77,8 @@ const AppContent = () => {
             <Route path="s/:public_id/r/:edit_token" element={<ShowResponsePage />} />
             <Route path="s/:public_id/r/:edit_token/edit" element={<EditResponsePage />} />
             <Route path="respondent/edit" element={<EditRespondentsPage />} />
-            <Route path="about-us" element={<AboutUsPage />} />
+            <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="about-us" element={<Navigate to="/privacy-policy" replace />} />
           </Route>
 
           <Route path="/admin" element={<AdminAuthProvider><Outlet /></AdminAuthProvider>}>

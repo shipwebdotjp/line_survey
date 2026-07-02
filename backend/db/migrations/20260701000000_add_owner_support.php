@@ -13,6 +13,7 @@ final class AddOwnerSupport extends AbstractMigration
         $table->addColumn('line_user_id', 'string', ['limit' => 255])
               ->addColumn('line_display_name', 'string', ['limit' => 255])
               ->addColumn('line_picture_url', 'string', ['limit' => 1024, 'null' => true])
+              ->addColumn('email', 'string', ['limit' => 255, 'null' => true])
               ->addColumn('role', 'string', ['limit' => 20, 'default' => 'user'])
               ->addColumn('created_at', 'datetime')
               ->addColumn('updated_at', 'datetime')

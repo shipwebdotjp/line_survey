@@ -329,7 +329,6 @@
 }
 
 .public-home-badge,
-.public-home-section-kicker,
 .public-home-panel-kicker {
   display: inline-flex;
   align-self: flex-start;
@@ -443,18 +442,6 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-.public-home-panel-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.32rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(6, 199, 85, 0.1);
-  color: #0f7a3a;
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
 .public-home-stacked-cards {
@@ -1183,6 +1170,36 @@
   padding: 3rem;
   color: var(--text);
   opacity: 0.7;
+}
+
+/* Admin Login Page */
+.admin-login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.admin-login-card {
+  background: var(--social-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.admin-login-button {
+  background-color: #06C755;
+  color: white;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.admin-login-button:hover:not(:disabled) {
+  background-color: #05b34c;
 }
 
 /* Admin Detail Tables and Cards */
