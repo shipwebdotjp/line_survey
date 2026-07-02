@@ -102,6 +102,7 @@ const PublicSurveyPage: React.FC = () => {
             id_token: idToken,
             public_id: public_id,
           }),
+          credentials: 'include',
         });
         const identifyResult: IdentifyResponse = await identifyResponse.json();
 

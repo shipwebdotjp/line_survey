@@ -52,7 +52,7 @@ final class IdentifyService
         $masters = $this->masterRepository->findBy([
             'line_display_name' => $lineDisplayName,
             'owner_user_id' => $ownerUserId,
-        ]);
+        ], $ownerUserId);
         if (!empty($masters)) {
             $master = $masters[0];
 
