@@ -39,7 +39,10 @@ class SurveyRepository
 
     public function findByPublicId(string $publicId): ?array
     {
-        $sql = sprintf('SELECT * FROM %s WHERE public_id = ? LIMIT 1', self::TABLE);
+        $sql = sprintf(
+            'SELECT s.*, u.email AS owner_email FROM %s s LEFT JOIN users u ON s.owner_user_id = u.id WHERE s.public_id = ? LIMIT 1',
+            self::TABLE
+        );
         $result = $this->db->selectOne($sql, [$publicId]);
 
         if (!$result) {

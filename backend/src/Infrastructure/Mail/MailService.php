@@ -22,7 +22,6 @@ class MailService
     private string $smtpEncryption;
     private string $fromAddress;
     private string $fromName;
-    private string $adminAddress;
     private string $appUrl;
     private ?PHPMailer $phpMailer = null;
 
@@ -41,7 +40,6 @@ class MailService
         $this->smtpEncryption = $settings->get('mail.encryption', '');
         $this->fromAddress = $settings->get('mail.from_address', 'onboarding@resend.dev');
         $this->fromName = $settings->get('mail.from_name', 'Survey App');
-        $this->adminAddress = trim((string) $settings->get('mail.admin_address', ''));
         $this->phpMailer = $phpMailer;
 
         $appUrl = $settings->get('app.public_url');
@@ -88,25 +86,26 @@ class MailService
             'message' => $message,
         ];
 
-        if ($this->shouldSendAdminCopy($to)) {
-            $adminResult = $this->sendEmail($this->adminAddress, $subject_admin, $body_admin);
-            $result['admin_result'] = $adminResult;
+        $ownerEmail = trim($survey['owner_email'] ?? '');
+        if ($this->shouldSendOwnerCopy($to, $ownerEmail)) {
+            $ownerResult = $this->sendEmail($ownerEmail, $subject_admin, $body_admin);
+            $result['admin_result'] = $ownerResult;
 
-            if (($adminResult['status'] ?? null) !== 'sent') {
-                $result['message'] = $message . ' Admin copy failed: ' . ($adminResult['message'] ?? 'Unknown error.');
+            if (($ownerResult['status'] ?? null) !== 'sent') {
+                $result['message'] = $message . ' Admin copy failed: ' . ($ownerResult['message'] ?? 'Unknown error.');
             }
         }
 
         return $result;
     }
 
-    private function shouldSendAdminCopy(string $primaryRecipient): bool
+    private function shouldSendOwnerCopy(string $primaryRecipient, string $ownerEmail): bool
     {
-        if ($this->adminAddress === '') {
+        if ($ownerEmail === '') {
             return false;
         }
 
-        return strcasecmp(trim($primaryRecipient), $this->adminAddress) !== 0;
+        return strcasecmp(trim($primaryRecipient), $ownerEmail) !== 0;
     }
 
     private function buildEmailBody(array $respondent, array $survey, array $response, bool $isUpdate = false, bool $isAdmin = false): string

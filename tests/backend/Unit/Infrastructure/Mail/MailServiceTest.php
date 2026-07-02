@@ -19,7 +19,6 @@ class MailServiceTest extends TestCase
         'RESEND_API_KEY',
         'MAIL_FROM_ADDRESS',
         'MAIL_FROM_NAME',
-        'ADMIN_MAIL',
         'MAIL_HOST',
         'MAIL_PORT',
         'MAIL_USERNAME',
@@ -154,7 +153,7 @@ class MailServiceTest extends TestCase
         $this->assertEquals('Email sent successfully via SMTP.', $result['message']);
     }
 
-    public function test_sendConfirmation_via_smtp_sends_admin_copy_when_configured(): void
+    public function test_sendConfirmation_via_smtp_sends_owner_copy_when_owner_email_set(): void
     {
         $settings = $this->createSettings([
             'MAIL_MAILER' => 'smtp',
@@ -163,7 +162,6 @@ class MailServiceTest extends TestCase
             'MAIL_USERNAME' => 'user',
             'MAIL_PASSWORD' => 'pass',
             'MAIL_ENCRYPTION' => 'tls',
-            'ADMIN_MAIL' => 'admin@example.com',
         ]);
 
         $phpMailerMock = $this->createMock(PHPMailer::class);
@@ -193,7 +191,8 @@ class MailServiceTest extends TestCase
         $survey = [
             'send_confirmation_email' => true,
             'title' => 'Test Survey',
-            'public_id' => 'survey123'
+            'public_id' => 'survey123',
+            'owner_email' => 'owner@example.com',
         ];
         $response = [
             'submitted_at' => '2023-01-01 12:00:00',
@@ -205,12 +204,12 @@ class MailServiceTest extends TestCase
 
         $this->assertEquals('sent', $result['status']);
         $this->assertEquals('Email sent successfully via SMTP.', $result['message']);
-        $this->assertSame(['test@example.com', 'admin@example.com'], $sentRecipients);
+        $this->assertSame(['test@example.com', 'owner@example.com'], $sentRecipients);
         $this->assertArrayHasKey('admin_result', $result);
         $this->assertEquals('sent', $result['admin_result']['status']);
     }
 
-    public function test_sendConfirmation_reports_admin_copy_failure_without_failing_primary_send(): void
+    public function test_sendConfirmation_reports_owner_copy_failure_without_failing_primary_send(): void
     {
         $settings = $this->createSettings([
             'MAIL_MAILER' => 'smtp',
@@ -219,7 +218,6 @@ class MailServiceTest extends TestCase
             'MAIL_USERNAME' => 'user',
             'MAIL_PASSWORD' => 'pass',
             'MAIL_ENCRYPTION' => 'tls',
-            'ADMIN_MAIL' => 'admin@example.com',
         ]);
 
         $phpMailerMock = $this->createMock(PHPMailer::class);
@@ -257,7 +255,8 @@ class MailServiceTest extends TestCase
         $survey = [
             'send_confirmation_email' => true,
             'title' => 'Test Survey',
-            'public_id' => 'survey123'
+            'public_id' => 'survey123',
+            'owner_email' => 'owner@example.com',
         ];
         $response = [
             'submitted_at' => '2023-01-01 12:00:00',
@@ -269,8 +268,58 @@ class MailServiceTest extends TestCase
 
         $this->assertEquals('sent', $result['status']);
         $this->assertStringContainsString('Admin copy failed', $result['message']);
-        $this->assertSame(['test@example.com', 'admin@example.com'], $sentRecipients);
+        $this->assertSame(['test@example.com', 'owner@example.com'], $sentRecipients);
         $this->assertArrayHasKey('admin_result', $result);
         $this->assertEquals('failed', $result['admin_result']['status']);
+    }
+
+    public function test_sendConfirmation_skips_owner_copy_when_owner_email_empty(): void
+    {
+        $settings = $this->createSettings([
+            'MAIL_MAILER' => 'smtp',
+            'MAIL_HOST' => 'smtp.test.com',
+            'MAIL_PORT' => '587',
+            'MAIL_USERNAME' => 'user',
+            'MAIL_PASSWORD' => 'pass',
+            'MAIL_ENCRYPTION' => 'tls',
+        ]);
+
+        $phpMailerMock = $this->createMock(PHPMailer::class);
+
+        $phpMailerMock->expects($this->once())
+            ->method('clearAllRecipients');
+
+        $phpMailerMock->expects($this->once())
+            ->method('addAddress')
+            ->with('test@example.com');
+
+        $phpMailerMock->expects($this->once())
+            ->method('send')
+            ->willReturn(true);
+
+        $mailService = new MailService($settings, $phpMailerMock);
+
+        $respondent = [
+            'email' => 'test@example.com',
+            'name' => 'Test User',
+            'honorific' => '様'
+        ];
+        $survey = [
+            'send_confirmation_email' => true,
+            'title' => 'Test Survey',
+            'public_id' => 'survey123',
+            'owner_email' => '',
+        ];
+        $response = [
+            'submitted_at' => '2023-01-01 12:00:00',
+            'answer_json' => [],
+            'edit_token' => 'token123'
+        ];
+
+        $result = $mailService->sendConfirmation($respondent, $survey, $response);
+
+        $this->assertEquals('sent', $result['status']);
+        $this->assertEquals('Email sent successfully via SMTP.', $result['message']);
+        $this->assertArrayNotHasKey('admin_result', $result);
     }
 }

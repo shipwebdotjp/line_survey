@@ -47,7 +47,8 @@ Docker Compose 環境では、`DB_HOST=db` のままで動作します。
 ## メール設定
 
 回答控えメールの送信先は `MAIL_*` で設定します。  
-`ADMIN_MAIL` を指定すると、回答者に送る内容と同じ控えを管理者にも別送します。
+アンケートの owner にメールアドレスが設定されている場合は、回答者に送る内容と同じ控えを owner にも別送します。  
+owner のメールアドレスは `settings` テーブルまたは `users.email` で管理します。
 
 ```env
 MAIL_MAILER=smtp
@@ -55,7 +56,6 @@ MAIL_HOST=mailhog
 MAIL_PORT=1025
 MAIL_FROM_ADDRESS=onboarding@resend.dev
 MAIL_FROM_NAME="Survey App"
-ADMIN_MAIL=admin@example.com
 APP_ORIGIN_URL=http://localhost:5173
 APP_PUBLIC_URL=http://localhost:8080
 ```
