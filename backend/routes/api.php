@@ -96,8 +96,8 @@ return function (App $app) {
 
     })->add(SessionMiddleware::class);
 
-    // Admin API
-    $app->group('/api/admin', function (RouteCollectorProxy $group) {
+    // Manage API
+    $app->group('/api/manage', function (RouteCollectorProxy $group) {
         // Public Admin APIs (No session required)
         $group->post('/login', AdminLoginAction::class);
 

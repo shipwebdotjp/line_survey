@@ -26,7 +26,7 @@ final class AdminAuthMiddleware implements MiddlewareInterface
 
         if (!$ownerUserId) {
             $response = $this->responseFactory->createResponse(401);
-            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Admin session is required', null, 401);
+            return JsonResponse::error($response, 'OWNER_SESSION_REQUIRED', 'Manage session is required', null, 401);
         }
 
         $user = $this->userRepository->findById((int)$ownerUserId);

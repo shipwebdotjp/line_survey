@@ -30,10 +30,10 @@ export async function fetchAdmin<T>(
   }
 
   if (response.status === 401) {
-    // If we're on the admin side, 401 means session expired or not logged in
-    if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+    // If we're on the manage side, 401 means session expired or not logged in
+    if (window.location.pathname.startsWith('/manage') && window.location.pathname !== '/manage/login') {
       const currentPath = window.location.pathname + window.location.search;
-      window.location.href = `/admin/login?from=${encodeURIComponent(currentPath)}`;
+      window.location.href = `/manage/login?from=${encodeURIComponent(currentPath)}`;
       // Return a never-resolving promise to stop further execution in the caller
       return new Promise(() => {});
     }

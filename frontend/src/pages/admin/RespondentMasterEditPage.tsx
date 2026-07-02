@@ -53,7 +53,7 @@ const RespondentMasterEditPage: React.FC = () => {
       setValidationErrors({});
       await adminRespondentMasterApi.update(parsedId, data);
       showToast('マスターを更新しました', 'success');
-      navigate('/admin/respondent-masters');
+      navigate('/manage/respondent-masters');
     } catch (err: any) {
       if (err instanceof AdminApiError && err.data && err.data.code === 'VALIDATION_ERROR') {
         setValidationErrors(err.data.details || {});
@@ -84,7 +84,7 @@ const RespondentMasterEditPage: React.FC = () => {
             onSubmit={handleSubmit}
             isSaving={isSaving}
             validationErrors={validationErrors}
-            onCancel={() => navigate('/admin/respondent-masters')}
+            onCancel={() => navigate('/manage/respondent-masters')}
           />
         </div>
       </div>

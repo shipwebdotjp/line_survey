@@ -96,7 +96,7 @@ const SurveyListPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>アンケート管理</h1>
         <div className="admin-actions">
-          <AdminButton to="/admin/surveys/new" variant="primary">
+          <AdminButton to="/manage/surveys/new" variant="primary">
             新規作成
           </AdminButton>
         </div>
@@ -142,7 +142,7 @@ const SurveyListPage: React.FC = () => {
                   <td>
                     <div className="admin-actions">
                       <AdminButton
-                        to={`/admin/surveys/${survey.id}/edit`}
+                        to={`/manage/surveys/${survey.id}/edit`}
                         size="sm"
                       >
                         編集
@@ -173,13 +173,13 @@ const SurveyListPage: React.FC = () => {
                         削除
                       </AdminButton>
                       <AdminButton
-                        to={`/admin/surveys/${survey.id}/responses`}
+                        to={`/manage/surveys/${survey.id}/responses`}
                         size="sm"
                       >
                         回答一覧
                       </AdminButton>
                       <AdminButton
-                        to={`/admin/surveys/${survey.id}/summary`}
+                        to={`/manage/surveys/${survey.id}/summary`}
                         size="sm"
                       >
                         要約

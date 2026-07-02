@@ -43,25 +43,25 @@ const AdminShell: React.FC = () => {
 
   if (!user) {
     const from = pathname + search;
-    return <Navigate to={`/admin/login?from=${encodeURIComponent(from)}`} replace />;
+    return <Navigate to={`/manage/login?from=${encodeURIComponent(from)}`} replace />;
   }
 
   const getBreadcrumbs = () => {
-    const breadcrumbs = [{ label: 'Admin', path: '/admin' }];
+    const breadcrumbs = [{ label: 'Manage', path: '/manage' }];
 
-    if (matchPath('/admin/surveys/*', pathname) || pathname === '/admin/surveys') {
-      breadcrumbs.push({ label: 'アンケート管理', path: '/admin/surveys' });
+    if (matchPath('/manage/surveys/*', pathname) || pathname === '/manage/surveys') {
+      breadcrumbs.push({ label: 'アンケート管理', path: '/manage/surveys' });
 
-      const responseMatch = matchPath('/admin/surveys/:id/responses/:responseId/*', pathname) || matchPath('/admin/surveys/:id/responses/:responseId', pathname);
-      const responsesMatch = matchPath('/admin/surveys/:id/responses', pathname);
-      const summaryMatch = matchPath('/admin/surveys/:id/summary', pathname);
-      const editMatch = matchPath('/admin/surveys/:id/edit', pathname);
-      const newMatch = matchPath('/admin/surveys/new', pathname);
+      const responseMatch = matchPath('/manage/surveys/:id/responses/:responseId/*', pathname) || matchPath('/manage/surveys/:id/responses/:responseId', pathname);
+      const responsesMatch = matchPath('/manage/surveys/:id/responses', pathname);
+      const summaryMatch = matchPath('/manage/surveys/:id/summary', pathname);
+      const editMatch = matchPath('/manage/surveys/:id/edit', pathname);
+      const newMatch = matchPath('/manage/surveys/new', pathname);
 
       if (responseMatch) {
         const { id, responseId } = responseMatch.params;
-        breadcrumbs.push({ label: `回答一覧`, path: `/admin/surveys/${id}/responses` });
-        breadcrumbs.push({ label: `回答詳細`, path: `/admin/surveys/${id}/responses/${responseId}` });
+        breadcrumbs.push({ label: `回答一覧`, path: `/manage/surveys/${id}/responses` });
+        breadcrumbs.push({ label: `回答詳細`, path: `/manage/surveys/${id}/responses/${responseId}` });
       } else if (responsesMatch) {
         breadcrumbs.push({ label: '回答一覧', path: pathname });
       } else if (summaryMatch) {
@@ -71,39 +71,39 @@ const AdminShell: React.FC = () => {
       } else if (newMatch) {
         breadcrumbs.push({ label: '新規作成', path: pathname });
       }
-    } else if (matchPath('/admin/response-drafts/*', pathname) || pathname === '/admin/response-drafts') {
-      breadcrumbs.push({ label: '下書き一覧', path: '/admin/response-drafts' });
+    } else if (matchPath('/manage/response-drafts/*', pathname) || pathname === '/manage/response-drafts') {
+      breadcrumbs.push({ label: '下書き一覧', path: '/manage/response-drafts' });
 
-      const detailMatch = matchPath('/admin/response-drafts/:id', pathname);
+      const detailMatch = matchPath('/manage/response-drafts/:id', pathname);
 
       if (detailMatch) {
         breadcrumbs.push({ label: '詳細', path: pathname });
       }
-    } else if (matchPath('/admin/respondent-masters/*', pathname) || pathname === '/admin/respondent-masters') {
-      breadcrumbs.push({ label: 'マスター管理', path: '/admin/respondent-masters' });
+    } else if (matchPath('/manage/respondent-masters/*', pathname) || pathname === '/manage/respondent-masters') {
+      breadcrumbs.push({ label: 'マスター管理', path: '/manage/respondent-masters' });
 
-      const newMatch = matchPath('/admin/respondent-masters/new', pathname);
-      const editMatch = matchPath('/admin/respondent-masters/:id/edit', pathname);
+      const newMatch = matchPath('/manage/respondent-masters/new', pathname);
+      const editMatch = matchPath('/manage/respondent-masters/:id/edit', pathname);
 
       if (newMatch) {
         breadcrumbs.push({ label: '新規登録', path: pathname });
       } else if (editMatch) {
         breadcrumbs.push({ label: '編集', path: pathname });
       }
-    } else if (matchPath('/admin/respondents/*', pathname) || pathname === '/admin/respondents') {
-      breadcrumbs.push({ label: '回答者管理', path: '/admin/respondents' });
+    } else if (matchPath('/manage/respondents/*', pathname) || pathname === '/manage/respondents') {
+      breadcrumbs.push({ label: '回答者管理', path: '/manage/respondents' });
 
-      const detailMatch = matchPath('/admin/respondents/:id', pathname);
-      const editMatch = matchPath('/admin/respondents/:id/edit', pathname);
+      const detailMatch = matchPath('/manage/respondents/:id', pathname);
+      const editMatch = matchPath('/manage/respondents/:id/edit', pathname);
 
       if (editMatch) {
         const { id } = editMatch.params;
-        breadcrumbs.push({ label: '詳細', path: `/admin/respondents/${id}` });
+        breadcrumbs.push({ label: '詳細', path: `/manage/respondents/${id}` });
         breadcrumbs.push({ label: '編集', path: pathname });
       } else if (detailMatch) {
         breadcrumbs.push({ label: '詳細', path: pathname });
       }
-    } else if (pathname === '/admin/profile/edit') {
+    } else if (pathname === '/manage/profile/edit') {
       breadcrumbs.push({ label: 'プロフィール編集', path: pathname });
     }
 
@@ -112,22 +112,22 @@ const AdminShell: React.FC = () => {
 
   const breadcrumbs = getBreadcrumbs();
 
-  const showSurveySubNav = matchPath('/admin/surveys/*', pathname) ||
-    pathname === '/admin/surveys' ||
-    matchPath('/admin/response-drafts/*', pathname) ||
-    pathname === '/admin/response-drafts';
+  const showSurveySubNav = matchPath('/manage/surveys/*', pathname) ||
+    pathname === '/manage/surveys' ||
+    matchPath('/manage/response-drafts/*', pathname) ||
+    pathname === '/manage/response-drafts';
 
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <div className="admin-sidebar-brand">
-          Admin Panel
+          Manage Panel
         </div>
         <nav className="admin-nav">
           <ul>
             <li>
               <NavLink
-                to="/admin/surveys"
+                to="/manage/surveys"
                 className={({ isActive }) => isActive ? 'active' : ''}
               >
                 アンケート管理
@@ -136,7 +136,7 @@ const AdminShell: React.FC = () => {
                 <ul className="admin-nav-sub">
                   <li>
                     <NavLink
-                      to="/admin/surveys"
+                      to="/manage/surveys"
                       className={({ isActive }) => isActive ? 'active' : ''}
                       end
                     >
@@ -145,7 +145,7 @@ const AdminShell: React.FC = () => {
                   </li>
                   <li>
                     <NavLink
-                      to="/admin/response-drafts"
+                      to="/manage/response-drafts"
                       className={({ isActive }) => isActive ? 'active' : ''}
                     >
                       下書き一覧
@@ -156,7 +156,7 @@ const AdminShell: React.FC = () => {
             </li>
             <li>
               <NavLink
-                to="/admin/respondent-masters"
+                to="/manage/respondent-masters"
                 className={({ isActive }) => isActive ? 'active' : ''}
               >
                 マスター管理
@@ -164,7 +164,7 @@ const AdminShell: React.FC = () => {
             </li>
             <li>
               <NavLink
-                to="/admin/respondents"
+                to="/manage/respondents"
                 className={({ isActive }) => isActive ? 'active' : ''}
               >
                 回答者管理
@@ -204,7 +204,7 @@ const AdminShell: React.FC = () => {
 
                 {isMenuOpen && (
                   <div className="admin-dropdown-menu">
-                    <Link to="/admin/profile/edit" className="admin-dropdown-item">
+                    <Link to="/manage/profile/edit" className="admin-dropdown-item">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>

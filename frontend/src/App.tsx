@@ -59,7 +59,7 @@ const AppContent = () => {
     location.pathname === '/s' ||
     location.pathname.startsWith('/s/') ||
     location.pathname === '/respondent/edit' ||
-    location.pathname.startsWith('/admin/login') ||
+    location.pathname.startsWith('/manage/login') ||
     params.has('liff.state') ||
     params.has('code') ||
     params.has('liffClientId') ||
@@ -82,7 +82,7 @@ const AppContent = () => {
             <Route path="about-us" element={<Navigate to="/privacy-policy" replace />} />
           </Route>
 
-          <Route path="/admin" element={<AdminAuthProvider><Outlet /></AdminAuthProvider>}>
+          <Route path="/manage" element={<AdminAuthProvider><Outlet /></AdminAuthProvider>}>
             <Route path="login" element={<AdminLoginPage />} />
             <Route element={<AdminShell />}>
               <Route index element={<Navigate to="surveys" replace />} />

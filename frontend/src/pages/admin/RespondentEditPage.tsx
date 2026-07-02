@@ -70,7 +70,7 @@ const RespondentEditPage: React.FC = () => {
         email: formData.email,
         honorific: formData.honorific || null,
       });
-      navigate(`/admin/respondents/${respondent.id}`);
+      navigate(`/manage/respondents/${respondent.id}`);
     } catch (err: any) {
       if (err.name === 'FetchError' && err.data && err.data.code === 'VALIDATION_ERROR') {
         setValidationErrors(err.data.details || {});
@@ -164,7 +164,7 @@ const RespondentEditPage: React.FC = () => {
             <AdminButton type="submit" variant="primary" disabled={isSaving}>
               {isSaving ? '保存中...' : '保存する'}
             </AdminButton>
-            <AdminButton to={`/admin/respondents/${respondent.id}`}>
+            <AdminButton to={`/manage/respondents/${respondent.id}`}>
               キャンセル
             </AdminButton>
           </div>

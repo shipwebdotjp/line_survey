@@ -75,7 +75,7 @@ const RespondentMasterListPage: React.FC = () => {
         <h1>回答者マスター管理</h1>
         <div className="admin-actions">
           <AdminButton
-            to="/admin/respondent-masters/new"
+            to="/manage/respondent-masters/new"
             variant="primary"
           >
             新規登録
@@ -162,7 +162,7 @@ const RespondentMasterListPage: React.FC = () => {
                       <td>
                         <div className="admin-table-actions">
                           <AdminButton
-                            to={`/admin/respondent-masters/${master.id}/edit`}
+                            to={`/manage/respondent-masters/${master.id}/edit`}
                             variant="outline"
                             size="sm"
                           >

@@ -52,7 +52,7 @@ const RespondentDetailPage: React.FC = () => {
     try {
       await adminRespondentApi.delete(respondent.id);
       showToast('回答者を削除しました');
-      navigate('/admin/respondents');
+      navigate('/manage/respondents');
     } catch (err: any) {
       showToast(err.message, 'error');
     }
@@ -67,13 +67,13 @@ const RespondentDetailPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>回答者詳細</h1>
         <div className="admin-actions">
-          <AdminButton to={`/admin/respondents/${respondent.id}/edit`}>
+          <AdminButton to={`/manage/respondents/${respondent.id}/edit`}>
             編集
           </AdminButton>
           <AdminButton variant="danger" onClick={handleDelete}>
             削除
           </AdminButton>
-          <AdminButton to="/admin/respondents">一覧へ戻る</AdminButton>
+          <AdminButton to="/manage/respondents">一覧へ戻る</AdminButton>
         </div>
       </div>
 
@@ -149,7 +149,7 @@ const RespondentDetailPage: React.FC = () => {
                     {history.survey_id && (
                       <div className="admin-actions">
                         <AdminButton
-                          to={`/admin/surveys/${history.survey_id}/responses/${history.response_id}`}
+                          to={`/manage/surveys/${history.survey_id}/responses/${history.response_id}`}
                           size="sm"
                         >
                           詳細

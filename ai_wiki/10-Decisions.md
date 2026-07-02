@@ -15,8 +15,8 @@
 
 ## 2026-07-02: 管理画面の自動復帰ログイン
 
-- `/admin` 配下の保護ルートは `AdminShell` で共通ガードし、未認証時は `/admin/login?from=...` にリダイレクトする
-- `/admin/login` は外部ブラウザで LINE 認証を行った後、`POST /api/admin/login` を自動実行して管理者セッションを作成する
+- `/manage` 配下の保護ルートは `AdminShell` で共通ガードし、未認証時は `/manage/login?from=...` にリダイレクトする
+- `/manage/login` は外部ブラウザで LINE 認証を行った後、`POST /api/manage/login` を自動実行して管理者セッションを作成する
 - 認証後は `from` に保持した元の admin ルートへ自動復帰する
 - この変更で、管理画面への直アクセス時にユーザーが手動で二度ログイン操作を行う必要はなくなる
 
@@ -32,7 +32,7 @@
 
 - `deploy.sh` は作業ツリーをそのまま同期せず、一時ステージングに `backend/` と `public_html/` を組み立ててから CoreServer へ送る
 - フロントエンドはステージング先の `public_html/` にビルドし、`public_html/api/index.php` はデプロイ時に生成する
-- `public_html/.htaccess` は repo 管理の実体をそのまま staging にコピーし、`/admin` 用の Basic Auth 設定を保持する
+- `public_html/.htaccess` は repo 管理の実体をそのまま staging にコピーし、`/manage` 用の Basic Auth 設定を保持する
 - リモートでは `backend/.env`、`backend/storage/`、`.htpasswd` 系を残し、それ以外の不要な古い成果物は `rsync --delete` で整理する
 - `DRY_RUN=1` では転送内容の確認だけ行い、実送信はしない
 

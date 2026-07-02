@@ -94,13 +94,13 @@ const RespondentListPage: React.FC = () => {
                   <td>
                     <div className="admin-actions">
                       <AdminButton
-                        to={`/admin/respondents/${respondent.id}`}
+                        to={`/manage/respondents/${respondent.id}`}
                         size="sm"
                       >
                         詳細
                       </AdminButton>
                       <AdminButton
-                        to={`/admin/respondents/${respondent.id}/edit`}
+                        to={`/manage/respondents/${respondent.id}/edit`}
                         size="sm"
                       >
                         編集

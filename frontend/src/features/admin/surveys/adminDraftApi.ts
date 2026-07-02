@@ -4,7 +4,7 @@ import type { ResponseDraft } from '../../survey/types';
 export const adminDraftApi = {
   async list(): Promise<ResponseDraft[]> {
     const data = await fetchAdmin<{ drafts: ResponseDraft[] }>(
-      '/api/admin/response-drafts',
+      '/api/manage/response-drafts',
       {
         headers: {
           'Accept': 'application/json',
@@ -18,7 +18,7 @@ export const adminDraftApi = {
 
   async get(id: number): Promise<ResponseDraft> {
     const data = await fetchAdmin<{ draft: ResponseDraft | null }>(
-      `/api/admin/response-drafts/${id}`,
+      `/api/manage/response-drafts/${id}`,
       {
         headers: {
           'Accept': 'application/json',
@@ -36,7 +36,7 @@ export const adminDraftApi = {
 
   async cleanup(): Promise<{ deleted_count: number; message: string }> {
     return fetchAdmin<{ deleted_count: number; message: string }>(
-      '/api/admin/response-drafts/cleanup',
+      '/api/manage/response-drafts/cleanup',
       {
         method: 'POST',
         headers: {

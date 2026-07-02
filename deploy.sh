@@ -54,16 +54,8 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [QSA,L]
 
-# Basic Auth for /admin
-# We use <If> to apply Basic Auth only to /admin and its sub-paths.
-# This ensures it doesn't interfere with /api or public survey routes.
-<If "%{REQUEST_URI} =~ m#^/admin#">
-    AuthType Basic
-    AuthName "Admin"
-    # AuthUserFile will be managed in the target environment (e.g., Coreserver)
-    AuthUserFile /home/shipweb/domains/survey.shipweb.jp/backend/.htpasswd
-    Require valid-user
-</If>
+# Note: BasicAuth is intentionally absent. The PHP AdminAuthMiddleware is the
+# sole auth path for the management API. See openspec/changes/admin-to-manage.
 
 PHP
 

@@ -65,7 +65,7 @@ const ResponseDetailPage: React.FC = () => {
     try {
       await adminSurveyApi.deleteResponse(surveyId, rid);
       showToast('回答を削除しました');
-      navigate(`/admin/surveys/${surveyId}/responses`, { replace: true });
+      navigate(`/manage/surveys/${surveyId}/responses`, { replace: true });
     } catch (err) {
       console.error(err);
       showToast('削除に失敗しました。', 'error');
@@ -98,8 +98,8 @@ const ResponseDetailPage: React.FC = () => {
         <AdminButton
           to={
             Number.isNaN(surveyId)
-              ? '/admin/surveys'
-              : `/admin/surveys/${surveyId}/responses`
+              ? '/manage/surveys'
+              : `/manage/surveys/${surveyId}/responses`
           }
         >
           回答一覧に戻る
@@ -114,24 +114,24 @@ const ResponseDetailPage: React.FC = () => {
         <h1>回答詳細</h1>
         <div className="admin-actions">
           <AdminButton
-            to={`/admin/surveys/${surveyId}/responses/${prevId}`}
+            to={`/manage/surveys/${surveyId}/responses/${prevId}`}
             disabled={prevId === null}
           >
             前の回答
           </AdminButton>
           <AdminButton
-            to={`/admin/surveys/${surveyId}/responses/${nextId}`}
+            to={`/manage/surveys/${surveyId}/responses/${nextId}`}
             disabled={nextId === null}
           >
             次の回答
           </AdminButton>
-          <AdminButton to={`/admin/surveys/${surveyId}/responses/${rid}/edit`}>
+          <AdminButton to={`/manage/surveys/${surveyId}/responses/${rid}/edit`}>
             編集
           </AdminButton>
           <AdminButton variant="danger" onClick={handleDelete}>
             削除
           </AdminButton>
-          <AdminButton to={`/admin/surveys/${surveyId}/responses`}>
+          <AdminButton to={`/manage/surveys/${surveyId}/responses`}>
             回答一覧に戻る
           </AdminButton>
         </div>

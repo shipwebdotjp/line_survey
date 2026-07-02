@@ -6,7 +6,7 @@ import type {
   UpdateRespondentMasterRequest,
 } from './types';
 
-const API_BASE = '/api/admin/respondent-masters';
+const API_BASE = '/api/manage/respondent-masters';
 
 export const adminRespondentMasterApi = {
   async list(): Promise<RespondentMaster[]> {

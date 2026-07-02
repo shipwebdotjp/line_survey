@@ -51,7 +51,7 @@ const SurveyEditPage: React.FC = () => {
     try {
       await adminSurveyApi.update(surveyId, values);
       showToast('アンケートを保存しました');
-      navigate('/admin/surveys');
+      navigate('/manage/surveys');
     } catch (err) {
       showToast('保存に失敗しました。', 'error');
       console.error(err);
@@ -59,7 +59,7 @@ const SurveyEditPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate('/admin/surveys');
+    navigate('/manage/surveys');
   };
 
   if (loading) {

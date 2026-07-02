@@ -39,7 +39,7 @@ const ResponseDraftDetailPage: React.FC = () => {
     return (
       <div className="error-container">
         <p>{error || '下書きが見つかりませんでした。'}</p>
-        <AdminButton to="/admin/response-drafts">一覧へ戻る</AdminButton>
+        <AdminButton to="/manage/response-drafts">一覧へ戻る</AdminButton>
       </div>
     );
   }
@@ -49,7 +49,7 @@ const ResponseDraftDetailPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>下書き詳細</h1>
         <div className="admin-actions">
-          <AdminButton to="/admin/response-drafts">
+          <AdminButton to="/manage/response-drafts">
             一覧へ戻る
           </AdminButton>
         </div>

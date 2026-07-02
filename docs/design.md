@@ -340,7 +340,7 @@ SurveyJS の定義と公開状態を保持する。
 - `AuthSessionMiddleware` で `$_SESSION['respondent_id']` の有無を確認し、なければ401を返す
 - CSRF対策は `SameSite=Lax` + `Origin`/`Referer` チェック + `Content-Type: application/json` 強制で行う（CSRFトークンは使わない）
 - 管理画面は Basic 認証とする
-- 対象は `/admin` と `/api/admin`
+- 対象は `/manage` と `/api/manage`
 - 編集時は `edit_token` と `respondent_id` の一致を確認する
 
 ## 16. API 設計
@@ -357,16 +357,16 @@ SurveyJS の定義と公開状態を保持する。
 
 ### 16.2 管理側
 
-- `GET /api/admin/surveys`
-- `POST /api/admin/surveys`
-- `GET /api/admin/surveys/{id}`
-- `PUT /api/admin/surveys/{id}`
-- `DELETE /api/admin/surveys/{id}`
-- `POST /api/admin/surveys/{id}/duplicate`
-- `GET /api/admin/surveys/{id}/responses`
-- `GET /api/admin/surveys/{id}/responses.csv`
-- `POST /api/admin/respondent-masters/import`
-- `GET /api/admin/respondent-masters`
+- `GET /api/manage/surveys`
+- `POST /api/manage/surveys`
+- `GET /api/manage/surveys/{id}`
+- `PUT /api/manage/surveys/{id}`
+- `DELETE /api/manage/surveys/{id}`
+- `POST /api/manage/surveys/{id}/duplicate`
+- `GET /api/manage/surveys/{id}/responses`
+- `GET /api/manage/surveys/{id}/responses.csv`
+- `POST /api/manage/respondent-masters/import`
+- `GET /api/manage/respondent-masters`
 
 ## 17. 画面設計
 

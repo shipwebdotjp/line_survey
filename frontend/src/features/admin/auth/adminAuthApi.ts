@@ -11,7 +11,7 @@ export interface AdminUser {
   updated_at: string;
 }
 
-const API_BASE = '/api/admin';
+const API_BASE = '/api/manage';
 
 async function fetchJson<T>(
   url: string,

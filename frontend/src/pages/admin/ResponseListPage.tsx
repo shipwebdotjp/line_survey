@@ -74,7 +74,7 @@ const ResponseListPage: React.FC = () => {
     return (
       <div className="error-container">
         <p>{error || 'アンケートが見つかりませんでした。'}</p>
-        <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
+        <AdminButton to="/manage/surveys">アンケート一覧に戻る</AdminButton>
       </div>
     );
   }
@@ -87,7 +87,7 @@ const ResponseListPage: React.FC = () => {
           <AdminButton href={adminSurveyApi.getCsvUrl(surveyId)} download>
             CSVダウンロード
           </AdminButton>
-          <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
+          <AdminButton to="/manage/surveys">アンケート一覧に戻る</AdminButton>
         </div>
       </div>
 
@@ -122,13 +122,13 @@ const ResponseListPage: React.FC = () => {
                   <td>
                     <div className="admin-actions">
                       <AdminButton
-                        to={`/admin/surveys/${surveyId}/responses/${res.id}`}
+                        to={`/manage/surveys/${surveyId}/responses/${res.id}`}
                         size="sm"
                       >
                         詳細
                       </AdminButton>
                       <AdminButton
-                        to={`/admin/surveys/${surveyId}/responses/${res.id}/edit`}
+                        to={`/manage/surveys/${surveyId}/responses/${res.id}/edit`}
                         size="sm"
                       >
                         編集

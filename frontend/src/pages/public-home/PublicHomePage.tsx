@@ -58,7 +58,7 @@ const PublicHomePage: React.FC = () => {
             </p>
 
             <div className="public-home-actions">
-              <Link className="public-btn public-btn-primary" to="/admin/surveys/new">
+              <Link className="public-btn public-btn-primary" to="/manage/surveys/new">
                 アンケート作成
               </Link>
             </div>

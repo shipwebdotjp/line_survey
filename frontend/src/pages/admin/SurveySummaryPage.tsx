@@ -237,7 +237,7 @@ const SurveySummaryPage: React.FC = () => {
     return (
       <div className="error-container">
         <p>{error || 'アンケートが見つかりませんでした。'}</p>
-        <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
+        <AdminButton to="/manage/surveys">アンケート一覧に戻る</AdminButton>
       </div>
     );
   }
@@ -247,7 +247,7 @@ const SurveySummaryPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>{survey.title} - 集計要約</h1>
         <div className="admin-actions">
-          <AdminButton to="/admin/surveys">アンケート一覧に戻る</AdminButton>
+          <AdminButton to="/manage/surveys">アンケート一覧に戻る</AdminButton>
         </div>
       </div>
 

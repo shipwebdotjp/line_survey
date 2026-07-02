@@ -535,7 +535,7 @@ MVPでは簡易JSON編集。
   - 選択した response の回答内容を表示する
   - 同一回答者の response 切り替え UI は持たない
 - 回答詳細API
-  - `GET /api/admin/surveys/{id}/responses/{response_id}`
+  - `GET /api/manage/surveys/{id}/responses/{response_id}`
   - `respondent` はネストしたオブジェクトで返す
   - `respondent` には `name`, `email`, `line_display_name`, `honorific`, `is_manually_entered`, `respondent_master_id` を含める
   - `survey_snapshot_json` はDBに保存されている内容をそのまま返す
@@ -608,8 +608,8 @@ MVPではBasic認証。
 
 対象:
 
-- `/admin`
-- `/api/admin`
+- `/manage`
+- `/api/manage`
 
 ### 編集時認証
 
@@ -638,17 +638,17 @@ MVPではBasic認証。
 
 ### 管理側
 
-- `GET /api/admin/surveys`
-- `POST /api/admin/surveys`
-- `GET /api/admin/surveys/{id}`
-- `PUT /api/admin/surveys/{id}`
-- `DELETE /api/admin/surveys/{id}`
-- `POST /api/admin/surveys/{id}/duplicate`
-- `GET /api/admin/surveys/{id}/responses`
-- `GET /api/admin/surveys/{id}/responses/{response_id}`
-- `GET /api/admin/surveys/{id}/responses.csv`
-- `POST /api/admin/respondent-masters/import`
-- `GET /api/admin/respondent-masters`
+- `GET /api/manage/surveys`
+- `POST /api/manage/surveys`
+- `GET /api/manage/surveys/{id}`
+- `PUT /api/manage/surveys/{id}`
+- `DELETE /api/manage/surveys/{id}`
+- `POST /api/manage/surveys/{id}/duplicate`
+- `GET /api/manage/surveys/{id}/responses`
+- `GET /api/manage/surveys/{id}/responses/{response_id}`
+- `GET /api/manage/surveys/{id}/responses.csv`
+- `POST /api/manage/respondent-masters/import`
+- `GET /api/manage/respondent-masters`
 
 ## 17. DB設計案
 
@@ -758,8 +758,8 @@ LIFFの初期化（`liff.init()`）は、以下の条件のいずれかを満た
 - URLに `liff.state=` パラメータが含まれている場合（LIFF内でのリダイレクト復元時）
 - パスが `/s/` で始まる場合（アンケート回答・編集画面）
 
-`/` (ランディングページ) や `/admin` (管理画面) への通常アクセス時は、LIFFの初期化を行わない。
-`/admin/login` は管理者認証の入口として例外的に LIFF を有効にする。
+`/` (ランディングページ) や `/manage` (管理画面) への通常アクセス時は、LIFFの初期化を行わない。
+`/manage/login` は管理者認証の入口として例外的に LIFF を有効にする。
 
 ### 外部ブラウザ対応
 
@@ -767,7 +767,7 @@ LIFFの初期化（`liff.init()`）は、以下の条件のいずれかを満た
 
 - `liff.init()` の際、`withLoginOnExternalBrowser: true` を指定する。
 - コード内で明示的に `liff.login()` を呼び出すことは避ける（ログインループ防止のため、LIFF SDKの自動ログイン機能に委ねる）。
-- ただし `/admin/login` は、LINE認証後に管理者セッションを自動作成して元の管理画面へ戻すための例外として扱う。
+- ただし `/manage/login` は、LINE認証後に管理者セッションを自動作成して元の管理画面へ戻すための例外として扱う。
 
 ### 実装構造
 

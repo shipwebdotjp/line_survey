@@ -13,7 +13,7 @@ const AdminLoginPage: React.FC = () => {
   const hasAttemptedLoginRef = useRef(false);
 
   useEffect(() => {
-    document.title = '管理者ログイン';
+    document.title = '管理画面ログイン';
   }, []);
 
   useEffect(() => {
@@ -21,12 +21,12 @@ const AdminLoginPage: React.FC = () => {
       return;
     }
     const params = new URLSearchParams(location.search);
-    let from = params.get('from') || (location.state as any)?.from?.pathname || '/admin/surveys';
+    let from = params.get('from') || (location.state as any)?.from?.pathname || '/manage/surveys';
 
-    // Validate redirect target: Must start with /admin and NOT be /admin/login
-    const isValidAdminPath = from.startsWith('/admin') && !from.startsWith('/admin/login');
-    if (!isValidAdminPath) {
-      from = '/admin/surveys';
+    // Validate redirect target: Must start with /manage and NOT be /manage/login
+    const isValidManagePath = from.startsWith('/manage') && !from.startsWith('/manage/login');
+    if (!isValidManagePath) {
+      from = '/manage/surveys';
     }
 
     navigate(from, { replace: true });
@@ -68,11 +68,11 @@ const AdminLoginPage: React.FC = () => {
   return (
     <div className="admin-login-page">
       <div className="admin-login-card">
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center' }}>Admin Login</h1>
+        <h1 style={{ fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center' }}>Manage Login</h1>
 
         <div style={{ textAlign: 'center' }}>
           <p style={{ marginBottom: '2rem', color: '#6b7280' }}>
-            管理者パネルにアクセスするため、LINE認証と管理者ログインを処理しています。
+            管理画面にアクセスするため、LINE認証とログインを処理しています。
           </p>
 
           {isAuthenticating && (

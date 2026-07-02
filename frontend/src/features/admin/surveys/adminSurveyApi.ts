@@ -8,7 +8,7 @@ import type {
   SurveyUpdateParams,
 } from './types';
 
-const API_BASE = '/api/admin/surveys';
+const API_BASE = '/api/manage/surveys';
 
 export const adminSurveyApi = {
   async list(): Promise<Survey[]> {

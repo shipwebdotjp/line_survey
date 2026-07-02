@@ -53,7 +53,7 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     } finally {
       versionRef.current++;
       setUser(null);
-      window.location.href = '/admin/login';
+      window.location.href = '/manage/login';
     }
   };
 

@@ -9,11 +9,11 @@ const SurveyCreatePage: React.FC = () => {
 
   const handleSubmit = async (values: SurveyCreateParams) => {
     await adminSurveyApi.create(values);
-    navigate('/admin/surveys');
+    navigate('/manage/surveys');
   };
 
   const handleCancel = () => {
-    navigate('/admin/surveys');
+    navigate('/manage/surveys');
   };
 
   return (

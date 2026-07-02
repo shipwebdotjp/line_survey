@@ -15,6 +15,6 @@
 
 ## 2026-07-02: 管理者ログインの自動復帰導線
 
-- `AdminShell` 配下の保護ルートは、未認証時に `/admin/login?from=...` へ共通リダイレクトする
-- `/admin/login` では LINE 認証後に `POST /api/admin/login` を自動実行し、管理者セッションを作成してから元の admin ルートへ戻す
-- これにより、`/admin/surveys` や `/admin/surveys/new` などへの直アクセスでも、手動で二度ログイン操作をする必要がなくなった
+- `AdminShell` 配下の保護ルートは、未認証時に `/manage/login?from=...` へ共通リダイレクトする
+- `/manage/login` では LINE 認証後に `POST /api/manage/login` を自動実行し、管理者セッションを作成してから元の admin ルートへ戻す
+- これにより、`/manage/surveys` や `/manage/surveys/new` などへの直アクセスでも、手動で二度ログイン操作をする必要がなくなった

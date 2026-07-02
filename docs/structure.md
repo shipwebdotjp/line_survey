@@ -223,7 +223,7 @@ frontend/src/
 - `features/liff/` は LIFF 初期化と認証を置く
 - `features/survey/` は SurveyJS 連携を置く
 - `features/response/` は回答送信・編集・再訪表示を置く
-- `features/admin/` は管理画面の機能を置く
+- `features/manage/` は管理画面の機能を置く
 - `features/auth/` は管理画面認証などを置く
 
 ## 5. ファイル命名

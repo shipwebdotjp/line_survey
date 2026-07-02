@@ -40,7 +40,7 @@ const PublicFooter: React.FC = () => {
         <nav className="public-footer-nav">
           <ul className="public-footer-links">
             <li>
-              <Link to="/admin/surveys/new">アンケート作成</Link>
+              <Link to="/manage/surveys/new">アンケート作成</Link>
             </li>
             <li>
               <Link to={publicId ? `/s?public_id=${publicId}` : '/s'}>回答一覧</Link>

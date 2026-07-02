@@ -14,7 +14,7 @@
 
 - [x] 0-2. フロントエンドの起動基盤を作る
   - Vite + React + TypeScript のビルド/起動導線を整える
-  - 公開側（`/s/*`）と管理側（`/admin/*`）でルーティングを分ける
+  - 公開側（`/s/*`）と管理側（`/manage/*`）でルーティングを分ける
   - **SurveyJS のバージョンを固定し、`questions_json` の最小サンプルを1件用意する**
   - LIFF SDK をインストールし、初期化関数の雛形を作る
   - **LIFF ブラウザ外アクセス時（開発環境など）のフォールバック方針を決める**
@@ -158,11 +158,11 @@
 > **前提: タスク 0-1 完了後に着手する**
 
 - [x] 7-1. Basic 認証ミドルウェアを作る
-  - `/api/admin/*` に適用する
+  - `/api/manage/*` に適用する
   - 認証情報は `ADMIN_USER` / `ADMIN_PASS` 環境変数から読む
   - 401 時は `WWW-Authenticate: Basic realm="Admin"` を返す
 
-- [x] 7-2. フロントエンドの `/admin/*` ルートと Basic 認証の整合を確認する
+- [x] 7-2. フロントエンドの `/manage/*` ルートと Basic 認証の整合を確認する
   - Coreserver に静的ビルドを配置する場合、`.htaccess` でBasic認証を掛ける方針を決める
   - Vite 開発サーバーでは認証をスキップする方針を明示する
 
@@ -172,26 +172,26 @@
 
 > **前提: タスク 1-3、7-1 完了後に着手する**
 
-- [x] 8-1. `GET /api/admin/surveys` を実装する
+- [x] 8-1. `GET /api/manage/surveys` を実装する
   - 一覧（id, title, status, 回答数, allow_multiple, allow_edit, starts_at, ends_at）を返す
 
-- [x] 8-2. `POST /api/admin/surveys` を実装する
+- [x] 8-2. `POST /api/manage/surveys` を実装する
   - `public_id` を生成して保存する
   - `questions_json` の JSON 構文バリデーションを行う
 
-- [x] 8-3. `GET /api/admin/surveys/{id}` を実装する
+- [x] 8-3. `GET /api/manage/surveys/{id}` を実装する
   - 編集画面用に全カラムを返す
   - 回答数も含めて返す（編集画面の補助情報として使う）
 
-- [x] 8-4. `PUT /api/admin/surveys/{id}` を実装する
+- [x] 8-4. `PUT /api/manage/surveys/{id}` を実装する
   - `questions_json` を含む全フィールドを更新可能にする
   - `questions_json` は JSON 構文バリデーションを行う
 
-- [x] 8-5. `DELETE /api/admin/surveys/{id}` を実装する
+- [x] 8-5. `DELETE /api/manage/surveys/{id}` を実装する
   - 回答数 ≥ 1 のとき削除を拒否する（409）
   - 回答 0 件のときのみ削除する
 
-- [ ] 8-6. `POST /api/admin/surveys/{id}/duplicate` を実装する
+- [ ] 8-6. `POST /api/manage/surveys/{id}/duplicate` を実装する
   - コピー対象: title / description / questions_json / allow_multiple / allow_edit / メール設定
   - コピーしない: responses / public_id / created_at / updated_at
   - 新しい `public_id` を生成する
@@ -202,11 +202,11 @@
 
 > **前提: タスク 4-2、8-1 完了後に着手する**
 
-- [x] 9-1. `GET /api/admin/surveys/{id}/responses` を実装する
+- [x] 9-1. `GET /api/manage/surveys/{id}/responses` を実装する
   - respondent の氏名・メール・LINE表示名を JOIN して返す
   - `submitted_at` 降順で返す
 
-- [x] 9-2. `GET /api/admin/surveys/{id}/responses.csv` を実装する
+- [x] 9-2. `GET /api/manage/surveys/{id}/responses.csv` を実装する
   - 列順: 回答ID、初回回答日時、最終更新日時、LINE表示名、氏名、敬称、メール、設問列
   - 設問列は `responses.survey_snapshot_json` から生成する（回答時点の定義を使う）
   - 複数選択は `;` 区切り、空値は空文字
@@ -218,10 +218,10 @@
 
 > **前提: タスク 1-3、7-1 完了後に着手する**
 
-- [x] 10-1. `GET /api/admin/respondent-masters` を実装する
+- [x] 10-1. `GET /api/manage/respondent-masters` を実装する
   - 全件一覧を返す（master_code / line_display_name / name / email / honorific / note）
 
-- [x] 10-2. `POST /api/admin/respondent-masters/import` を実装する
+- [x] 10-2. `POST /api/manage/respondent-masters/import` を実装する
   - CSV を読み込み、`master_code` 単位で upsert する
   - 一部エラーがあっても成功行は保存する
   - レスポンスに `{ "imported": N, "errors": [ { "row": N, "reason": "..." } ] }` を返す

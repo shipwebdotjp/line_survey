@@ -102,7 +102,7 @@ const ResponseDraftListPage: React.FC = () => {
                   <td>
                     <div className="admin-actions">
                       <AdminButton
-                        to={`/admin/response-drafts/${draft.id}`}
+                        to={`/manage/response-drafts/${draft.id}`}
                         size="sm"
                       >
                         詳細

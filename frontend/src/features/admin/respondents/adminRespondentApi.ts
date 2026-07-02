@@ -5,7 +5,7 @@ import type {
   UpdateRespondentRequest,
 } from './types';
 
-const API_BASE = '/api/admin/respondents';
+const API_BASE = '/api/manage/respondents';
 
 export interface ApiError {
   error: string;

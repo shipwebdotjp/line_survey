@@ -48,7 +48,7 @@ const ResponseEditPage: React.FC = () => {
     try {
       await adminSurveyApi.updateResponse(surveyId, rid, sender.data);
       showToast('回答を更新しました');
-      navigate(`/admin/surveys/${surveyId}/responses/${rid}`);
+      navigate(`/manage/surveys/${surveyId}/responses/${rid}`);
     } catch (err) {
       console.error(err);
       showToast('更新に失敗しました。', 'error');
@@ -72,8 +72,8 @@ const ResponseEditPage: React.FC = () => {
         <AdminButton
           to={
             Number.isNaN(surveyId)
-              ? '/admin/surveys'
-              : `/admin/surveys/${surveyId}/responses`
+              ? '/manage/surveys'
+              : `/manage/surveys/${surveyId}/responses`
           }
         >
           回答一覧に戻る
@@ -87,7 +87,7 @@ const ResponseEditPage: React.FC = () => {
       <div className="admin-page-header">
         <h1>回答編集</h1>
         <div className="admin-actions">
-          <AdminButton to={`/admin/surveys/${surveyId}/responses/${rid}`}>
+          <AdminButton to={`/manage/surveys/${surveyId}/responses/${rid}`}>
             詳細に戻る
           </AdminButton>
         </div>

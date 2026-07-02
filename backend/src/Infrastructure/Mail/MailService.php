@@ -124,7 +124,7 @@ class MailService
         $lines = [];
 
         if($isAdmin){
-            $view_url = "{$this->appUrl}/admin/surveys/{$survey['id']}/responses/{$response['id']}";
+            $view_url = "{$this->appUrl}/manage/surveys/{$survey['id']}/responses/{$response['id']}";
             $lines[] = "新しいアンケート回答がありました。";
             $lines[] = "";
             $lines[] = "管理画面で回答内容を確認するには以下のURLにアクセスしてください。";
