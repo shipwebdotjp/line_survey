@@ -94,6 +94,10 @@ final class RequestSafetyMiddleware implements MiddlewareInterface
 
     private function isContentTypeSafe(ServerRequestInterface $request): bool
     {
+        if ($this->isEmptyBody($request)) {
+            return true;
+        }
+
         $contentType = $request->getHeaderLine('Content-Type');
         if (empty($contentType)) {
             return false;
@@ -103,6 +107,31 @@ final class RequestSafetyMiddleware implements MiddlewareInterface
         $parts = explode(';', $contentType);
         $mediaType = strtolower(trim($parts[0]));
 
-        return $mediaType === 'application/json';
+        return in_array($mediaType, ['application/json', 'multipart/form-data'], true);
+    }
+
+    private function isEmptyBody(ServerRequestInterface $request): bool
+    {
+        $contentLength = $request->getHeaderLine('Content-Length');
+        if ($contentLength !== '') {
+            return (int)$contentLength === 0;
+        }
+
+        $body = $request->getBody();
+        $size = $body->getSize();
+        if ($size !== null) {
+            return $size === 0;
+        }
+
+        if ($body->isSeekable()) {
+            $position = $body->tell();
+            $body->rewind();
+            $contents = $body->getContents();
+            $body->seek($position);
+
+            return $contents === '';
+        }
+
+        return false;
     }
 }
