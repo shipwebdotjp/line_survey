@@ -64,6 +64,22 @@ APP_PUBLIC_URL=http://localhost:8080
 
 開発環境で DB を作り直したい場合は、DB コンテナやデータボリュームを削除してから、改めて `make init` -> `make migrate` -> `make seed` を実行します。
 
+## 本番環境でのマイグレーション
+
+レンタルサーバー等、CLI の PHP バージョンが古い（PHP 7.4 等）が Web 側の PHP バージョンが新しい（PHP 8.3 等）環境では、Web 経由でマイグレーションを実行するための専用ランナーを使用します。
+
+### 実行手順
+
+1. `backend/.env` に `MIGRATION_TOKEN` を設定します（推測困難なランダムな文字列を推奨）。
+2. `public_html/api/_ops/migrate.php` に対して、`X-Migration-Token` ヘッダーに設定したトークンを含めて HTTP リクエストを送信します。
+   - `curl -H "X-Migration-Token: your-token-here" https://your-domain.example.com/api/_ops/migrate.php`
+3. 実行結果を確認します。成功すると `Success: Migration completed.` と詳細ログが返ります。
+4. 一度成功すると、安全のため `backend/storage/logs/migration.lock` ファイルが作成され、以降の実行はブロックされます。再実行が必要な場合は、このロックファイルを手動で削除してください。
+
+### ログの確認
+
+マイグレーションの実行詳細は `backend/storage/logs/migrations.log` に記録されます。失敗した場合はこのログを確認してください。
+
 ## 参考
 
 - `backend/phinx.php`
