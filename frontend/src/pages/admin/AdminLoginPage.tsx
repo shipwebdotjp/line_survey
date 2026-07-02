@@ -1,58 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLiffContext } from '../../features/liff/LiffContext';
 import { useAdminAuth } from '../../features/admin/auth/AdminAuthContext';
-import { useToast } from '../../features/ui/ToastContext';
 
 const AdminLoginPage: React.FC = () => {
-  const { isLoggedIn, idToken, liff } = useLiffContext();
-  const { login, user } = useAdminAuth();
-  const { showToast } = useToast();
+  const { isLoggedIn, idToken } = useLiffContext();
+  const { login, user, isLoading } = useAdminAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasAttemptedLoginRef = useRef(false);
 
   useEffect(() => {
     document.title = '管理者ログイン';
   }, []);
 
   useEffect(() => {
-    if (user) {
-      const params = new URLSearchParams(location.search);
-      let from = params.get('from') || (location.state as any)?.from?.pathname || '/admin/surveys';
-
-      // Validate redirect target: Must start with /admin and NOT be /admin/login
-      const isValidAdminPath = from.startsWith('/admin') && !from.startsWith('/admin/login');
-      if (!isValidAdminPath) {
-        from = '/admin/surveys';
-      }
-
-      navigate(from, { replace: true });
+    if (isLoading || !user) {
+      return;
     }
-  }, [user, navigate, location]);
+    const params = new URLSearchParams(location.search);
+    let from = params.get('from') || (location.state as any)?.from?.pathname || '/admin/surveys';
 
-  const handleLogin = async () => {
+    // Validate redirect target: Must start with /admin and NOT be /admin/login
+    const isValidAdminPath = from.startsWith('/admin') && !from.startsWith('/admin/login');
+    if (!isValidAdminPath) {
+      from = '/admin/surveys';
+    }
+
+    navigate(from, { replace: true });
+  }, [user, isLoading, navigate, location]);
+
+  useEffect(() => {
+    if (isLoading || user || isAuthenticating || hasAttemptedLoginRef.current) {
+      return;
+    }
+
     if (!isLoggedIn) {
-      liff.login({ redirectUri: window.location.href });
       return;
     }
 
     if (!idToken) {
-      showToast('LINE IDトークンが取得できませんでした。', 'error');
+      hasAttemptedLoginRef.current = true;
+      setErrorMessage('LINE IDトークンが取得できませんでした。');
       return;
     }
 
-    try {
-      setIsAuthenticating(true);
-      await login(idToken);
-      showToast('ログインしました。', 'success');
-    } catch (err) {
-      console.error(err);
-      showToast(err instanceof Error ? err.message : 'ログインに失敗しました。', 'error');
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
+    hasAttemptedLoginRef.current = true;
+    setIsAuthenticating(true);
+    setErrorMessage(null);
+
+    const runLogin = async () => {
+      try {
+        await login(idToken);
+      } catch (err) {
+        console.error(err);
+        setErrorMessage(err instanceof Error ? err.message : 'ログインに失敗しました。');
+      } finally {
+        setIsAuthenticating(false);
+      }
+    };
+
+    void runLogin();
+  }, [isLoading, user, isLoggedIn, idToken, login, isAuthenticating]);
 
   return (
     <div className="admin-login-page">
@@ -61,16 +72,18 @@ const AdminLoginPage: React.FC = () => {
 
         <div style={{ textAlign: 'center' }}>
           <p style={{ marginBottom: '2rem', color: '#6b7280' }}>
-            管理者パネルにアクセスするには、LINEでログインしてください。
+            管理者パネルにアクセスするため、LINE認証と管理者ログインを処理しています。
           </p>
 
-          <button
-            onClick={handleLogin}
-            disabled={isAuthenticating}
-            className="admin-button admin-login-button"
-          >
-            {isAuthenticating ? '認証中...' : 'LINEでログイン'}
-          </button>
+          {isAuthenticating && (
+            <p style={{ marginBottom: '1rem' }}>ログイン中...</p>
+          )}
+
+          {errorMessage && (
+            <div className="error-banner" style={{ marginBottom: '1rem', textAlign: 'left' }}>
+              {errorMessage}
+            </div>
+          )}
         </div>
       </div>
     </div>
